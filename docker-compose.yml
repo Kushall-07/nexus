@@ -1,0 +1,12 @@
+services:
+  mongodb:
+    image: mongo:8
+    container_name: nexus-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - nexus-mongodb-data:/data/db
+
+volumes:
+  nexus-mongodb-data:
