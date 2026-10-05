@@ -20,6 +20,15 @@ const userSchema = new Schema(
       required: true,
       select: false,
     },
+
+    // Denormalized counter used to atomically enforce the MAX_REPOSITORIES_PER_ANALYSIS
+    // limit without multi-document transactions (see github-selection.service.ts).
+    selectedRepositoryCount: {
+      type: Number,
+      required: true,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,
