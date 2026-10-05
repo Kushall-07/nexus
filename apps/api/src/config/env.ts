@@ -25,6 +25,10 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().url(),
 
   BACKEND_URL: z.string().url(),
+
+  MAX_REPOSITORIES_PER_ANALYSIS: z.coerce.number().int().min(1).default(15),
+
+  MAX_REQUESTS_PER_REPOSITORY: z.coerce.number().int().min(1).default(10),
 });
 
 export const env = envSchema.parse({
@@ -37,4 +41,6 @@ export const env = envSchema.parse({
   TOKEN_ENCRYPTION_KEY: process.env.TOKEN_ENCRYPTION_KEY,
   FRONTEND_URL: process.env.FRONTEND_URL,
   BACKEND_URL: process.env.BACKEND_URL,
+  MAX_REPOSITORIES_PER_ANALYSIS: process.env.MAX_REPOSITORIES_PER_ANALYSIS,
+  MAX_REQUESTS_PER_REPOSITORY: process.env.MAX_REQUESTS_PER_REPOSITORY,
 });
