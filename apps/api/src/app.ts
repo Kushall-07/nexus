@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import githubRouter from "./routes/github.routes.js";
+import analysisRouter from "./routes/analysis.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { env } from "./config/env.js";
 
@@ -21,6 +22,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/github", githubRouter);
+app.use("/api/analysis", analysisRouter);
 
 app.use(errorHandler);
 

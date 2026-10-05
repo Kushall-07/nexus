@@ -1,0 +1,131 @@
+{
+  "manifestTypes": [
+    "package.json",
+    "requirements.txt",
+    "pyproject.toml",
+    "go.mod",
+    "pom.xml"
+  ],
+  "technologies": [
+    {
+      "id": "react",
+      "displayName": "React",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "package.json": ["react"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+['\"]react['\"]",
+        "\\brequire\\(\\s*['\"]react['\"]\\s*\\)",
+        "\\bimport\\s+['\"]react['\"]"
+      ],
+      "sourceFileExtensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "nextjs",
+      "displayName": "Next.js",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "package.json": ["next"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+['\"]next(/[^'\"]*)?['\"]",
+        "\\brequire\\(\\s*['\"]next(/[^'\"]*)?['\"]\\s*\\)"
+      ],
+      "sourceFileExtensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"],
+      "configFilePatterns": ["next.config.js", "next.config.mjs", "next.config.ts"]
+    },
+    {
+      "id": "express",
+      "displayName": "Express",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "package.json": ["express"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+['\"]express['\"]",
+        "\\brequire\\(\\s*['\"]express['\"]\\s*\\)"
+      ],
+      "sourceFileExtensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "fastapi",
+      "displayName": "FastAPI",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "requirements.txt": ["fastapi"],
+        "pyproject.toml": ["fastapi"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+fastapi\\s+import\\b",
+        "\\bimport\\s+fastapi\\b"
+      ],
+      "sourceFileExtensions": [".py"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "django",
+      "displayName": "Django",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "requirements.txt": ["django"],
+        "pyproject.toml": ["django"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+django\\b",
+        "\\bimport\\s+django\\b"
+      ],
+      "sourceFileExtensions": [".py"],
+      "configFilePatterns": ["manage.py"]
+    },
+    {
+      "id": "flask",
+      "displayName": "Flask",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "requirements.txt": ["flask"],
+        "pyproject.toml": ["flask"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+flask\\s+import\\b",
+        "\\bimport\\s+flask\\b"
+      ],
+      "sourceFileExtensions": [".py"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "spring-boot",
+      "displayName": "Spring Boot",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "pom.xml": ["spring-boot-starter"]
+      },
+      "sourceImportPatterns": [
+        "\\bimport\\s+org\\.springframework\\b"
+      ],
+      "sourceFileExtensions": [".java"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "gin",
+      "displayName": "Gin",
+      "category": "framework",
+      "dependencyIdentifiers": {
+        "go.mod": ["github.com/gin-gonic/gin"]
+      },
+      "sourceImportPatterns": [
+        "\"github\\.com/gin-gonic/gin\""
+      ],
+      "sourceFileExtensions": [".go"],
+      "configFilePatterns": []
+    }
+  ],
+  "structureCategories": {
+    "frontend": ["src", "components", "pages", "hooks"],
+    "backend": ["controllers", "services", "routes", "models", "middleware"],
+    "ml": ["models", "datasets", "training", "inference"],
+    "ai": ["agents", "tools", "prompts", "rag", "embeddings"]
+  }
+}

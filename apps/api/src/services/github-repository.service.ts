@@ -205,7 +205,7 @@ export async function getRepositoryDetail(
   return repo;
 }
 
-function mapToObject(
+export function mapToObject(
   map: Map<string, number> | null | undefined,
 ): Record<string, number> {
   if (!map) {
