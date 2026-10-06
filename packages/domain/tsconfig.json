@@ -11,7 +11,9 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "rootDir": ".",
+    "outDir": "./dist"
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]
 }

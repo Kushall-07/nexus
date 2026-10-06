@@ -4,6 +4,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const findByIdMock = vi.fn();
 const selectMock = vi.fn();
 const findOneMock = vi.fn();
+const evidenceBulkWriteMock = vi.fn();
+const evidenceDeleteManyMock = vi.fn();
+
+vi.mock("../src/models/evidence.model.js", () => ({
+  EvidenceModel: {
+    bulkWrite: (...args: unknown[]) => evidenceBulkWriteMock(...args),
+    deleteMany: (...args: unknown[]) => evidenceDeleteManyMock(...args),
+  },
+}));
 
 vi.mock("../src/models/user.model.js", () => ({
   UserModel: {
@@ -96,6 +105,8 @@ describe("POST /api/analysis/repositories/:id", () => {
     findByIdMock.mockReset();
     selectMock.mockReset();
     findOneMock.mockReset();
+    evidenceBulkWriteMock.mockReset().mockResolvedValue({});
+    evidenceDeleteManyMock.mockReset().mockResolvedValue({});
     mockUserToken();
   });
 
@@ -179,6 +190,44 @@ describe("POST /api/analysis/repositories/:id", () => {
     expect(response.body.data.analysis).toBeDefined();
     expect(response.body.data.analysis.requestBudget.limit).toBeGreaterThan(0);
     expect(repoDoc.save).toHaveBeenCalledTimes(1);
+  });
+
+  it("derives and persists Phase 4 evidence from the analysis", async () => {
+    const repoDoc = makeRepoDoc();
+    findOneMock.mockImplementation(async ({ userId }: { userId: string }) =>
+      userId === OWNER_USER_ID ? repoDoc : null,
+    );
+    stubGithubFetch();
+
+    const response = await request(app)
+      .post(`/api/analysis/repositories/${REPOSITORY_ID}`)
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${ownerSessionToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.evidence.items).toEqual([
+      expect.objectContaining({
+        skillId: "typescript",
+        evidenceType: "LANGUAGE",
+        signal: "sourceUsage",
+        normalizedStrength: 1,
+      }),
+    ]);
+    expect(response.body.data.evidence.items[0]).not.toHaveProperty("userId");
+    expect(evidenceBulkWriteMock).toHaveBeenCalledTimes(1);
+    expect(evidenceDeleteManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: OWNER_USER_ID, repositoryId: REPOSITORY_ID }),
+    );
+  });
+
+  it("does not persist evidence for a repository the user does not own", async () => {
+    findOneMock.mockResolvedValue(null);
+
+    await request(app)
+      .post(`/api/analysis/repositories/${REPOSITORY_ID}`)
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${ownerSessionToken}`);
+
+    expect(evidenceBulkWriteMock).not.toHaveBeenCalled();
+    expect(evidenceDeleteManyMock).not.toHaveBeenCalled();
   });
 
   it("never returns the GitHub token or encrypted token in the response", async () => {

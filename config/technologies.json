@@ -11,6 +11,7 @@
       "id": "react",
       "displayName": "React",
       "category": "framework",
+      "skillIds": ["react"],
       "dependencyIdentifiers": {
         "package.json": ["react"]
       },
@@ -26,6 +27,7 @@
       "id": "nextjs",
       "displayName": "Next.js",
       "category": "framework",
+      "skillIds": ["nextjs"],
       "dependencyIdentifiers": {
         "package.json": ["next"]
       },
@@ -40,6 +42,7 @@
       "id": "express",
       "displayName": "Express",
       "category": "framework",
+      "skillIds": ["express"],
       "dependencyIdentifiers": {
         "package.json": ["express"]
       },
@@ -54,6 +57,7 @@
       "id": "fastapi",
       "displayName": "FastAPI",
       "category": "framework",
+      "skillIds": ["fastapi"],
       "dependencyIdentifiers": {
         "requirements.txt": ["fastapi"],
         "pyproject.toml": ["fastapi"]
@@ -69,6 +73,7 @@
       "id": "django",
       "displayName": "Django",
       "category": "framework",
+      "skillIds": [],
       "dependencyIdentifiers": {
         "requirements.txt": ["django"],
         "pyproject.toml": ["django"]
@@ -84,6 +89,7 @@
       "id": "flask",
       "displayName": "Flask",
       "category": "framework",
+      "skillIds": [],
       "dependencyIdentifiers": {
         "requirements.txt": ["flask"],
         "pyproject.toml": ["flask"]
@@ -99,6 +105,7 @@
       "id": "spring-boot",
       "displayName": "Spring Boot",
       "category": "framework",
+      "skillIds": [],
       "dependencyIdentifiers": {
         "pom.xml": ["spring-boot-starter"]
       },
@@ -112,6 +119,7 @@
       "id": "gin",
       "displayName": "Gin",
       "category": "framework",
+      "skillIds": [],
       "dependencyIdentifiers": {
         "go.mod": ["github.com/gin-gonic/gin"]
       },
@@ -122,6 +130,23 @@
       "configFilePatterns": []
     }
   ],
+  "languageSkills": {
+    "Python": "python",
+    "JavaScript": "javascript",
+    "TypeScript": "typescript",
+    "Java": "java",
+    "Go": "go"
+  },
+  "observationSkills": {
+    "docker": ["docker"],
+    "genericTesting": ["unit-testing"],
+    "structure": {
+      "frontend": ["ui-development"],
+      "backend": ["rest-apis"],
+      "ml": ["model-development"],
+      "ai": ["llm-applications"]
+    }
+  },
   "structureCategories": {
     "frontend": ["src", "components", "pages", "hooks"],
     "backend": ["controllers", "services", "routes", "models", "middleware"],

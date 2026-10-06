@@ -4,6 +4,8 @@ import { z } from "zod";
 import type { RepositoryAnalysis } from "../analyzer/types.js";
 import { analyzeSelectedRepository } from "../services/github-analysis.service.js";
 import { getDecryptedGithubToken } from "../services/github-token.service.js";
+import type { BuildEvidenceResult } from "../evidence/evidence-builder.js";
+import { toPublicEvidence } from "../services/evidence.service.js";
 import { AppError, AuthErrorCode } from "../utils/errors.js";
 
 const repositoryIdParamSchema = z.object({
@@ -24,7 +26,7 @@ function requireUser(req: Request) {
 // described by the frozen spec (section 49): repository identity separated
 // from the analysis payload, with the raw GitHub access token never anywhere
 // near this response.
-function toAnalysisResponse(analysis: RepositoryAnalysis) {
+function toAnalysisResponse(analysis: RepositoryAnalysis, evidence: BuildEvidenceResult) {
   return {
     repository: {
       id: analysis.repositoryId,
@@ -42,6 +44,12 @@ function toAnalysisResponse(analysis: RepositoryAnalysis) {
       documentation: analysis.documentation,
       activity: analysis.activity,
       requestBudget: analysis.requestBudget,
+    },
+    // Phase 4 evidence derived from the observations above. Evidence only
+    // describes what was observed; it carries no skill score.
+    evidence: {
+      items: evidence.items.map(toPublicEvidence),
+      unmappedTechnologies: evidence.unmappedTechnologies,
     },
     warnings: analysis.warnings,
   };
@@ -61,7 +69,11 @@ export async function analyzeRepositoryHandler(req: Request, res: Response): Pro
   }
 
   const accessToken = await getDecryptedGithubToken(user.id);
-  const analysis = await analyzeSelectedRepository(user.id, paramsResult.data.id, accessToken);
+  const { analysis, evidence } = await analyzeSelectedRepository(
+    user.id,
+    paramsResult.data.id,
+    accessToken,
+  );
 
-  res.status(200).json({ success: true, data: toAnalysisResponse(analysis) });
+  res.status(200).json({ success: true, data: toAnalysisResponse(analysis, evidence) });
 }

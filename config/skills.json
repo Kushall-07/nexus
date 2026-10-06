@@ -1,0 +1,79 @@
+{
+  "root": { "id": "software-engineering", "displayName": "Software Engineering" },
+  "categories": [
+    {
+      "id": "programming",
+      "displayName": "Programming",
+      "skills": [
+        { "id": "python", "displayName": "Python" },
+        { "id": "javascript", "displayName": "JavaScript" },
+        { "id": "typescript", "displayName": "TypeScript" },
+        { "id": "java", "displayName": "Java" },
+        { "id": "go", "displayName": "Go" }
+      ]
+    },
+    {
+      "id": "frontend",
+      "displayName": "Frontend",
+      "skills": [
+        { "id": "react", "displayName": "React" },
+        { "id": "nextjs", "displayName": "Next.js" },
+        { "id": "ui-development", "displayName": "UI Development" }
+      ]
+    },
+    {
+      "id": "backend",
+      "displayName": "Backend",
+      "skills": [
+        { "id": "nodejs", "displayName": "Node.js" },
+        { "id": "express", "displayName": "Express" },
+        { "id": "fastapi", "displayName": "FastAPI" },
+        { "id": "rest-apis", "displayName": "REST APIs" }
+      ]
+    },
+    {
+      "id": "databases",
+      "displayName": "Databases",
+      "skills": [
+        { "id": "mongodb", "displayName": "MongoDB" },
+        { "id": "postgresql", "displayName": "PostgreSQL" },
+        { "id": "sql", "displayName": "SQL" }
+      ]
+    },
+    {
+      "id": "testing",
+      "displayName": "Testing",
+      "skills": [
+        { "id": "unit-testing", "displayName": "Unit Testing" },
+        { "id": "integration-testing", "displayName": "Integration Testing" }
+      ]
+    },
+    {
+      "id": "devops",
+      "displayName": "DevOps",
+      "skills": [
+        { "id": "docker", "displayName": "Docker" },
+        { "id": "ci-cd", "displayName": "CI/CD" }
+      ]
+    },
+    {
+      "id": "ai-engineering",
+      "displayName": "AI Engineering",
+      "skills": [
+        { "id": "llm-applications", "displayName": "LLM Applications" },
+        { "id": "agentic-ai", "displayName": "Agentic AI" },
+        { "id": "rag", "displayName": "RAG" },
+        { "id": "ai-apis", "displayName": "AI APIs" }
+      ]
+    },
+    {
+      "id": "machine-learning",
+      "displayName": "Machine Learning",
+      "skills": [
+        { "id": "pytorch", "displayName": "PyTorch" },
+        { "id": "tensorflow", "displayName": "TensorFlow" },
+        { "id": "model-development", "displayName": "Model Development" }
+      ]
+    }
+  ]
+}

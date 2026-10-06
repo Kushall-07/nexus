@@ -1,9 +1,16 @@
 import { env } from "../config/env.js";
 import { analyzeRepository } from "../analyzer/repository-analyzer.js";
 import type { RepositoryAnalysis } from "../analyzer/types.js";
+import type { BuildEvidenceResult } from "../evidence/evidence-builder.js";
 import { RepositoryModel } from "../models/repository.model.js";
 import { AppError, AuthErrorCode } from "../utils/errors.js";
+import { generateRepositoryEvidence } from "./evidence.service.js";
 import { mapToObject } from "./github-repository.service.js";
+
+export interface AnalyzedRepository {
+  analysis: RepositoryAnalysis;
+  evidence: BuildEvidenceResult;
+}
 
 // Phase 3 analysis is ownership-scoped and selection-scoped: a user can only
 // trigger analysis for a repository that (a) belongs to them and (b) they
@@ -13,7 +20,7 @@ export async function analyzeSelectedRepository(
   userId: string,
   repositoryId: string,
   accessToken: string,
-): Promise<RepositoryAnalysis> {
+): Promise<AnalyzedRepository> {
   const repo = await RepositoryModel.findOne({ _id: repositoryId, userId });
 
   if (!repo) {
@@ -52,5 +59,9 @@ export async function analyzeSelectedRepository(
 
   await repo.save();
 
-  return analysis;
+  // Phase 4: derive and persist EvidenceItems from the observations Phase 3
+  // just produced. No additional GitHub requests are made.
+  const evidence = await generateRepositoryEvidence(userId, analysis);
+
+  return { analysis, evidence };
 }
