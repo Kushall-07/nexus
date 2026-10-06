@@ -49,6 +49,13 @@ export async function analyzeSelectedRepository(
 
   repo.analyzed = true;
   repo.analyzedAt = new Date();
+  repo.scoringObservations = {
+    sourceFileCount: analysis.testing.sourceFileCount,
+    relevantStructureSignalCount: analysis.projectStructure.reduce(
+      (sum, structure) => sum + structure.relevantStructureSignalCount,
+      0,
+    ),
+  };
 
   const hasCachedLanguages = Boolean(repo.languages && repo.languages.size > 0);
   const hasFreshLanguages = Object.keys(analysis.languages.bytesByLanguage).length > 0;

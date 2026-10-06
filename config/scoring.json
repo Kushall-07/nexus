@@ -1,0 +1,68 @@
+{
+  "scoringVersion": "1.0.0",
+  "signalWeights": {
+    "dependency": 0.2,
+    "framework": 0.2,
+    "sourceUsage": 0.25,
+    "projectStructure": 0.1,
+    "testing": 0.1,
+    "documentation": 0.05,
+    "activity": 0.1
+  },
+  "meaningfulSignalThreshold": 0.25,
+  "breadthFactors": {
+    "noMeaningfulSignal": 0.5,
+    "tiers": [
+      { "minMeaningfulSignals": 1, "factor": 0.5 },
+      { "minMeaningfulSignals": 2, "factor": 0.75 },
+      { "minMeaningfulSignals": 3, "factor": 1 }
+    ]
+  },
+  "repositorySubstance": {
+    "sourceFileReference": 50,
+    "structureSignalReference": 5,
+    "sourceDepthWeight": 0.7,
+    "structureDepthWeight": 0.3,
+    "floor": 0.25,
+    "span": 0.75
+  },
+  "aggregation": {
+    "topRepositories": 5,
+    "rankDecay": 0.6
+  },
+  "applicability": {
+    "python": ["sourceUsage", "activity"],
+    "javascript": ["sourceUsage", "activity"],
+    "typescript": ["sourceUsage", "activity"],
+    "java": ["sourceUsage", "activity"],
+    "go": ["sourceUsage", "activity"],
+
+    "react": ["dependency", "framework", "sourceUsage", "testing", "documentation", "activity"],
+    "nextjs": ["dependency", "framework", "sourceUsage", "testing", "documentation", "activity"],
+    "ui-development": ["projectStructure", "activity"],
+
+    "nodejs": ["dependency", "sourceUsage", "documentation", "activity"],
+    "express": ["dependency", "framework", "sourceUsage", "testing", "documentation", "activity"],
+    "fastapi": ["dependency", "framework", "sourceUsage", "testing", "documentation", "activity"],
+    "rest-apis": ["projectStructure", "activity"],
+
+    "mongodb": ["dependency", "sourceUsage", "documentation", "activity"],
+    "postgresql": ["dependency", "sourceUsage", "documentation", "activity"],
+    "sql": ["sourceUsage", "documentation", "activity"],
+
+    "unit-testing": ["testing", "activity"],
+    "integration-testing": ["testing", "activity"],
+
+    "docker": ["projectStructure", "activity"],
+    "ci-cd": ["projectStructure", "activity"],
+
+    "llm-applications": ["projectStructure", "activity"],
+    "agentic-ai": ["projectStructure", "activity"],
+    "rag": ["projectStructure", "activity"],
+    "ai-apis": ["dependency", "sourceUsage", "documentation", "activity"],
+
+    "pytorch": ["dependency", "sourceUsage", "documentation", "activity"],
+    "tensorflow": ["dependency", "sourceUsage", "documentation", "activity"],
+    "model-development": ["projectStructure", "activity"]
+  }
+}

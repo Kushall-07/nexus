@@ -18,6 +18,17 @@ const repositoryMetadataSchema = new Schema(
   { _id: false },
 );
 
+// Phase 3 repository-level counts that Phase 5 needs for RepositorySubstance.
+// They are observations (not scores) stored when the repository is analyzed,
+// so scoring never has to re-run the analyzer or call GitHub.
+const scoringObservationsSchema = new Schema(
+  {
+    sourceFileCount: { type: Number, required: true, min: 0 },
+    relevantStructureSignalCount: { type: Number, required: true, min: 0 },
+  },
+  { _id: false },
+);
+
 const repositorySchema = new Schema(
   {
     userId: {
@@ -89,6 +100,11 @@ const repositorySchema = new Schema(
     metadata: {
       type: repositoryMetadataSchema,
       default: () => ({}),
+    },
+
+    scoringObservations: {
+      type: scoringObservationsSchema,
+      default: null,
     },
 
     // Reserved for future change-detection phases; not computed in Phase 2.
