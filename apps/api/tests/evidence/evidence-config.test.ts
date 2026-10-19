@@ -28,13 +28,34 @@ describe("evidence configuration", () => {
     expect(taxonomy.skills.map((skill) => skill.displayName)).toEqual([
       "Python", "JavaScript", "TypeScript", "Java", "Go",
       "React", "Next.js", "UI Development",
-      "Node.js", "Express", "FastAPI", "REST APIs",
-      "MongoDB", "PostgreSQL", "SQL",
-      "Unit Testing", "Integration Testing",
+      "Node.js", "Express", "FastAPI", "REST APIs", "Backend",
+      "MongoDB", "PostgreSQL", "SQL", "Databases",
+      "Unit Testing", "Integration Testing", "Testing",
       "Docker", "CI/CD",
       "LLM Applications", "Agentic AI", "RAG", "AI APIs",
       "PyTorch", "TensorFlow", "Model Development",
     ]);
+  });
+
+  // Phase 7 role requirements name Backend, Databases and Testing as skills.
+  // Only Backend is backed by an existing observation (backend directory
+  // layout). Databases and Testing have no detector, so they get no mapping.
+  it("maps only the Backend role skill, from the backend directory-layout observation", () => {
+    const { taxonomy, technologies } = loadEvidenceConfig();
+    const mapped = new Set([
+      ...technologies.technologies.flatMap((technology) => technology.skillIds),
+      ...Object.values(technologies.languageSkills),
+      ...technologies.observationSkills.docker,
+      ...technologies.observationSkills.genericTesting,
+      ...Object.values(technologies.observationSkills.structure).flat(),
+    ]);
+
+    for (const id of ["backend-development", "database-systems", "software-testing"]) {
+      expect(taxonomy.skills.some((skill) => skill.id === id)).toBe(true);
+    }
+    expect(technologies.observationSkills.structure.backend).toEqual(["backend-development", "rest-apis"]);
+    expect(mapped.has("database-systems")).toBe(false);
+    expect(mapped.has("software-testing")).toBe(false);
   });
 
   it("caches the loaded configuration", () => {

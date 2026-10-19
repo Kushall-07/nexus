@@ -45,13 +45,16 @@
     "express": ["dependency", "framework", "sourceUsage", "testing", "documentation", "activity"],
     "fastapi": ["dependency", "framework", "sourceUsage", "testing", "documentation", "activity"],
     "rest-apis": ["projectStructure", "activity"],
+    "backend-development": ["projectStructure", "activity"],
 
     "mongodb": ["dependency", "sourceUsage", "documentation", "activity"],
     "postgresql": ["dependency", "sourceUsage", "documentation", "activity"],
     "sql": ["sourceUsage", "documentation", "activity"],
+    "database-systems": ["sourceUsage", "documentation", "activity"],
 
     "unit-testing": ["testing", "activity"],
     "integration-testing": ["testing", "activity"],
+    "software-testing": ["testing", "activity"],
 
     "docker": ["projectStructure", "activity"],
     "ci-cd": ["projectStructure", "activity"],

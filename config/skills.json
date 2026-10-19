@@ -28,7 +28,8 @@
         { "id": "nodejs", "displayName": "Node.js" },
         { "id": "express", "displayName": "Express" },
         { "id": "fastapi", "displayName": "FastAPI" },
-        { "id": "rest-apis", "displayName": "REST APIs" }
+        { "id": "rest-apis", "displayName": "REST APIs" },
+        { "id": "backend-development", "displayName": "Backend" }
       ]
     },
     {
@@ -37,7 +38,8 @@
       "skills": [
         { "id": "mongodb", "displayName": "MongoDB" },
         { "id": "postgresql", "displayName": "PostgreSQL" },
-        { "id": "sql", "displayName": "SQL" }
+        { "id": "sql", "displayName": "SQL" },
+        { "id": "database-systems", "displayName": "Databases" }
       ]
     },
     {
@@ -45,7 +47,8 @@
       "displayName": "Testing",
       "skills": [
         { "id": "unit-testing", "displayName": "Unit Testing" },
-        { "id": "integration-testing", "displayName": "Integration Testing" }
+        { "id": "integration-testing", "displayName": "Integration Testing" },
+        { "id": "software-testing", "displayName": "Testing" }
       ]
     },
     {

@@ -142,7 +142,7 @@
     "genericTesting": ["unit-testing"],
     "structure": {
       "frontend": ["ui-development"],
-      "backend": ["rest-apis"],
+      "backend": ["backend-development", "rest-apis"],
       "ml": ["model-development"],
       "ai": ["llm-applications"]
     }

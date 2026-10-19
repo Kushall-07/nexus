@@ -206,8 +206,41 @@ describe("buildEvidence", () => {
       expect(item?.normalizedStrength).toBe(0.5);
     });
 
+    it("derives Backend evidence only from matched backend directories, traceably", () => {
+      const analysis = richAnalysis();
+      analysis.projectStructure = analysis.projectStructure.map((entry) =>
+        entry.category === "backend"
+          ? { ...entry, detectedPaths: ["src/controllers", "src/routes"], relevantStructureSignalCount: 2 }
+          : entry,
+      );
+      const items = run(analysis).items;
+      const [backend] = find(items, "backend-development", "PROJECT_STRUCTURE");
+      const [rest] = find(items, "rest-apis", "PROJECT_STRUCTURE");
+
+      expect(backend).toMatchObject({
+        signal: "projectStructure",
+        value: 2,
+        sourcePath: "src/controllers",
+        sourceReference: "src/controllers, src/routes",
+        normalizedStrength: 2 / 5,
+      });
+      expect(backend?.explanation).toContain("backend conventions");
+      expect(rest?.normalizedStrength).toBe(backend?.normalizedStrength);
+      // A language or a framework alone is never Backend evidence.
+      expect(find(items, "backend-development", "LANGUAGE")).toHaveLength(0);
+      expect(items.filter((item) => item.skillId === "backend-development" && item.signal !== "activity").map((item) => item.evidenceType)).toEqual(["PROJECT_STRUCTURE"]);
+    });
+
+    it("never produces Databases or Testing role-skill evidence", () => {
+      const ids = new Set(run(richAnalysis()).items.map((item) => item.skillId));
+
+      expect(ids.has("database-systems")).toBe(false);
+      expect(ids.has("software-testing")).toBe(false);
+    });
+
     it("emits no structure evidence when nothing matched", () => {
       expect(find(run(richAnalysis()).items, "rest-apis", "PROJECT_STRUCTURE")).toHaveLength(0);
+      expect(find(run(richAnalysis()).items, "backend-development", "PROJECT_STRUCTURE")).toHaveLength(0);
     });
   });
 

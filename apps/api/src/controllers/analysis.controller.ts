@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { z } from "zod";
 import type { RepositoryAnalysis } from "../analyzer/types.js";
 import { analyzeSelectedRepository } from "../services/github-analysis.service.js";
+import { scoreUserEvidence } from "../services/scoring.service.js";
 import { getDecryptedGithubToken } from "../services/github-token.service.js";
 import type { BuildEvidenceResult } from "../evidence/evidence-builder.js";
 import { toPublicEvidence } from "../services/evidence.service.js";
@@ -76,4 +77,23 @@ export async function analyzeRepositoryHandler(req: Request, res: Response): Pro
   );
 
   res.status(200).json({ success: true, data: toAnalysisResponse(analysis, evidence) });
+}
+
+// Runs Phase 5 deterministic scoring over the user's persisted evidence and
+// stores the result as a new analysis. It never calls GitHub.
+export async function runScoringHandler(req: Request, res: Response): Promise<void> {
+  const user = requireUser(req);
+  const scored = await scoreUserEvidence(user.id);
+
+  res.status(201).json({
+    success: true,
+    data: {
+      analysisId: scored.analysisId,
+      scoringVersion: scored.scoringVersion,
+      repositoryCount: scored.repositoryIds.length,
+      skippedRepositoryCount: scored.skippedRepositoryIds.length,
+      evidenceCount: scored.evidenceCount,
+      scoredSkillCount: scored.result.skillScores.length,
+    },
+  });
 }

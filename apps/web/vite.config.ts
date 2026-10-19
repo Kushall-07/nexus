@@ -6,5 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss()
-  ]
+  ],
+  server: {
+    // Same-origin API access in development so the session cookie is sent.
+    proxy: { "/api": "http://localhost:4000" }
+  }
 });

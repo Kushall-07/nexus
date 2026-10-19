@@ -1,0 +1,75 @@
+{
+  "roleCatalogVersion": "1.0.0",
+  "roles": [
+    {
+      "id": "software-engineer",
+      "displayName": "Software Engineer",
+      "requirements": [
+        { "skillId": "python", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "typescript", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "backend-development", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "database-systems", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "rest-apis", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "software-testing", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "docker", "weight": 0.1, "minimumScore": 40 }
+      ]
+    },
+    {
+      "id": "full-stack-developer",
+      "displayName": "Full-Stack Developer",
+      "requirements": [
+        { "skillId": "javascript", "weight": 0.1, "minimumScore": 50 },
+        { "skillId": "typescript", "weight": 0.1, "minimumScore": 50 },
+        { "skillId": "react", "weight": 0.15, "minimumScore": 60 },
+        { "skillId": "nodejs", "weight": 0.15, "minimumScore": 55 },
+        { "skillId": "rest-apis", "weight": 0.1, "minimumScore": 50 },
+        { "skillId": "mongodb", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "postgresql", "weight": 0.1, "minimumScore": 40 },
+        { "skillId": "software-testing", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "docker", "weight": 0.1, "minimumScore": 40 }
+      ]
+    },
+    {
+      "id": "backend-engineer",
+      "displayName": "Backend Engineer",
+      "requirements": [
+        { "skillId": "python", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "nodejs", "weight": 0.15, "minimumScore": 50 },
+        { "skillId": "express", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "fastapi", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "rest-apis", "weight": 0.15, "minimumScore": 60 },
+        { "skillId": "mongodb", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "postgresql", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "software-testing", "weight": 0.05, "minimumScore": 40 },
+        { "skillId": "docker", "weight": 0.1, "minimumScore": 40 }
+      ]
+    },
+    {
+      "id": "ai-engineer",
+      "displayName": "AI Engineer",
+      "requirements": [
+        { "skillId": "python", "weight": 0.15, "minimumScore": 60 },
+        { "skillId": "llm-applications", "weight": 0.2, "minimumScore": 60 },
+        { "skillId": "agentic-ai", "weight": 0.15, "minimumScore": 55 },
+        { "skillId": "rag", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "ai-apis", "weight": 0.1, "minimumScore": 50 },
+        { "skillId": "rest-apis", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "docker", "weight": 0.1, "minimumScore": 40 },
+        { "skillId": "software-testing", "weight": 0.1, "minimumScore": 40 }
+      ]
+    },
+    {
+      "id": "ml-engineer",
+      "displayName": "ML Engineer",
+      "requirements": [
+        { "skillId": "python", "weight": 0.2, "minimumScore": 65 },
+        { "skillId": "pytorch", "weight": 0.2, "minimumScore": 60 },
+        { "skillId": "tensorflow", "weight": 0.1, "minimumScore": 45 },
+        { "skillId": "model-development", "weight": 0.2, "minimumScore": 60 },
+        { "skillId": "software-testing", "weight": 0.1, "minimumScore": 40 },
+        { "skillId": "docker", "weight": 0.1, "minimumScore": 40 },
+        { "skillId": "rest-apis", "weight": 0.1, "minimumScore": 40 }
+      ]
+    }
+  ]
+}
