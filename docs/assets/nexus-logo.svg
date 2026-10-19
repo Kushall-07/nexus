@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200" role="img" aria-labelledby="t d">
+  <title id="t">NEXUS</title>
+  <desc id="d">NEXUS - GitHub Evidence Engine wordmark with a connected-node symbol</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#111B33"/>
+    </linearGradient>
+    <linearGradient id="ac" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="200" rx="20" fill="url(#bg)"/>
+  <g transform="translate(60 40)" stroke="url(#ac)" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M60 10 L100 40 L100 80 L60 110 L20 80 L20 40 Z" opacity="0.55"/>
+    <path d="M60 10 L60 60 M20 40 L60 60 L100 40 M20 80 L60 60 L100 80 M60 60 L60 110"/>
+  </g>
+  <g fill="#22D3EE">
+    <circle cx="120" cy="50" r="7"/>
+    <circle cx="160" cy="80" r="7" fill="#8B5CF6"/>
+    <circle cx="160" cy="120" r="7"/>
+    <circle cx="120" cy="150" r="7" fill="#8B5CF6"/>
+    <circle cx="80" cy="120" r="7"/>
+    <circle cx="80" cy="80" r="7" fill="#8B5CF6"/>
+    <circle cx="120" cy="100" r="10" fill="#E6F6FF"/>
+  </g>
+  <text x="215" y="108" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="68" font-weight="700" letter-spacing="6" fill="#E6F6FF">NEXUS</text>
+  <text x="218" y="144" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" letter-spacing="3" fill="#22D3EE">GitHub Evidence Engine</text>
+</svg>
