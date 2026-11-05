@@ -139,3 +139,57 @@ export interface GapAnalysisResponse {
   requirements: RoleRequirementResult[];
   criticalGaps: RoleRequirementResult[];
 }
+
+export interface RepositoryDto {
+  id: string;
+  githubId: number;
+  owner: string;
+  name: string;
+  fullName: string;
+  url: string;
+  description: string | null;
+  isFork: boolean;
+  isArchived: boolean;
+  primaryLanguage: string | null;
+  stars: number;
+  selected: boolean;
+  analyzed: boolean;
+  analyzedAt: string | null;
+}
+
+export interface RepositoryListResponse {
+  repositories: RepositoryDto[];
+  count: number;
+  truncated: boolean;
+}
+
+export interface GithubQuota {
+  limit: number;
+  remaining: number;
+  resetAt: string;
+}
+
+export interface ScoringRunSummary {
+  analysisId: string;
+  scoringVersion: string;
+  repositoryCount: number;
+  skippedRepositoryCount: number;
+  evidenceCount: number;
+  scoredSkillCount: number;
+}
+
+export interface GapExplanationContent {
+  summary: string;
+  strengths: string[];
+  priorityGaps: Array<{ skillId: string; explanation: string }>;
+  recommendedActions: string[];
+  limitations: string[];
+}
+
+export interface GapExplanationResponse {
+  gapAnalysisId: string;
+  roleId: string;
+  promptVersion: string;
+  generatedAt: string;
+  explanation: GapExplanationContent;
+}

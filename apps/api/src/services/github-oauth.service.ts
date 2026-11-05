@@ -2,6 +2,7 @@ import { env } from "../config/env.js";
 import { AppError, AuthErrorCode } from "../utils/errors.js";
 
 const GITHUB_USER_AGENT = "NEXUS-App";
+const GITHUB_REQUEST_TIMEOUT_MS = 20_000;
 
 interface GithubTokenResponse {
   access_token?: string;
@@ -37,6 +38,7 @@ export async function exchangeCodeForAccessToken(
         code,
         redirect_uri: `${env.BACKEND_URL}/api/auth/github/callback`,
       }),
+      signal: AbortSignal.timeout(GITHUB_REQUEST_TIMEOUT_MS),
     });
   } catch {
     throw new AppError(
@@ -89,6 +91,7 @@ export async function fetchGithubIdentity(
         Accept: "application/vnd.github+json",
         "User-Agent": GITHUB_USER_AGENT,
       },
+      signal: AbortSignal.timeout(GITHUB_REQUEST_TIMEOUT_MS),
     });
   } catch {
     throw new AppError(

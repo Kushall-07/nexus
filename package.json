@@ -9,14 +9,20 @@
     "packages/domain"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/web",
+    "dev": "node scripts/dev-db.mjs && concurrently --kill-others -n API,WEB -c cyan,magenta \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:db": "node scripts/dev-db.mjs",
     "dev:api": "npm run dev --workspace=apps/api",
-    "build": "npm run build --workspaces",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=packages/domain && npm run build --workspace=apps/api && npm run build --workspace=apps/web",
     "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces"
+    "typecheck": "npm run typecheck --workspace=packages/domain && npm run typecheck --workspace=apps/api && npm run typecheck --workspace=apps/web",
+    "start": "npm run start --workspace=apps/api"
   },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
   }
 }

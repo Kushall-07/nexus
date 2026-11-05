@@ -65,7 +65,7 @@ NEXUS is a full-stack developer tool that reads the **public repositories you ch
 - **Explainability over inflated scores.** Breakdowns are preferred to a single opaque number.
 - **Honest benchmarks.** Role requirements are manually curated and versioned, not live job-market data or universal hiring standards.
 
-> **AI status.** The current implementation does **not** call any LLM. `LLM_PROVIDER` / `LLM_API_KEY` appear in `.env.example` as reserved placeholders but are not read by the API. If AI-generated explanations are added in future, they are intended to explain gaps and never to determine numerical scores.
+> **AI status.** An optional AI explanation can describe a completed role gap analysis in plain language. It is off unless `LLM_PROVIDER` and `LLM_API_KEY` are set, it never changes or produces scores, and the full deterministic app works without it. Provider failures do not affect Evidence Scores or Role Match.
 
 ## The problem
 
@@ -128,6 +128,11 @@ Each item below was checked against the current source.
 **Role gap analysis**
 - Five manually curated, versioned role benchmarks (`config/roles.json`), validated strictly at load time.
 - Weighted Role Match, per-skill gap and deficit, and critical-gap flags. Missing evidence is shown explicitly.
+
+**Career Copilot (Phases 11-13)**
+- Opportunity search over optional job providers (Remotive, Adzuna, JSearch) or clearly labelled demo fixtures, ranked by a separate explainable matcher (`config/job-matching.json`).
+- Saved jobs and application tracking, resume upload/review/replace/delete (PDF and DOCX), career preferences, a prioritized skill-development plan, GitHub profile refresh, and a Career Copilot chat that works without an LLM key.
+- Everything works with no job-provider credentials (demo mode). See [docs/implementation/phase11-13-career-copilot.md](docs/implementation/phase11-13-career-copilot.md) for architecture, endpoints, privacy and the credentials still needed.
 
 **Quality**
 - Zod-validated environment, request bodies and configuration files.
@@ -343,7 +348,9 @@ In `.env`, set the following (never commit this file):
 | `FRONTEND_URL`, `BACKEND_URL` | Defaults `http://localhost:5173` and `http://localhost:4000`. |
 | `MAX_REPOSITORIES_PER_ANALYSIS`, `MAX_REQUESTS_PER_REPOSITORY` | Optional, defaults 15 and 10. |
 
-`ANALYSIS_COOLDOWN_MINUTES`, `LLM_PROVIDER` and `LLM_API_KEY` are listed in `.env.example` but are not read by the current code.
+`ANALYSIS_COOLDOWN_MINUTES` is listed in `.env.example` but is not read by the current code.
+
+**Optional AI explanations.** Set `LLM_PROVIDER` (`groq`, `gemini` or `openai-compatible`) and `LLM_API_KEY` (server-side only) to enable the "AI Explanation" panel on the Target role page; both providers have free tiers. `LLM_MODEL` overrides the default model, and `LLM_BASE_URL` is required for `openai-compatible`. Leave them blank to disable the feature. Explanations are generated on demand from your stored gap analysis, are not persisted, and receive only role, score, threshold and gap values.
 
 ### Run
 
@@ -359,7 +366,9 @@ Open <http://localhost:5173> and sign in with GitHub.
 ```bash
 npm test            # all workspaces
 npm run typecheck   # all workspaces
-npm run build       # all workspaces
+npm run build       # domain -> api -> web, in order
+npm start           # production API from compiled output (node apps/api/dist/server.js)
+npm run test:integration --workspace=apps/api   # real-MongoDB tests (disposable in-memory server)
 ```
 
 ### Troubleshooting
@@ -423,3 +432,14 @@ NEXUS builds on [React](https://react.dev), [Vite](https://vite.dev), [Tailwind 
 [Repository](https://github.com/Kushall-07/nexus) · [Issues](https://github.com/Kushall-07/nexus/issues) · [Docs](docs/implementation/README.md) · [Scoring config](config/scoring.json) · [Role catalog](config/roles.json)
 
 </div>
+
+## Production hardening notes
+
+- **Health:** `GET /health` is liveness only. `GET /ready` returns 503 until MongoDB is connected; the optional LLM never affects it.
+- **CSRF:** production session cookies are `SameSite=None`, so state-changing requests (anything but GET/HEAD/OPTIONS) whose `Origin` header is not `FRONTEND_URL` are rejected with 403 `FORBIDDEN_ORIGIN`. Open the app via the exact `FRONTEND_URL` origin (e.g. `localhost`, not `127.0.0.1`).
+- **Rate limits:** per authenticated user, in memory, per API process (not shared across instances; add a shared store before running several instances). Explanations 5/min, gap-analysis create 30/min, analysis 20/min, GitHub endpoints 60/min. Exceeding returns 429 `RATE_LIMITED` with `Retry-After`.
+- **Limits:** JSON bodies are capped at 16 kB (413 `PAYLOAD_TOO_LARGE`; malformed JSON is 400). GitHub calls time out after 20 s, LLM calls after 20 s, LLM response bodies are read with a hard size cap.
+- **Config validation (startup):** `PORT` 1-65535, `LLM_PROVIDER` must be `groq`, `gemini` or `openai-compatible` (or blank), `openai-compatible` needs `LLM_BASE_URL` and `LLM_MODEL`, `TOKEN_ENCRYPTION_KEY` must decode to 32 bytes, and in production `FRONTEND_URL`, `BACKEND_URL` and `LLM_BASE_URL` must be https.
+- **Shutdown:** SIGINT/SIGTERM stop accepting connections, drain in-flight requests, then close MongoDB (10 s cap).
+- **Docker MongoDB** is published on `127.0.0.1` only and runs without authentication: local development use only.
+- Behind a reverse proxy, terminate TLS there; rate limits key on user id, so no proxy-header trust is needed.

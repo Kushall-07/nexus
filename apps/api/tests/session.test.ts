@@ -24,7 +24,7 @@ describe("session service", () => {
     expect(decoded).not.toHaveProperty("githubToken");
     expect(decoded).not.toHaveProperty("encryptedGithubToken");
     expect(Object.keys(decoded).sort()).toEqual(
-      ["githubId", "sub", "iat", "exp"].sort(),
+      ["githubId", "sub", "iat", "exp", "jti"].sort(),
     );
   });
 

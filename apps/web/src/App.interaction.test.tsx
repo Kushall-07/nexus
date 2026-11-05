@@ -184,7 +184,8 @@ describe("skill overview and detail (real App, stubbed network)", () => {
     handler = baseHandler({ "/api/auth/me": () => fail(401, "UNAUTHORIZED", "Authentication required.") });
     mount();
 
-    expect(await screen.findByRole("link", { name: "Sign in with GitHub" })).toBeTruthy();
+    // One link in the header account control, one in the page prompt.
+    expect((await screen.findAllByRole("link", { name: "Sign in with GitHub" })).length).toBeGreaterThan(0);
     expect(calls.some((call) => call.url === "/api/skills")).toBe(false);
   });
 

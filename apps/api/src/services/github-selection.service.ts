@@ -63,22 +63,11 @@ async function selectRepository(
   const reserved = await UserModel.findOneAndUpdate(
     {
       _id: userId,
-      $expr: {
-        $lt: [
-          { $ifNull: ["$selectedRepositoryCount", 0] },
-          env.MAX_REPOSITORIES_PER_ANALYSIS,
-        ],
-      },
+      selectedRepositoryCount: { $lt: env.MAX_REPOSITORIES_PER_ANALYSIS }
     },
-    [
-      {
-        $set: {
-          selectedRepositoryCount: {
-            $add: [{ $ifNull: ["$selectedRepositoryCount", 0] }, 1],
-          },
-        },
-      },
-    ],
+    {
+      $inc: { selectedRepositoryCount: 1 }
+    },
   );
 
   if (!reserved) {
@@ -140,16 +129,10 @@ async function releaseSelectionSlot(userId: string): Promise<void> {
   await UserModel.findOneAndUpdate(
     {
       _id: userId,
-      $expr: { $gt: [{ $ifNull: ["$selectedRepositoryCount", 0] }, 0] },
+      selectedRepositoryCount: { $gt: 0 }
     },
-    [
-      {
-        $set: {
-          selectedRepositoryCount: {
-            $subtract: [{ $ifNull: ["$selectedRepositoryCount", 0] }, 1],
-          },
-        },
-      },
-    ],
+    {
+      $inc: { selectedRepositoryCount: -1 }
+    },
   );
 }

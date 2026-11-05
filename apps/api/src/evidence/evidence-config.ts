@@ -38,6 +38,7 @@ export function validateEvidenceConfig(config: EvidenceConfig): void {
   }
 
   const { docker, genericTesting, structure } = config.technologies.observationSkills;
+  const integrationTesting = config.technologies.observationSkills.integrationTesting ?? [];
 
   for (const skillId of docker) {
     check(skillId, "Docker mapping");
@@ -45,6 +46,10 @@ export function validateEvidenceConfig(config: EvidenceConfig): void {
 
   for (const skillId of genericTesting) {
     check(skillId, "Generic testing mapping");
+  }
+
+  for (const skillId of integrationTesting) {
+    check(skillId, "Integration testing mapping");
   }
 
   for (const [category, skillIds] of Object.entries(structure)) {

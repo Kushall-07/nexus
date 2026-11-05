@@ -54,6 +54,63 @@
       "configFilePatterns": []
     },
     {
+      "id": "nodejs",
+      "displayName": "Node.js",
+      "category": "runtime",
+      "skillIds": ["nodejs"],
+      "dependencyIdentifiers": {
+        "package.json": ["@types/node", "nodemon", "ts-node"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+['\"]node:[^'\"]+['\"]",
+        "\\brequire\\(\\s*['\"]node:[^'\"]+['\"]\\s*\\)",
+        "\\bfrom\\s+['\"](fs|fs/promises|child_process|worker_threads)['\"]",
+        "\\brequire\\(\\s*['\"](fs|fs/promises|child_process|worker_threads)['\"]\\s*\\)"
+      ],
+      "sourceFileExtensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "mongodb",
+      "displayName": "MongoDB",
+      "category": "database",
+      "skillIds": ["mongodb"],
+      "dependencyIdentifiers": {
+        "package.json": ["mongodb", "mongoose"],
+        "requirements.txt": ["pymongo", "motor", "mongoengine"],
+        "pyproject.toml": ["pymongo", "motor", "mongoengine"],
+        "go.mod": ["go.mongodb.org/mongo-driver"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+['\"](mongodb|mongoose)['\"]",
+        "\\brequire\\(\\s*['\"](mongodb|mongoose)['\"]\\s*\\)",
+        "\\b(from|import)\\s+(pymongo|motor|mongoengine)\\b",
+        "\"go\\.mongodb\\.org/mongo-driver"
+      ],
+      "sourceFileExtensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".py", ".go"],
+      "configFilePatterns": []
+    },
+    {
+      "id": "postgresql",
+      "displayName": "PostgreSQL",
+      "category": "database",
+      "skillIds": ["postgresql"],
+      "dependencyIdentifiers": {
+        "package.json": ["pg", "postgres", "pg-promise"],
+        "requirements.txt": ["psycopg2", "psycopg2-binary", "psycopg", "asyncpg"],
+        "pyproject.toml": ["psycopg2", "psycopg2-binary", "psycopg", "asyncpg"],
+        "go.mod": ["github.com/lib/pq", "github.com/jackc/pgx/v4", "github.com/jackc/pgx/v5"]
+      },
+      "sourceImportPatterns": [
+        "\\bfrom\\s+['\"](pg|postgres|pg-promise)['\"]",
+        "\\brequire\\(\\s*['\"](pg|postgres|pg-promise)['\"]\\s*\\)",
+        "\\b(from|import)\\s+(psycopg2?|asyncpg)\\b",
+        "\"github\\.com/(lib/pq|jackc/pgx)"
+      ],
+      "sourceFileExtensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".py", ".go"],
+      "configFilePatterns": []
+    },
+    {
       "id": "fastapi",
       "displayName": "FastAPI",
       "category": "framework",
@@ -130,6 +187,14 @@
       "configFilePatterns": []
     }
   ],
+  "testFrameworks": [
+    { "id": "jest", "displayName": "Jest", "dependencyIdentifiers": { "package.json": ["jest"] } },
+    { "id": "vitest", "displayName": "Vitest", "dependencyIdentifiers": { "package.json": ["vitest"] } },
+    { "id": "mocha", "displayName": "Mocha", "dependencyIdentifiers": { "package.json": ["mocha"] } },
+    { "id": "pytest", "displayName": "pytest", "dependencyIdentifiers": { "requirements.txt": ["pytest"], "pyproject.toml": ["pytest"] } },
+    { "id": "testify", "displayName": "testify", "dependencyIdentifiers": { "go.mod": ["github.com/stretchr/testify"] } },
+    { "id": "junit", "displayName": "JUnit", "dependencyIdentifiers": { "pom.xml": ["junit"] } }
+  ],
   "languageSkills": {
     "Python": "python",
     "JavaScript": "javascript",
@@ -140,6 +205,7 @@
   "observationSkills": {
     "docker": ["docker"],
     "genericTesting": ["unit-testing"],
+    "integrationTesting": ["integration-testing"],
     "structure": {
       "frontend": ["ui-development"],
       "backend": ["backend-development", "rest-apis"],

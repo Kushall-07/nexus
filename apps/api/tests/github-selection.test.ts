@@ -54,13 +54,35 @@ function makeRepository(id: string, userId: string, selected = false): FakeRepos
   };
 }
 
-const userFindOneAndUpdateMock = vi.fn(async (filter: Record<string, any>) => {
+const userFindOneAndUpdateMock = vi.fn(async (filter: Record<string, any>, update: Record<string, any>) => {
   const user = users.get(filter._id);
 
   if (!user) {
     return null;
   }
 
+  // Handle direct field comparison with $inc (new implementation)
+  if (filter.selectedRepositoryCount?.['$gt'] !== undefined && update.$inc?.selectedRepositoryCount === -1) {
+    if (user.selectedRepositoryCount > 0) {
+      user.selectedRepositoryCount -= 1;
+      return user;
+    }
+
+    return null;
+  }
+
+  if (filter.selectedRepositoryCount?.['$lt'] !== undefined && update.$inc?.selectedRepositoryCount === 1) {
+    const max = filter.selectedRepositoryCount['$lt'];
+
+    if (user.selectedRepositoryCount < max) {
+      user.selectedRepositoryCount += 1;
+      return user;
+    }
+
+    return null;
+  }
+
+  // Handle $expr format (old implementation, for backward compatibility)
   if (filter.$expr?.$lt) {
     const max = filter.$expr.$lt[1];
 

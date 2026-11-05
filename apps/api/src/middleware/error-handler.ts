@@ -11,6 +11,25 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return;
   }
 
+  // body-parser failures carry a client-error status and a stable `type`.
+  const parserType = (err as { type?: unknown } | null)?.type;
+
+  if (parserType === "entity.too.large") {
+    res.status(413).json({
+      success: false,
+      error: { code: AuthErrorCode.PAYLOAD_TOO_LARGE, message: "Request body is too large." },
+    });
+    return;
+  }
+
+  if ((typeof parserType === "string" && parserType.startsWith("entity.")) || parserType === "encoding.unsupported" || parserType === "charset.unsupported") {
+    res.status(400).json({
+      success: false,
+      error: { code: AuthErrorCode.VALIDATION_ERROR, message: "Invalid request body." },
+    });
+    return;
+  }
+
   if (err instanceof mongoose.Error) {
     console.error("MongoDB error:", err.name);
 

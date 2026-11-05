@@ -97,12 +97,16 @@ and `(userId, skillId, repositoryId)`.
 
 ## Known limitations
 
-- Phase 3 recognizes only the eight technologies in `technologies.json`, so
-  taxonomy skills without a Phase 3 detector (Node.js, MongoDB, PostgreSQL,
-  SQL, PyTorch, TensorFlow, CI/CD, Integration Testing, AI skills other than
-  via project structure) cannot yet receive evidence. Adding a technology is a
-  config change in `technologies.json`; it was left out because it would alter
-  Phase 3 detection (an existing Phase 3 test asserts `torch` is unrecognized).
+- Phase 3 originally recognized only the eight technologies in
+  `technologies.json`. Phase 10 later added limited, convention-based detection
+  for Node.js, MongoDB, PostgreSQL and integration-test files (see
+  [phase10-richer-evidence.md](phase10-richer-evidence.md) for the current
+  detection rules and limitations; it is not comprehensive). Taxonomy skills
+  without a detector (SQL, PyTorch, TensorFlow, CI/CD, AI skills other than via
+  project structure) still cannot receive evidence. Adding a technology is a
+  config change in `technologies.json`; these were left out because it would
+  alter Phase 3 detection (an existing Phase 3 test asserts `torch` is
+  unrecognized).
 - Generic test evidence is attached to Unit Testing by naming convention only;
   Integration Testing cannot be distinguished.
 - Structure categories map to a single skill each (frontend → UI Development,

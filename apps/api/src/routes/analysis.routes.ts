@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { rateLimitPerUser } from "../middleware/rate-limit.js";
 import { requireAuth } from "../middleware/require-auth.js";
 import { analyzeRepositoryHandler, runScoringHandler } from "../controllers/analysis.controller.js";
 
@@ -9,6 +10,8 @@ const router = Router();
 // analyzer (docs/implementation/phase3-repository-analyzer.md).
 // `POST /api/analysis/run` scores the user's already-persisted evidence (Phase 5).
 router.use(requireAuth);
+// Analysis fans out to GitHub and scoring. Per-user, per-process.
+router.use(rateLimitPerUser({ windowMs: 60_000, max: 20 }));
 
 router.post("/repositories/:id", analyzeRepositoryHandler);
 router.post("/run", runScoringHandler);

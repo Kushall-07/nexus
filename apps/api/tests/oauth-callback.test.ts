@@ -217,3 +217,33 @@ describe("GET /api/auth/github/callback", () => {
     expect(findOneAndUpdateMock.mock.calls[1][0]).toEqual({ githubId: "42" });
   });
 });
+
+describe("GET /api/auth/github/callback when the user cancels", () => {
+  it("redirects to the SPA without creating a session or calling GitHub", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await request(app)
+      .get("/api/auth/github/callback")
+      .query({ error: "access_denied", state: VALID_STATE })
+      .set("Cookie", `${OAUTH_STATE_COOKIE_NAME}=${VALID_STATE}`);
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toMatch(/\?auth_error=cancelled$/);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    const cookies = (response.headers["set-cookie"] as unknown as string[]).join(";");
+    expect(cookies).not.toContain("nexus_session=ey");
+  });
+
+  it("still rejects a callback with a code but a mismatched state", async () => {
+    stubFetch({});
+
+    const response = await request(app)
+      .get("/api/auth/github/callback")
+      .query({ code: "abc", state: "other", error: "access_denied" })
+      .set("Cookie", `${OAUTH_STATE_COOKIE_NAME}=${VALID_STATE}`);
+
+    expect(response.status).toBe(400);
+  });
+});

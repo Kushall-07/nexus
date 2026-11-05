@@ -22,6 +22,28 @@ describe("GET /api/auth/github", () => {
     expect(location.searchParams.get("state")).toBeTruthy();
   });
 
+  it("does not force the account picker by default", async () => {
+    const response = await request(app).get("/api/auth/github");
+
+    expect(new URL(response.headers.location).searchParams.has("prompt")).toBe(false);
+  });
+
+  it("forces GitHub's account picker for an account switch, keeping state validation", async () => {
+    const response = await request(app).get("/api/auth/github?switch=1");
+    const location = new URL(response.headers.location);
+
+    expect(location.searchParams.get("prompt")).toBe("select_account");
+    expect(location.searchParams.get("state")).toBeTruthy();
+    expect(location.searchParams.get("redirect_uri")).toBe(`${env.BACKEND_URL}/api/auth/github/callback`);
+    expect((response.headers["set-cookie"] as unknown as string[]).some((c) => c.startsWith("github_oauth_state="))).toBe(true);
+  });
+
+  it("ignores any other switch value", async () => {
+    const response = await request(app).get("/api/auth/github?switch=select_account&prompt=login");
+
+    expect(new URL(response.headers.location).searchParams.has("prompt")).toBe(false);
+  });
+
   it("sets a secure, http-only state cookie", async () => {
     const response = await request(app).get("/api/auth/github");
 

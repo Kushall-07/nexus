@@ -227,7 +227,7 @@ export async function analyzeRepository(
 
   const projectStructure = analyzeStructure(snapshot.tree, config);
   const docker = analyzeDocker(snapshot.tree);
-  const testing = analyzeTests(snapshot.tree, dedupedRelevantTechnologyIds, config);
+  const testing = analyzeTests(snapshot.tree, dedupedRelevantTechnologyIds, config, dependencies);
 
   const readmeContent =
     snapshot.readme?.file.status === "decoded" ? snapshot.readme.file.content : null;

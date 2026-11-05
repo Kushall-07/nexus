@@ -14,7 +14,8 @@ import {
   exchangeCodeForAccessToken,
   fetchGithubIdentity,
 } from "../services/github-oauth.service.js";
-import { createSessionToken } from "../services/session.service.js";
+import { createSessionToken, revokeSessionToken } from "../services/session.service.js";
+import { deleteAccountData } from "../services/account.service.js";
 import { findSafeUserById, upsertUserFromGithub } from "../services/user.service.js";
 import { generateOAuthState } from "../utils/oauth.js";
 import { AppError, AuthErrorCode } from "../utils/errors.js";
@@ -24,7 +25,7 @@ const callbackQuerySchema = z.object({
   state: z.string().min(1),
 });
 
-export function githubLogin(_req: Request, res: Response): void {
+export function githubLogin(req: Request, res: Response): void {
   const state = generateOAuthState();
 
   res.cookie(OAUTH_STATE_COOKIE_NAME, state, oauthStateCookieOptions);
@@ -39,6 +40,12 @@ export function githubLogin(_req: Request, res: Response): void {
   authorizationUrl.searchParams.set("scope", GITHUB_OAUTH_SCOPE);
   authorizationUrl.searchParams.set("state", state);
 
+  // Account switching: GitHub documents prompt=select_account as forcing its
+  // account picker. Only the literal value "1" is honoured.
+  if (req.query.switch === "1") {
+    authorizationUrl.searchParams.set("prompt", "select_account");
+  }
+
   res.redirect(authorizationUrl.toString());
 }
 
@@ -47,6 +54,13 @@ export async function githubCallback(req: Request, res: Response): Promise<void>
   const storedState = req.cookies?.[OAUTH_STATE_COOKIE_NAME];
 
   res.clearCookie(OAUTH_STATE_COOKIE_NAME, clearedOauthStateCookieOptions);
+
+  // The user declined on GitHub. No code is exchanged and no session is created;
+  // send them back to the SPA, which shows a neutral notice.
+  if (req.query.error === "access_denied" && !parseResult.success) {
+    res.redirect(`${env.FRONTEND_URL}?auth_error=cancelled`);
+    return;
+  }
 
   if (!parseResult.success) {
     throw new AppError(
@@ -108,11 +122,43 @@ export async function me(req: Request, res: Response): Promise<void> {
   });
 }
 
-export function logout(_req: Request, res: Response): void {
+export async function logout(req: Request, res: Response): Promise<void> {
+  const token = req.cookies?.[SESSION_COOKIE_NAME];
+
+  if (typeof token === "string" && token.length > 0) {
+    try {
+      await revokeSessionToken(token);
+    } catch (error) {
+      // Revoked in memory already; only durability across restarts is lost.
+      console.error("Session revocation was not persisted:", error instanceof Error ? error.name : "unknown error");
+    }
+  }
+
   res.clearCookie(SESSION_COOKIE_NAME, clearedSessionCookieOptions);
 
   res.status(200).json({
     success: true,
     data: { message: "Logged out successfully." },
   });
+}
+
+
+const deleteAccountSchema = z.object({ confirmation: z.literal("DELETE MY DATA") }).strict();
+
+// Permanently deletes this user's NEXUS data. The caller must send the exact
+// confirmation phrase, so a stray request or chat message cannot trigger it.
+export async function deleteAccount(req: Request, res: Response): Promise<void> {
+  if (!deleteAccountSchema.safeParse(req.body).success) {
+    throw new AppError(AuthErrorCode.VALIDATION_ERROR, 422, 'Send { "confirmation": "DELETE MY DATA" } to confirm.');
+  }
+
+  const deleted = await deleteAccountData(req.user!.id);
+
+  const token = req.cookies?.[SESSION_COOKIE_NAME];
+  if (typeof token === "string" && token.length > 0) {
+    await revokeSessionToken(token).catch(() => false);
+  }
+
+  res.clearCookie(SESSION_COOKIE_NAME, clearedSessionCookieOptions);
+  res.status(200).json({ success: true, data: { deleted } });
 }

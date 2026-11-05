@@ -61,7 +61,11 @@ export function SkillOverviewView({ state, onRetry, onRunScoring, scoring }: Pro
         </p>
       ) : (
         <EmptyState title="Not yet analyzed">
-          <p>No scoring run exists yet. Analyze your repositories, then score the collected evidence.</p>
+          <p>
+            No scoring run exists yet.{" "}
+            <Link to="/repositories" className="underline">Select and analyze your repositories</Link>, then score the
+            collected evidence.
+          </p>
         </EmptyState>
       )}
 

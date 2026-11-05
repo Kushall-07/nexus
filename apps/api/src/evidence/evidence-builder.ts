@@ -323,6 +323,32 @@ export function buildEvidence(
       }
     }
 
+    // Integration tests are a subset of the test files above. The strength
+    // reuses the per-technology convention: half generic test presence, half
+    // a saturating count of the integration files (3 files saturate).
+    const integrationPaths = [...(testing.integrationTestFilePaths ?? [])].sort(compareStrings);
+
+    if (integrationPaths.length > 0 && isFiniteNumber(testing.integrationTestSignal)) {
+      const integrationSkills = [
+        ...(config.technologies.observationSkills.integrationTesting ?? []),
+      ].sort(compareStrings);
+
+      for (const skillId of integrationSkills) {
+        push({
+          skillId,
+          evidenceType: "TEST",
+          value: integrationPaths.length,
+          normalizedStrength:
+            GENERIC_TEST_WEIGHT * testing.genericTestSignal +
+            SKILL_TEST_WEIGHT * testing.integrationTestSignal,
+          sourcePath: integrationPaths[0],
+          sourceReference: `repository-tree:integration-test-files(${integrationPaths.length}/${testing.testFileCount})`,
+          explanation: `${integrationPaths.length} of ${testing.testFileCount} test ${plural(testing.testFileCount, "file")} follow integration-test naming or directory conventions.`,
+          observationKey: "test:integration",
+        });
+      }
+    }
+
     for (const perTechnology of testing.perTechnology ?? []) {
       const { displayName, skillIds } = resolveTechnology(perTechnology.technology);
 

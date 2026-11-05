@@ -19,20 +19,37 @@ const technologySchema = z.object({
 const observationSkillsSchema = z.object({
   docker: z.array(z.string().min(1)).default([]),
   genericTesting: z.array(z.string().min(1)).default([]),
+  integrationTesting: z.array(z.string().min(1)).default([]),
   structure: z.record(z.string(), z.array(z.string().min(1))).default({}),
+});
+
+// Test frameworks are an observation only: they are recognised from manifests
+// for transparency and are never mapped to a skill.
+const testFrameworkSchema = z.object({
+  id: z.string().min(1),
+  displayName: z.string().min(1),
+  dependencyIdentifiers: z.record(z.string(), z.array(z.string())).default({}),
 });
 
 const technologyConfigSchema = z.object({
   manifestTypes: z.array(z.string()),
   technologies: z.array(technologySchema),
   structureCategories: z.record(z.string(), z.array(z.string())),
+  testFrameworks: z.array(testFrameworkSchema).default([]),
   languageSkills: z.record(z.string(), z.string().min(1)).default({}),
-  observationSkills: observationSkillsSchema.default({ docker: [], genericTesting: [], structure: {} }),
+  observationSkills: observationSkillsSchema.default({
+    docker: [],
+    genericTesting: [],
+    integrationTesting: [],
+    structure: {},
+  }),
 });
 
 export interface ObservationSkillMappings {
   docker: string[];
   genericTesting: string[];
+  // Optional so configurations written before Phase 10 remain valid.
+  integrationTesting?: string[];
   structure: Record<string, string[]>;
 }
 
@@ -47,9 +64,16 @@ export interface TechnologyDefinition {
   configFilePatterns: string[];
 }
 
+export interface TestFrameworkDefinition {
+  id: string;
+  displayName: string;
+  dependencyIdentifiers: Partial<Record<SupportedManifest, string[]>>;
+}
+
 export interface TechnologyConfig {
   manifestTypes: SupportedManifest[];
   technologies: TechnologyDefinition[];
+  testFrameworks?: TestFrameworkDefinition[];
   structureCategories: Record<StructureCategory, string[]>;
   languageSkills: Record<string, string>;
   observationSkills: ObservationSkillMappings;
@@ -92,6 +116,7 @@ export function loadTechnologyConfig(): TechnologyConfig {
   cachedConfig = {
     manifestTypes: parsed.manifestTypes as SupportedManifest[],
     technologies: parsed.technologies.map(compileTechnology),
+    testFrameworks: parsed.testFrameworks as TestFrameworkDefinition[],
     structureCategories: parsed.structureCategories as Record<StructureCategory, string[]>,
     languageSkills: parsed.languageSkills,
     observationSkills: parsed.observationSkills,

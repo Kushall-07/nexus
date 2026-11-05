@@ -2,6 +2,8 @@ import { AppError, AuthErrorCode } from "../utils/errors.js";
 
 const GITHUB_API_BASE_URL = "https://api.github.com";
 const GITHUB_USER_AGENT = "NEXUS-App";
+// Bounds every outbound GitHub call; a hang surfaces as the existing 502.
+export const GITHUB_REQUEST_TIMEOUT_MS = 20_000;
 const GITHUB_API_VERSION = "2022-11-28";
 
 interface GithubRequestOptions {
@@ -112,6 +114,7 @@ export async function githubRequest<T>(
         "User-Agent": GITHUB_USER_AGENT,
         "X-GitHub-Api-Version": GITHUB_API_VERSION,
       },
+      signal: AbortSignal.timeout(GITHUB_REQUEST_TIMEOUT_MS),
     });
   } catch {
     throw new AppError(

@@ -61,6 +61,8 @@ const view = (overrides: Partial<Parameters<typeof RolesView>[0]> = {}) =>
       onRun={noop}
       onRetryRoles={noop}
       run={{ status: "idle" }}
+      explanation={{ status: "idle" }}
+      onExplain={noop}
       {...overrides}
     />,
   );

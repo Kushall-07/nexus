@@ -123,6 +123,19 @@ export interface TestObservation {
   testRatio: number;
   genericTestSignal: number;
   perTechnology: TestTechnologySignal[];
+  // Phase 10 additions are optional so earlier observations stay valid.
+  // Integration test files are the subset of `testFilePaths` that follow an
+  // integration-test naming or directory convention.
+  integrationTestFilePaths?: string[];
+  integrationTestSignal?: number;
+  // Observation only: never mapped to a skill and never scored.
+  testFrameworks?: TestFrameworkObservation[];
+}
+
+export interface TestFrameworkObservation {
+  framework: string;
+  displayName: string;
+  sourcePath: string;
 }
 
 export interface DocumentationTechnologySignal {

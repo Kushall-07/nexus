@@ -4,6 +4,7 @@ import type { GapAnalysisResponse, RoleCatalogResponse, RoleDefinition } from ".
 import type { ResourceState } from "../../hooks/useApiResource";
 import { EmptyState, ErrorState, LoadingState, describeError } from "../../components/StateViews";
 import { formatPercent, formatScore } from "../../lib/format";
+import { ExplanationPanel, type ExplanationState } from "./ExplanationPanel";
 import { GapResultView } from "./GapResultView";
 
 export type GapRunState =
@@ -19,6 +20,8 @@ interface Props {
   onRun: () => void;
   onRetryRoles: () => void;
   run: GapRunState;
+  explanation: ExplanationState;
+  onExplain: () => void;
 }
 
 function RoleRequirements({ role }: { role: RoleDefinition }) {
@@ -47,7 +50,7 @@ function RoleRequirements({ role }: { role: RoleDefinition }) {
   );
 }
 
-function RunFeedback({ run }: { run: GapRunState }) {
+function RunFeedback({ run, explanation, onExplain }: { run: GapRunState; explanation: ExplanationState; onExplain: () => void }) {
   if (run.status === "error") {
     if (run.error.code === "NO_ANALYSIS") {
       return (
@@ -69,12 +72,17 @@ function RunFeedback({ run }: { run: GapRunState }) {
     return <p role="status" className="text-sm text-slate-700">Running gap analysis...</p>;
   }
   if (run.status === "done") {
-    return <GapResultView result={run.result} />;
+    return (
+      <div className="space-y-6">
+        <GapResultView result={run.result} />
+        <ExplanationPanel analysis={run.result} state={explanation} onExplain={onExplain} />
+      </div>
+    );
   }
   return null;
 }
 
-export function RolesView({ roles, selectedRoleId, onSelect, onRun, onRetryRoles, run }: Props) {
+export function RolesView({ roles, selectedRoleId, onSelect, onRun, onRetryRoles, run, explanation, onExplain }: Props) {
   if (roles.status === "loading") return <LoadingState label="Loading roles..." />;
   if (roles.status === "error") return <ErrorState error={roles.error} onRetry={onRetryRoles} />;
 
@@ -135,7 +143,7 @@ export function RolesView({ roles, selectedRoleId, onSelect, onRun, onRetryRoles
         <p className="text-sm text-slate-600">Select a role to see its requirements.</p>
       )}
 
-      <RunFeedback run={run} />
+      <RunFeedback run={run} explanation={explanation} onExplain={onExplain} />
     </div>
   );
 }

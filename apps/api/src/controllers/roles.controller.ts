@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
 import { getGapAnalysis, getRole, listRoles, runGapAnalysis } from "../services/gap-analysis.service.js";
+import { explainGapAnalysis } from "../services/gap-explanation.service.js";
 import { AppError, AuthErrorCode } from "../utils/errors.js";
 
 const roleIdSchema = z.string().min(1).max(64);
@@ -60,4 +61,17 @@ export async function getGapAnalysisHandler(req: Request, res: Response): Promis
   }
 
   res.status(200).json({ success: true, data: await getGapAnalysis(user.id, params.data.id) });
+}
+
+// The body is ignored on purpose: the explanation is derived only from the
+// stored analysis the authenticated user owns.
+export async function explainGapAnalysisHandler(req: Request, res: Response): Promise<void> {
+  const user = requireUser(req);
+  const params = gapAnalysisParamsSchema.safeParse(req.params);
+
+  if (!params.success) {
+    throw invalidRequest();
+  }
+
+  res.status(200).json({ success: true, data: await explainGapAnalysis(user.id, params.data.id) });
 }
