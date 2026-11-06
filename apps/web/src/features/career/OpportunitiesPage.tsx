@@ -40,7 +40,11 @@ function toApiError(error: unknown): ApiError {
   return error instanceof ApiError ? error : new ApiError(0, "UNKNOWN_ERROR", "The request failed.");
 }
 
-function TrackingForm({ item, onSaved, onError }: { item: OpportunityItem; onSaved: (saved: OpportunityItem["saved"]) => void; onError: (error: ApiError) => void }) {
+function TrackingForm({ item, onSaved, onError }: {
+  item: OpportunityItem;
+  onSaved: (saved: OpportunityItem["saved"]) => void;
+  onError: (error: ApiError) => void;
+}) {
   const [status, setStatus] = useState<ApplicationStatus>(item.saved?.status ?? "saved");
   const [note, setNote] = useState(item.saved?.note ?? "");
   const [date, setDate] = useState(item.saved?.statusDate?.slice(0, 10) ?? "");
@@ -64,23 +68,27 @@ function TrackingForm({ item, onSaved, onError }: { item: OpportunityItem; onSav
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2 rounded-md border border-slate-200 p-3" aria-label="Application tracking">
-      <h4 className="font-semibold text-slate-900">Track your application</h4>
-      <p className="text-xs text-slate-600">NEXUS never applies for you. Update this yourself after you apply on the original site.</p>
+    <form onSubmit={submit} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4" aria-label="Application tracking">
       <div>
-        <label htmlFor="track-status" className="block text-sm font-medium text-slate-800">Status</label>
+        <h4 className="font-semibold text-slate-900">Track your application</h4>
+        <p className="mt-0.5 text-xs text-slate-500">
+          NEXUS never applies for you. Update this yourself after you apply on the original site.
+        </p>
+      </div>
+      <div>
+        <label htmlFor="track-status" className="block text-sm font-medium text-slate-800 mb-1">Status</label>
         <StatusSelect id="track-status" value={status} onChange={setStatus} disabled={busy} />
       </div>
       <div>
-        <label htmlFor="track-date" className="block text-sm font-medium text-slate-800">Date (optional)</label>
+        <label htmlFor="track-date" className="block text-sm font-medium text-slate-800 mb-1">Date (optional)</label>
         <input id="track-date" type="date" className={inputClass} value={date} onChange={(event) => setDate(event.target.value)} disabled={busy} />
       </div>
       <div>
-        <label htmlFor="track-note" className="block text-sm font-medium text-slate-800">Private note (optional)</label>
+        <label htmlFor="track-note" className="block text-sm font-medium text-slate-800 mb-1">Private note (optional)</label>
         <textarea id="track-note" className={inputClass} rows={3} maxLength={2000} value={note} onChange={(event) => setNote(event.target.value)} disabled={busy} />
       </div>
       <button type="submit" className={primaryButtonClass} disabled={busy}>
-        {busy ? "Saving..." : "Save tracking"}
+        {busy ? "Saving…" : "Save tracking"}
       </button>
     </form>
   );
@@ -150,65 +158,106 @@ export function OpportunitiesPage({ initial = EMPTY_FILTERS }: { initial?: Filte
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold">Opportunities</h1>
-        <p className="text-sm text-slate-600">
-          Jobs and internships ranked by an explainable match with your GitHub evidence and resume. You do not need to choose a target role.{" "}
-          <Link to="/preferences" className="underline">Set preferences</Link>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Opportunities</h1>
+        <p className="mt-0.5 text-sm text-slate-500">
+          Jobs and internships ranked by an explainable match with your GitHub evidence and resume.{" "}
+          <Link to="/preferences" className="font-medium text-indigo-700 hover:underline">Set preferences</Link>
         </p>
       </div>
 
-      <form onSubmit={search} className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Search opportunities">
-        <div>
-          <label htmlFor="f-keywords" className="block text-sm font-medium text-slate-800">Title, keyword, company or technology</label>
-          <input id="f-keywords" className={inputClass} maxLength={120} value={form.keywords} onChange={(event) => set("keywords", event.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="f-location" className="block text-sm font-medium text-slate-800">Location</label>
-          <input id="f-location" className={inputClass} maxLength={120} value={form.location} onChange={(event) => set("location", event.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="f-mode" className="block text-sm font-medium text-slate-800">Work mode</label>
-          <select id="f-mode" className={inputClass} value={form.workMode} onChange={(event) => set("workMode", event.target.value as Filters["workMode"])}>
-            <option value="">Any</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="on-site">On-site</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="f-type" className="block text-sm font-medium text-slate-800">Employment type</label>
-          <select id="f-type" className={inputClass} value={form.employmentType} onChange={(event) => set("employmentType", event.target.value as Filters["employmentType"])}>
-            <option value="">Any</option>
-            <option value="internship">Internship</option>
-            <option value="full-time">Full-time</option>
-            <option value="part-time">Part-time</option>
-            <option value="contract">Contract</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="f-level" className="block text-sm font-medium text-slate-800">Experience level</label>
-          <select id="f-level" className={inputClass} value={form.experienceLevel} onChange={(event) => set("experienceLevel", event.target.value as Filters["experienceLevel"])}>
-            <option value="">Any</option>
-            <option value="intern">Intern</option>
-            <option value="entry">Entry</option>
-            <option value="mid">Mid</option>
-            <option value="senior">Senior</option>
-            <option value="lead">Lead</option>
-          </select>
-        </div>
-        <div className="flex items-end gap-2">
-          <button type="submit" className={primaryButtonClass}>Search</button>
-          {form.source === "demo" ? (
-            <button type="button" className={buttonClass} onClick={() => { const next = { ...form, source: "live" as const }; setForm(next); setPatches({}); setApplied(next); }}>
-              Back to live sources
-            </button>
-          ) : null}
+      {/* Filter panel */}
+      <form
+        onSubmit={search}
+        className="rounded-xl border border-slate-200 bg-white px-5 py-4"
+        aria-label="Search opportunities"
+      >
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label htmlFor="f-keywords" className="block text-sm font-medium text-slate-800 mb-1">
+              Title, keyword, company or technology
+            </label>
+            <input
+              id="f-keywords"
+              className={inputClass}
+              maxLength={120}
+              value={form.keywords}
+              onChange={(event) => set("keywords", event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="f-location" className="block text-sm font-medium text-slate-800 mb-1">Location</label>
+            <input
+              id="f-location"
+              className={inputClass}
+              maxLength={120}
+              value={form.location}
+              onChange={(event) => set("location", event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="f-mode" className="block text-sm font-medium text-slate-800 mb-1">Work mode</label>
+            <select
+              id="f-mode"
+              className={inputClass}
+              value={form.workMode}
+              onChange={(event) => set("workMode", event.target.value as Filters["workMode"])}
+            >
+              <option value="">Any</option>
+              <option value="remote">Remote</option>
+              <option value="hybrid">Hybrid</option>
+              <option value="on-site">On-site</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="f-type" className="block text-sm font-medium text-slate-800 mb-1">Employment type</label>
+            <select
+              id="f-type"
+              className={inputClass}
+              value={form.employmentType}
+              onChange={(event) => set("employmentType", event.target.value as Filters["employmentType"])}
+            >
+              <option value="">Any</option>
+              <option value="internship">Internship</option>
+              <option value="full-time">Full-time</option>
+              <option value="part-time">Part-time</option>
+              <option value="contract">Contract</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="f-level" className="block text-sm font-medium text-slate-800 mb-1">Experience level</label>
+            <select
+              id="f-level"
+              className={inputClass}
+              value={form.experienceLevel}
+              onChange={(event) => set("experienceLevel", event.target.value as Filters["experienceLevel"])}
+            >
+              <option value="">Any</option>
+              <option value="intern">Intern</option>
+              <option value="entry">Entry</option>
+              <option value="mid">Mid</option>
+              <option value="senior">Senior</option>
+              <option value="lead">Lead</option>
+            </select>
+          </div>
+          <div className="flex items-end gap-2">
+            <button type="submit" className={primaryButtonClass}>Search</button>
+            {form.source === "demo" ? (
+              <button
+                type="button"
+                className={buttonClass}
+                onClick={() => { const next = { ...form, source: "live" as const }; setForm(next); setPatches({}); setApplied(next); }}
+              >
+                Back to live sources
+              </button>
+            ) : null}
+          </div>
         </div>
       </form>
 
-      {state.status === "loading" ? <LoadingState label="Searching opportunities..." /> : null}
+      {state.status === "loading" ? <LoadingState label="Searching opportunities…" /> : null}
       {state.status === "error" ? <ErrorState error={state.error} onRetry={reload} /> : null}
 
       {state.status === "success" ? (
@@ -228,7 +277,9 @@ export function OpportunitiesPage({ initial = EMPTY_FILTERS }: { initial?: Filte
       ) : null}
 
       {actionError ? (
-        <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">{describeError(actionError)}</p>
+        <p role="alert" className="rounded-xl border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-900">
+          {describeError(actionError)}
+        </p>
       ) : null}
     </div>
   );
@@ -253,10 +304,10 @@ export function Results({ data, patches, effectiveItem, selectedId, onSelect, on
     return (
       <EmptyState title="No live job provider is configured">
         <p>
-          This server has no job-search credentials, so NEXUS cannot show real listings and will not invent any. The owner can enable one or more providers
-          in the server environment:
+          This server has no job-search credentials, so NEXUS cannot show real listings and will not invent any.
+          The owner can enable one or more providers in the server environment:
         </p>
-        <ul className="mt-2 list-disc pl-5">
+        <ul className="mt-2 list-disc pl-5 text-left">
           {data.providers.map((provider) => (
             <li key={provider.id}>
               <strong>{provider.label}</strong>: {provider.hint ?? "available"}
@@ -276,32 +327,44 @@ export function Results({ data, patches, effectiveItem, selectedId, onSelect, on
 
   return (
     <div className="space-y-3">
+      {/* Source badge / demo notice */}
       {data.mode === "demo" ? (
-        <p role="status" className="rounded-md border border-violet-300 bg-violet-50 p-3 text-sm text-violet-900">
-          <strong>Demo mode.</strong> These are invented example listings from fictional employers, not real vacancies. Their links go to example.com.
+        <p role="status" className="rounded-xl border border-violet-300 bg-violet-50 px-4 py-2.5 text-sm text-violet-900">
+          <strong>Demo mode.</strong> These are invented example listings from fictional employers, not real vacancies.
+          Their links go to example.com.
         </p>
       ) : (
-        <p className="text-sm text-slate-600">
-          Live results from {data.providers.filter((provider) => provider.ok).map((provider) => provider.label).join(", ") || "no provider"} · retrieved{" "}
-          {new Date(data.retrievedAt).toLocaleTimeString()}
-          {data.providers.some((provider) => provider.cached) ? " · some results are cached and may not be current" : ""}. NEXUS cannot confirm a listing is still open.
+        <p className="text-xs text-slate-500">
+          Live results from{" "}
+          {data.providers.filter((provider) => provider.ok).map((provider) => provider.label).join(", ") || "no provider"}
+          {" · "}retrieved {new Date(data.retrievedAt).toLocaleTimeString()}
+          {data.providers.some((provider) => provider.cached) ? " · some results are cached" : ""}.
+          NEXUS cannot confirm a listing is still open.
         </p>
       )}
+
       {failed.length > 0 ? (
-        <p role="alert" className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-          Some sources failed, so results may be partial: {failed.map((provider) => `${provider.label} (${provider.errorMessage ?? "unavailable"})`).join("; ")}
+        <p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-900">
+          Some sources failed, so results may be partial:{" "}
+          {failed.map((provider) => `${provider.label} (${provider.errorMessage ?? "unavailable"})`).join("; ")}
         </p>
       ) : null}
+
       {!data.profile.hasGithubAnalysis && !data.profile.hasResume ? (
-        <p className="rounded-md border border-slate-300 bg-white p-3 text-sm text-slate-800">
-          You have no GitHub analysis or resume yet, so matches cannot be scored. Analyze your repositories on the <Link to="/repositories" className="underline">Repositories</Link>{" "}
-          page or add a <Link to="/resume" className="underline">resume</Link>.
-        </p>
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 nx-panel">
+          <p className="text-sm text-slate-700">
+            You have no GitHub analysis or resume yet, so matches cannot be scored. Analyze your repositories on the{" "}
+            <Link to="/repositories" className="font-medium text-indigo-700 underline">Repositories</Link>{" "}
+            page or add a{" "}
+            <Link to="/resume" className="font-medium text-indigo-700 underline">resume</Link>.
+          </p>
+        </div>
       ) : null}
 
       {items.length === 0 ? (
         <EmptyState title="No opportunities match these filters">
-          Try fewer filters or different keywords.{data.dismissedCount > 0 ? ` ${data.dismissedCount} dismissed listing(s) are hidden.` : ""}
+          Try fewer filters or different keywords.
+          {data.dismissedCount > 0 ? ` ${data.dismissedCount} dismissed listing(s) are hidden.` : ""}
         </EmptyState>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -312,16 +375,30 @@ export function Results({ data, patches, effectiveItem, selectedId, onSelect, on
               </li>
             ))}
           </ul>
+
           <aside aria-label="Job details" className="space-y-3 lg:sticky lg:top-4 lg:self-start">
             {selected ? (
-              <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
-                <h2 className="text-lg font-semibold">{selected.job.title}</h2>
-                <ExternalLink job={selected.job} />
+              <div className="space-y-4 rounded-xl border border-slate-200 bg-white px-5 py-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">{selected.job.title}</h2>
+                  <ExternalLink job={selected.job} />
+                </div>
                 <MatchDetail item={selected} />
-                {selected.saved ? <TrackingForm key={selected.job.id} item={selected} onSaved={(saved) => onTrackingSaved(selected, saved)} onError={onActionError} /> : <p className="text-sm text-slate-600">Save this job to track your application.</p>}
+                {selected.saved ? (
+                  <TrackingForm
+                    key={selected.job.id}
+                    item={selected}
+                    onSaved={(saved) => onTrackingSaved(selected, saved)}
+                    onError={onActionError}
+                  />
+                ) : (
+                  <p className="text-sm text-slate-500">Save this job to track your application.</p>
+                )}
               </div>
             ) : (
-              <EmptyState title="Select a job">Choose “View details” on a listing to see why it matches, what is missing and the original link.</EmptyState>
+              <EmptyState title="Select a job">
+                Choose "View details" on a listing to see why it matches, what is missing and the original link.
+              </EmptyState>
             )}
           </aside>
         </div>

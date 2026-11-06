@@ -25,7 +25,7 @@ function BackLink() {
   return (
     <Link
       to="/"
-      className="text-sm font-medium text-indigo-800 underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+      className="text-sm font-medium text-indigo-700 underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
     >
       Back to skill overview
     </Link>
@@ -104,9 +104,9 @@ export function EvidenceList({ items }: { items: EvidenceItem[] }) {
 
 function ContributionCard({ entry, evidence }: { entry: ContributionDetail; evidence: EvidenceItem[] }) {
   return (
-    <li className="rounded-lg border border-slate-200 bg-white p-4">
+    <li className="rounded-xl border border-slate-200 bg-white p-4">
       <h3 className="text-base">
-        <span className="mr-2 text-sm text-slate-600">Rank {entry.rank}</span>
+        <span className="mr-2 text-sm text-slate-500">Rank {entry.rank}</span>
         <RepositoryLink repository={entry.repository} />
       </h3>
       <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3">
@@ -127,7 +127,7 @@ function ContributionCard({ entry, evidence }: { entry: ContributionDetail; evid
 
 function ExcludedCard({ entry, evidence }: { entry: RepositoryScoreDetail; evidence: EvidenceItem[] }) {
   return (
-    <li className="rounded-lg border border-slate-200 bg-white p-4">
+    <li className="rounded-xl border border-slate-200 bg-white p-4">
       <h3 className="text-base">
         <RepositoryLink repository={entry.repository} />
       </h3>
@@ -155,7 +155,7 @@ function EvidenceOnlySection({ repositoryId, items }: { repositoryId: string; it
   const reference: RepositoryReference = { id: repositoryId, fullName: null, url: null };
 
   return (
-    <li className="rounded-lg border border-slate-200 bg-white p-4">
+    <li className="rounded-xl border border-slate-200 bg-white p-4">
       <h3 className="text-base"><RepositoryLink repository={reference} /></h3>
       <EvidenceList items={items} />
     </li>
@@ -192,7 +192,7 @@ export function SkillDetailView({ detail, evidence, onRetryDetail, onRetryEviden
       <BackLink />
       <header>
         <p className="text-sm text-slate-600">{data.skill.categoryName}</p>
-        <h1 className="text-2xl font-semibold text-slate-900">{data.skill.displayName}</h1>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>{data.skill.displayName}</h1>
         <div className="mt-2">
           <ScoreMeter score={data.score} unavailableLabel={unavailableLabel(data.status)} />
         </div>

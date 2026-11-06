@@ -2,27 +2,65 @@ import type { ApplicationStatus, Job, JobMatch, MatchLabel, OpportunityItem } fr
 import { APPLICATION_STATUS_LABELS } from "../../api/career-types";
 
 export const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-1";
-export const buttonClass = `rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`;
-export const primaryButtonClass = `rounded-md bg-indigo-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`;
-export const inputClass = `w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 ${focusRing}`;
+
+export const buttonClass = [
+  "rounded-lg border border-slate-300 bg-white px-3 py-1.5",
+  "text-sm font-medium text-slate-700",
+  "hover:bg-slate-100 hover:text-slate-900 hover:border-slate-400",
+  "disabled:cursor-not-allowed disabled:opacity-50",
+  "transition-colors",
+  focusRing,
+].join(" ");
+
+// Gold button: bg-indigo-700 = gold; text-slate-50 = midnight black (max contrast on gold)
+export const primaryButtonClass = [
+  "rounded-lg bg-indigo-700 px-3 py-1.5",
+  "text-sm font-semibold text-slate-50",
+  "hover:bg-indigo-600",
+  "disabled:cursor-not-allowed disabled:opacity-50",
+  "transition-opacity hover:opacity-90",
+  focusRing,
+].join(" ");
+
+export const inputClass = [
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5",
+  "text-sm text-slate-800 placeholder:text-slate-400",
+  "focus:border-indigo-500 focus:outline-none",
+  focusRing,
+].join(" ");
 
 export function skillLabel(skill: string): string {
   return skill.replace(/-/g, " ");
 }
 
 const LABELS: Record<MatchLabel, { text: string; className: string }> = {
-  strong: { text: "Strong match", className: "bg-emerald-100 text-emerald-900 border-emerald-300" },
-  potential: { text: "Potential match", className: "bg-sky-100 text-sky-900 border-sky-300" },
-  stretch: { text: "Stretch opportunity", className: "bg-amber-100 text-amber-900 border-amber-300" },
-  blocked: { text: "Eligibility blocker", className: "bg-red-100 text-red-900 border-red-300" },
-  "insufficient-evidence": { text: "Not enough evidence to score", className: "bg-slate-100 text-slate-800 border-slate-300" },
+  strong: {
+    text: "Strong match",
+    className: "bg-emerald-100 text-emerald-900 border-emerald-200",
+  },
+  potential: {
+    text: "Potential match",
+    className: "bg-indigo-100 text-indigo-900 border-indigo-200",
+  },
+  stretch: {
+    text: "Stretch",
+    className: "bg-amber-100 text-amber-900 border-amber-200",
+  },
+  blocked: {
+    text: "Eligibility blocker",
+    className: "bg-red-100 text-red-900 border-red-200",
+  },
+  "insufficient-evidence": {
+    text: "Not enough evidence to score",
+    className: "bg-slate-100 text-slate-700 border-slate-200",
+  },
 };
 
 // The label is always text, never color alone.
 export function MatchBadge({ match }: { match: JobMatch }) {
   const meta = LABELS[match.label];
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${meta.className}`}>
+    <span className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${meta.className}`}>
       {match.score !== null ? `${meta.text} · ${match.score}/100` : meta.text}
     </span>
   );
@@ -34,25 +72,45 @@ export function SourceBadge({ job }: { job: Job }) {
       Demo example — not a real vacancy
     </span>
   ) : (
-    <span className="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-xs text-slate-800">Source: {job.sourceName}</span>
+    <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+      Source: {job.sourceName}
+    </span>
   );
 }
 
 export function formatSalary(salary: Job["salary"]): string | null {
   if (!salary || (salary.min === undefined && salary.max === undefined)) return null;
-  const range = salary.min !== undefined && salary.max !== undefined ? `${salary.min.toLocaleString()}–${salary.max.toLocaleString()}` : (salary.max ?? salary.min)!.toLocaleString();
+  const range =
+    salary.min !== undefined && salary.max !== undefined
+      ? `${salary.min.toLocaleString()}–${salary.max.toLocaleString()}`
+      : (salary.max ?? salary.min)!.toLocaleString();
   return `${salary.currency ?? ""} ${range}${salary.period ? ` / ${salary.period}` : ""}`.trim();
 }
 
 export function JobMeta({ job }: { job: Job }) {
-  const parts = [job.location, job.workMode, job.employmentType, job.experienceLevel && `${job.experienceLevel} level`, formatSalary(job.salary)].filter(Boolean);
-  return <p className="text-sm text-slate-700">{parts.length ? parts.join(" · ") : "Location, type and pay not provided by the source."}</p>;
+  const parts = [
+    job.location,
+    job.workMode,
+    job.employmentType,
+    job.experienceLevel && `${job.experienceLevel} level`,
+    formatSalary(job.salary),
+  ].filter(Boolean);
+  return (
+    <p className="text-sm text-slate-600">
+      {parts.length ? parts.join(" · ") : "Location, type and pay not provided by the source."}
+    </p>
+  );
 }
 
 export function ExternalLink({ job }: { job: Job }) {
   // URLs were validated as http(s) by the API; the link never carries the opener.
   return (
-    <a href={job.url} target="_blank" rel="noopener noreferrer nofollow" className={`${buttonClass} inline-block`}>
+    <a
+      href={job.url}
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      className={`${buttonClass} inline-block`}
+    >
       {job.isDemo ? "Open example page" : "Open original listing"}
       {" "}<span className="sr-only">(opens in a new tab)</span>
     </a>
@@ -69,57 +127,100 @@ interface CardProps {
 
 export function JobCard({ item, onDetails, onToggleSave, onDismiss, busy }: CardProps) {
   const { job, match } = item;
-  const supported = match.skills.filter((skill) => skill.requirement === "required" && skill.status === "github");
+  const supported = match.skills.filter(
+    (skill) => skill.requirement === "required" && skill.status === "github",
+  );
   const required = match.skills.filter((skill) => skill.requirement === "required");
 
+  // Panel accent bar color based on match label
+  const accentClass =
+    match.label === "strong"
+      ? "nx-panel-success"
+      : match.label === "blocked"
+        ? "nx-panel-danger"
+        : match.label === "stretch"
+          ? "nx-panel-warning"
+          : "nx-panel";
+
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-4" aria-labelledby={`job-${job.id}`}>
+    <article
+      className={`rounded-xl border border-slate-200 bg-white px-4 py-3.5 ${accentClass}`}
+      aria-labelledby={`job-${job.id}`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h3 id={`job-${job.id}`} className="font-semibold text-slate-900">
+        <div className="min-w-0">
+          <h3 id={`job-${job.id}`} className="font-semibold text-slate-900 leading-snug">
             {job.title}
           </h3>
-          <p className="text-sm text-slate-700">{job.company ?? "Company not provided"}</p>
+          <p className="text-sm text-slate-600">{job.company ?? "Company not provided"}</p>
         </div>
         <MatchBadge match={match} />
       </div>
-      <JobMeta job={job} />
-      <div className="mt-2 flex flex-wrap gap-2">
+
+      <div className="mt-1.5">
+        <JobMeta job={job} />
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-1.5">
         <SourceBadge job={job} />
         {job.stale ? (
           <span className="rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-xs text-amber-900">
-            Older listing — may no longer be open
+            Older listing
           </span>
         ) : null}
         {item.saved ? (
-          <span className="rounded-full border border-indigo-300 bg-indigo-100 px-2 py-0.5 text-xs text-indigo-900">
+          <span className="rounded-full border border-indigo-300 bg-indigo-100 px-2 py-0.5 text-xs text-indigo-900 font-medium">
             {APPLICATION_STATUS_LABELS[item.saved.status]}
           </span>
         ) : null}
       </div>
+
       {required.length > 0 ? (
-        <p className="mt-2 text-sm text-slate-700">
-          {supported.length} of {required.length} required skills supported by GitHub evidence.
+        <p className="mt-2 text-xs text-slate-500">
+          <span className="font-semibold tabular-nums text-slate-700">{supported.length}</span>
+          {" of "}
+          <span className="font-semibold tabular-nums text-slate-700">{required.length}</span>
+          {" required skills supported by GitHub evidence."}
         </p>
       ) : null}
+
       {match.hardBlockers.length > 0 ? (
-        <p className="mt-1 text-sm font-medium text-red-800">Blocker: {match.hardBlockers[0]}</p>
+        <p className="mt-1.5 text-xs font-semibold text-red-800">
+          Blocker: {match.hardBlockers[0]}
+        </p>
       ) : null}
+
       <div className="mt-3 flex flex-wrap gap-2">
         {onDetails ? (
-          <button type="button" className={primaryButtonClass} onClick={() => onDetails(item)}>
-            View details{" "}<span className="sr-only">for {job.title}</span>
+          <button
+            type="button"
+            className={primaryButtonClass}
+            onClick={() => onDetails(item)}
+          >
+            View details
+            <span className="sr-only"> for {job.title}</span>
           </button>
         ) : null}
         {onToggleSave ? (
-          <button type="button" className={buttonClass} disabled={busy} onClick={() => onToggleSave(item)}>
+          <button
+            type="button"
+            aria-label={`${item.saved ? "Unsave" : "Save"} ${job.title}`}
+            className={buttonClass}
+            disabled={busy}
+            onClick={() => onToggleSave(item)}
+          >
             {item.saved ? "Unsave" : "Save"}
-            {" "}<span className="sr-only">{job.title}</span>
           </button>
         ) : null}
         {onDismiss ? (
-          <button type="button" className={buttonClass} disabled={busy} onClick={() => onDismiss(item)}>
-            Not interested{" "}<span className="sr-only">in {job.title}</span>
+          <button
+            type="button"
+            aria-label={`Not interested in ${job.title}`}
+            className={buttonClass}
+            disabled={busy}
+            onClick={() => onDismiss(item)}
+          >
+            Not interested
           </button>
         ) : null}
         <ExternalLink job={job} />
@@ -137,32 +238,35 @@ const STATUS_TEXT: Record<string, string> = {
 export function MatchDetail({ item }: { item: OpportunityItem }) {
   const { job, match } = item;
   return (
-    <div className="space-y-4 text-sm text-slate-800">
+    <div className="space-y-5 text-sm text-slate-700">
       <section aria-label="How this score was derived">
         <h4 className="font-semibold text-slate-900">Why this score</h4>
-        <ul className="mt-1 list-disc space-y-1 pl-5">
+        <ul className="mt-2 space-y-1 list-disc pl-5">
           {match.explanation.map((line) => (
             <li key={line}>{line}</li>
           ))}
         </ul>
-        <p className="mt-1 text-slate-600">
-          Evidence quality: <strong>{match.confidence}</strong> · matching model v{match.matchingVersion}
+        <p className="mt-2 text-slate-500">
+          Evidence quality: <span className="font-semibold text-slate-700">{match.confidence}</span>
+          {" · "}matching model v{match.matchingVersion}
         </p>
-        <table className="mt-2 w-full text-left">
+        <table className="mt-3 w-full text-left text-xs">
           <caption className="sr-only">Score components</caption>
           <thead>
-            <tr className="border-b border-slate-200 text-slate-700">
-              <th scope="col" className="py-1 font-medium">Component</th>
-              <th scope="col" className="py-1 font-medium">Weight</th>
-              <th scope="col" className="py-1 font-medium">Result</th>
+            <tr className="border-b border-slate-200 text-slate-600">
+              <th scope="col" className="py-1.5 font-semibold">Component</th>
+              <th scope="col" className="py-1.5 font-semibold">Weight</th>
+              <th scope="col" className="py-1.5 font-semibold">Result</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {match.components.map((component) => (
               <tr key={component.key} className="align-top">
-                <th scope="row" className="py-1 pr-2 font-normal">{component.key.replace(/([A-Z])/g, " $1").toLowerCase()}</th>
-                <td className="py-1 pr-2 tabular-nums">{Math.round(component.weight * 100)}%</td>
-                <td className="py-1">
+                <th scope="row" className="py-1.5 pr-2 font-normal text-slate-700 capitalize">
+                  {component.key.replace(/([A-Z])/g, " $1").toLowerCase()}
+                </th>
+                <td className="py-1.5 pr-2 tabular-nums">{Math.round(component.weight * 100)}%</td>
+                <td className="py-1.5 text-slate-600">
                   {component.value === null ? "Not computed. " : `${Math.round(component.value * 100)}%. `}
                   {component.note}
                 </td>
@@ -173,42 +277,53 @@ export function MatchDetail({ item }: { item: OpportunityItem }) {
       </section>
 
       {match.hardBlockers.length > 0 ? (
-        <section aria-label="Eligibility blockers" className="rounded-md border border-red-300 bg-red-50 p-3 text-red-900">
+        <section
+          aria-label="Eligibility blockers"
+          className="rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-900"
+        >
           <h4 className="font-semibold">Eligibility blockers</h4>
-          <ul className="list-disc pl-5">{match.hardBlockers.map((line) => <li key={line}>{line}</li>)}</ul>
+          <ul className="mt-1 list-disc pl-5">
+            {match.hardBlockers.map((line) => <li key={line}>{line}</li>)}
+          </ul>
         </section>
       ) : null}
 
       {match.unresolvedEligibility.length > 0 ? (
         <section aria-label="Unresolved eligibility questions">
           <h4 className="font-semibold text-slate-900">To confirm</h4>
-          <ul className="list-disc pl-5">{match.unresolvedEligibility.map((line) => <li key={line}>{line}</li>)}</ul>
+          <ul className="mt-1 list-disc pl-5">
+            {match.unresolvedEligibility.map((line) => <li key={line}>{line}</li>)}
+          </ul>
         </section>
       ) : null}
 
       <section aria-label="Skills">
         <h4 className="font-semibold text-slate-900">Skills</h4>
         {match.skills.length === 0 ? (
-          <p>The listing does not state recognisable skills.</p>
+          <p className="mt-1 text-slate-500">The listing does not state recognisable skills.</p>
         ) : (
-          <ul className="mt-1 space-y-1">
+          <ul className="mt-2 space-y-1.5">
             {match.skills.map((skill) => (
               <li key={skill.skill}>
-                <span className="font-medium capitalize">{skillLabel(skill.skill)}</span> ({skill.requirement}) — {STATUS_TEXT[skill.status]}
-                {skill.githubScore !== null ? `, Evidence Score ${skill.githubScore.toFixed(1)}` : ""}
+                <span className="font-medium text-slate-800 capitalize">{skillLabel(skill.skill)}</span>
+                <span className="text-slate-500"> ({skill.requirement})</span>
+                {" — "}{STATUS_TEXT[skill.status]}
+                {skill.githubScore !== null ? (
+                  <span className="tabular-nums text-slate-500">
+                    {" · "}Score {skill.githubScore.toFixed(1)}
+                  </span>
+                ) : null}
                 {skill.projects.length > 0 ? (
-                  <span>
-                    {" "}— projects:{" "}
+                  <span className="text-slate-500">
+                    {" · "}
                     {skill.projects.map((project, index) => (
                       <span key={project.fullName}>
                         {index > 0 ? ", " : ""}
                         {project.url ? (
-                          <a href={project.url} target="_blank" rel="noopener noreferrer" className="underline">
+                          <a href={project.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-indigo-700">
                             {project.fullName}
                           </a>
-                        ) : (
-                          project.fullName
-                        )}
+                        ) : project.fullName}
                       </span>
                     ))}
                   </span>
@@ -221,25 +336,30 @@ export function MatchDetail({ item }: { item: OpportunityItem }) {
 
       <section aria-label="Preferences">
         <h4 className="font-semibold text-slate-900">Your preferences</h4>
-        <p>Matching: {match.preferenceMatches.matched.join(", ") || "none"}</p>
-        <p>Not matching: {match.preferenceMatches.mismatched.join(", ") || "none"}</p>
-        <p>Cannot compare (listing lacks the data): {match.preferenceMatches.unknown.join(", ") || "none"}</p>
+        <dl className="mt-1 space-y-0.5 text-sm">
+          <div><dt className="inline text-slate-500">Matching: </dt><dd className="inline">{match.preferenceMatches.matched.join(", ") || "none"}</dd></div>
+          <div><dt className="inline text-slate-500">Not matching: </dt><dd className="inline">{match.preferenceMatches.mismatched.join(", ") || "none"}</dd></div>
+          <div><dt className="inline text-slate-500">Cannot compare: </dt><dd className="inline">{match.preferenceMatches.unknown.join(", ") || "none"}</dd></div>
+        </dl>
       </section>
 
       {match.unavailableInformation.length > 0 ? (
         <section aria-label="Unavailable information">
           <h4 className="font-semibold text-slate-900">Not provided by the source</h4>
-          <ul className="list-disc pl-5">{match.unavailableInformation.map((line) => <li key={line}>{line}</li>)}</ul>
+          <ul className="mt-1 list-disc pl-5">
+            {match.unavailableInformation.map((line) => <li key={line}>{line}</li>)}
+          </ul>
         </section>
       ) : null}
 
       <section aria-label="Description">
         <h4 className="font-semibold text-slate-900">Description</h4>
-        <p className="mt-1 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-md bg-slate-50 p-2 text-slate-800">
+        <p className="mt-1.5 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
           {job.description || "No description provided."}
         </p>
-        <p className="mt-1 text-xs text-slate-600">
-          Retrieved {new Date(job.retrievedAt).toLocaleString()} from {job.sourceName}. NEXUS cannot confirm the listing is still open.
+        <p className="mt-1 text-xs text-slate-500">
+          Retrieved {new Date(job.retrievedAt).toLocaleString()} from {job.sourceName}.
+          NEXUS cannot confirm the listing is still open.
         </p>
       </section>
     </div>
@@ -258,7 +378,13 @@ export function StatusSelect({
   id: string;
 }) {
   return (
-    <select id={id} className={inputClass} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value as ApplicationStatus)}>
+    <select
+      id={id}
+      className={inputClass}
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value as ApplicationStatus)}
+    >
       {(Object.keys(APPLICATION_STATUS_LABELS) as ApplicationStatus[]).map((status) => (
         <option key={status} value={status}>
           {APPLICATION_STATUS_LABELS[status]}

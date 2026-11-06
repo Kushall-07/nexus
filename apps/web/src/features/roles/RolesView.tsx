@@ -63,7 +63,7 @@ function RunFeedback({ run, explanation, onExplain }: { run: GapRunState; explan
       );
     }
     return (
-      <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-900">
+      <div role="alert" className="rounded-xl border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-900">
         Gap analysis failed: {describeError(run.error)}
       </div>
     );
@@ -96,8 +96,8 @@ export function RolesView({ roles, selectedRoleId, onSelect, onRun, onRetryRoles
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Target role</h1>
-        <p className="mt-1 max-w-3xl text-sm text-slate-600">
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Target role</h1>
+        <p className="mt-1 max-w-3xl text-sm text-slate-500">
           Choose a role to compare your Evidence Scores with. These benchmarks are manually curated v1 requirements
           (catalog v{roles.data.catalogVersion}), not live market data or universal hiring standards.
         </p>
@@ -109,7 +109,7 @@ export function RolesView({ roles, selectedRoleId, onSelect, onRun, onRetryRoles
           {list.map((role) => (
             <label
               key={role.id}
-              className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white p-3 has-[:checked]:border-indigo-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-700"
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white p-3.5 transition-colors has-[:checked]:border-indigo-700 has-[:checked]:bg-indigo-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-700"
             >
               <input
                 type="radio"
@@ -134,7 +134,7 @@ export function RolesView({ roles, selectedRoleId, onSelect, onRun, onRetryRoles
             type="button"
             onClick={onRun}
             disabled={run.status === "running"}
-            className="rounded-md bg-indigo-800 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2"
+            className="rounded-lg bg-indigo-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2 transition-colors"
           >
             {run.status === "running" ? "Running..." : "Run gap analysis"}
           </button>

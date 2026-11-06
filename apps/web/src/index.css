@@ -1,153 +1,257 @@
 @import "tailwindcss";
 
 /*
- * Dark-first theme. Components are written against Tailwind's palette
- * (slate/indigo/red/...); this block re-points those palette variables so every
- * surface, text and status colour reads correctly on a dark background without
- * per-component overrides. Scales are mirrored (50 <-> 950): "bg-white" is the
- * card surface, "bg-slate-50" the page, "text-slate-900" the primary text.
+ * NEXUS — "Gold Signal" design system.
+ *
+ * Brand palette:
+ *   Midnight Black  #08090B  — primary application background
+ *   Warm Pure White #F5F3EF  — primary text and surface highlight
+ *   Vibrant Gold    #F6C900  — primary accent, action, and data emphasis
+ *
+ * This theme reuses Tailwind's semantic slot names so every component
+ * works without per-component edits:
+ *   bg-slate-50       = page background (Midnight Black)
+ *   bg-white          = card surface (lifted dark surface)
+ *   border-slate-200  = default border (white at ~8% opacity)
+ *   text-slate-900    = primary text (Warm White)
+ *   bg-indigo-700     = PRIMARY action (Vibrant Gold)
+ *   text-indigo-700   = accent link / icon (Gold)
+ *
+ * Typography system:
+ *   --font-display  Barlow Condensed  → hero, section headlines, big metrics
+ *   --font-body     Inter             → body, nav, labels, buttons
+ *   --font-mono     JetBrains Mono    → scores, evidence IDs, code labels
  */
+
 @theme {
-  --color-indigo-50: oklch(25.7% 0.09 281.288);
-  --color-indigo-100: oklch(35.9% 0.144 278.697);
-  --color-indigo-200: oklch(39.8% 0.195 277.366);
-  --color-indigo-300: oklch(45.7% 0.24 277.023);
-  --color-indigo-400: oklch(51.1% 0.262 276.966);
-  --color-indigo-500: oklch(58.5% 0.233 277.117);
-  --color-indigo-600: oklch(67.3% 0.182 276.935);
-  --color-indigo-700: oklch(78.5% 0.115 274.713);
-  --color-indigo-800: oklch(87% 0.065 274.039);
-  --color-indigo-900: oklch(93% 0.034 272.788);
-  --color-indigo-950: oklch(96.2% 0.018 272.314);
-  --color-red-50: oklch(25.8% 0.092 26.042);
-  --color-red-100: oklch(39.6% 0.141 25.723);
-  --color-red-200: oklch(44.4% 0.177 26.899);
-  --color-red-300: oklch(50.5% 0.213 27.518);
-  --color-red-400: oklch(57.7% 0.245 27.325);
-  --color-red-500: oklch(63.7% 0.237 25.331);
-  --color-red-600: oklch(70.4% 0.191 22.216);
-  --color-red-700: oklch(80.8% 0.114 19.571);
-  --color-red-800: oklch(88.5% 0.062 18.334);
-  --color-red-900: oklch(93.6% 0.032 17.717);
-  --color-red-950: oklch(97.1% 0.013 17.38);
-  --color-amber-50: oklch(27.9% 0.077 45.635);
-  --color-amber-100: oklch(41.4% 0.112 45.904);
-  --color-amber-200: oklch(47.3% 0.137 46.201);
-  --color-amber-300: oklch(55.5% 0.163 48.998);
-  --color-amber-400: oklch(66.6% 0.179 58.318);
-  --color-amber-500: oklch(76.9% 0.188 70.08);
-  --color-amber-600: oklch(82.8% 0.189 84.429);
-  --color-amber-700: oklch(87.9% 0.169 91.605);
-  --color-amber-800: oklch(92.4% 0.12 95.746);
-  --color-amber-900: oklch(96.2% 0.059 95.617);
-  --color-amber-950: oklch(98.7% 0.022 95.277);
-  --color-green-50: oklch(26.6% 0.065 152.934);
-  --color-green-100: oklch(39.3% 0.095 152.535);
-  --color-green-200: oklch(44.8% 0.119 151.328);
-  --color-green-300: oklch(52.7% 0.154 150.069);
-  --color-green-400: oklch(62.7% 0.194 149.214);
-  --color-green-500: oklch(72.3% 0.219 149.579);
-  --color-green-600: oklch(79.2% 0.209 151.711);
-  --color-green-700: oklch(87.1% 0.15 154.449);
-  --color-green-800: oklch(92.5% 0.084 155.995);
-  --color-green-900: oklch(96.2% 0.044 156.743);
-  --color-green-950: oklch(98.2% 0.018 155.826);
-  --color-emerald-50: oklch(26.2% 0.051 172.552);
-  --color-emerald-100: oklch(37.8% 0.077 168.94);
-  --color-emerald-200: oklch(43.2% 0.095 166.913);
-  --color-emerald-300: oklch(50.8% 0.118 165.612);
-  --color-emerald-400: oklch(59.6% 0.145 163.225);
-  --color-emerald-500: oklch(69.6% 0.17 162.48);
-  --color-emerald-600: oklch(76.5% 0.177 163.223);
-  --color-emerald-700: oklch(84.5% 0.143 164.978);
-  --color-emerald-800: oklch(90.5% 0.093 164.15);
-  --color-emerald-900: oklch(95% 0.052 163.051);
-  --color-emerald-950: oklch(97.9% 0.021 166.113);
-  --color-violet-50: oklch(28.3% 0.141 291.089);
-  --color-violet-100: oklch(38% 0.189 293.745);
-  --color-violet-200: oklch(43.2% 0.232 292.759);
-  --color-violet-300: oklch(49.1% 0.27 292.581);
-  --color-violet-400: oklch(54.1% 0.281 293.009);
-  --color-violet-500: oklch(60.6% 0.25 292.717);
-  --color-violet-600: oklch(70.2% 0.183 293.541);
-  --color-violet-700: oklch(81.1% 0.111 293.571);
-  --color-violet-800: oklch(89.4% 0.057 293.283);
-  --color-violet-900: oklch(94.3% 0.029 294.588);
-  --color-violet-950: oklch(96.9% 0.016 293.756);
-  --color-sky-50: oklch(29.3% 0.066 243.157);
-  --color-sky-100: oklch(39.1% 0.09 240.876);
-  --color-sky-200: oklch(44.3% 0.11 240.79);
-  --color-sky-300: oklch(50% 0.134 242.749);
-  --color-sky-400: oklch(58.8% 0.158 241.966);
-  --color-sky-500: oklch(68.5% 0.169 237.323);
-  --color-sky-600: oklch(74.6% 0.16 232.661);
-  --color-sky-700: oklch(82.8% 0.111 230.318);
-  --color-sky-800: oklch(90.1% 0.058 230.902);
-  --color-sky-900: oklch(95.1% 0.026 236.824);
-  --color-sky-950: oklch(97.7% 0.013 236.62);
-  --color-blue-50: oklch(28.2% 0.091 267.935);
-  --color-blue-100: oklch(37.9% 0.146 265.522);
-  --color-blue-200: oklch(42.4% 0.199 265.638);
-  --color-blue-300: oklch(48.8% 0.243 264.376);
-  --color-blue-400: oklch(54.6% 0.245 262.881);
-  --color-blue-500: oklch(62.3% 0.214 259.815);
-  --color-blue-600: oklch(70.7% 0.165 254.624);
-  --color-blue-700: oklch(80.9% 0.105 251.813);
-  --color-blue-800: oklch(88.2% 0.059 254.128);
-  --color-blue-900: oklch(93.2% 0.032 255.585);
-  --color-blue-950: oklch(97% 0.014 254.604);
-  --color-yellow-50: oklch(28.6% 0.066 53.813);
-  --color-yellow-100: oklch(42.1% 0.095 57.708);
-  --color-yellow-200: oklch(47.6% 0.114 61.907);
-  --color-yellow-300: oklch(55.4% 0.135 66.442);
-  --color-yellow-400: oklch(68.1% 0.162 75.834);
-  --color-yellow-500: oklch(79.5% 0.184 86.047);
-  --color-yellow-600: oklch(85.2% 0.199 91.936);
-  --color-yellow-700: oklch(90.5% 0.182 98.111);
-  --color-yellow-800: oklch(94.5% 0.129 101.54);
-  --color-yellow-900: oklch(97.3% 0.071 103.193);
-  --color-yellow-950: oklch(98.7% 0.026 102.212);
-  --color-orange-50: oklch(26.6% 0.079 36.259);
-  --color-orange-100: oklch(40.8% 0.123 38.172);
-  --color-orange-200: oklch(47% 0.157 37.304);
-  --color-orange-300: oklch(55.3% 0.195 38.402);
-  --color-orange-400: oklch(64.6% 0.222 41.116);
-  --color-orange-500: oklch(70.5% 0.213 47.604);
-  --color-orange-600: oklch(75% 0.183 55.934);
-  --color-orange-700: oklch(83.7% 0.128 66.29);
-  --color-orange-800: oklch(90.1% 0.076 70.697);
-  --color-orange-900: oklch(95.4% 0.038 75.164);
-  --color-orange-950: oklch(98% 0.016 73.684);
-  --color-slate-50: oklch(12.9% 0.042 264.695);
-  --color-slate-100: oklch(0.27 0.04 260);
-  --color-slate-200: oklch(0.33 0.04 260);
-  --color-slate-300: oklch(37.2% 0.044 257.287);
-  --color-slate-400: oklch(44.6% 0.043 257.281);
-  --color-slate-500: oklch(55.4% 0.046 257.417);
-  --color-slate-600: oklch(86.9% 0.022 252.894);
-  --color-slate-700: oklch(92.9% 0.013 255.508);
-  --color-slate-800: oklch(96.8% 0.007 247.896);
-  --color-slate-900: oklch(98.4% 0.003 247.858);
-  --color-slate-950: oklch(98.4% 0.003 247.858);
-  --color-white: oklch(0.2 0.035 262);
+  /* ── SLATE (base tones — inverted: 50 = darkest, 950 = lightest) ──────── */
+  --color-slate-50:  oklch(5.5%  0.009  265); /* Midnight Black — page bg   */
+  --color-slate-100: oklch(8.5%  0.008  265); /* hover / active bg           */
+  --color-slate-200: oklch(13%   0.007  265); /* borders (subtle)            */
+  --color-slate-300: oklch(20%   0.006  265); /* borders (stronger)          */
+  --color-slate-400: oklch(32%   0.005  260); /* icons, placeholder text     */
+  --color-slate-500: oklch(46%   0.004  255); /* muted / helper text         */
+  --color-slate-600: oklch(60%   0.008  90);  /* secondary text              */
+  --color-slate-700: oklch(74%   0.010  90);  /* body text (warming tone)    */
+  --color-slate-800: oklch(85%   0.011  90);  /* strong body / sub-headings  */
+  --color-slate-900: oklch(96%   0.012  90);  /* Warm White — headings       */
+  --color-slate-950: oklch(98%   0.010  90);  /* max contrast white          */
+  --color-white:     oklch(8%    0.008  265); /* card surface (lifted dark)  */
+
+  /* ── GOLD (primary interactive color — #F6C900 family) ─────────────────── */
+  --color-indigo-50:  oklch(9%   0.030  86);  /* very subtle gold tint bg    */
+  --color-indigo-100: oklch(13%  0.055  86);  /* active nav / gold tint bg   */
+  --color-indigo-200: oklch(21%  0.090  86);  /* gold accent border          */
+  --color-indigo-300: oklch(35%  0.130  86);  /* medium gold                 */
+  --color-indigo-400: oklch(52%  0.170  86);  /* hover gold                  */
+  --color-indigo-500: oklch(68%  0.190  86);  /* strong gold                 */
+  --color-indigo-600: oklch(79%  0.198  86);  /* button hover                */
+  --color-indigo-700: oklch(81%  0.195  86);  /* PRIMARY — Vibrant Gold      */
+  --color-indigo-800: oklch(88%  0.160  86);  /* lighter gold                */
+  --color-indigo-900: oklch(93%  0.080  86);  /* warm light gold (nav/badge text on dark gold bg) */
+  --color-indigo-950: oklch(5.5% 0.009  265); /* near-midnight (skip-to-main on gold bg) */
+
+  /* ── RED (error, blockers, missing skills) ─────────────────────────────── */
+  --color-red-50:  oklch(10%  0.080  27);
+  --color-red-100: oklch(15%  0.090  26);
+  --color-red-200: oklch(22%  0.110  26);
+  --color-red-300: oklch(33%  0.145  26);
+  --color-red-400: oklch(47%  0.185  27);
+  --color-red-500: oklch(59%  0.210  26);
+  --color-red-600: oklch(68%  0.185  25);
+  --color-red-700: oklch(76%  0.145  24);
+  --color-red-800: oklch(84%  0.095  23);
+  --color-red-900: oklch(90%  0.050  22);
+  --color-red-950: oklch(96%  0.022  21);
+
+  /* ── AMBER (warning, partial evidence, stale listings) ─────────────────── */
+  --color-amber-50:  oklch(12%  0.070  48);
+  --color-amber-100: oklch(18%  0.090  47);
+  --color-amber-200: oklch(25%  0.110  47);
+  --color-amber-300: oklch(38%  0.135  48);
+  --color-amber-400: oklch(53%  0.160  56);
+  --color-amber-500: oklch(66%  0.178  65);
+  --color-amber-600: oklch(74%  0.182  76);
+  --color-amber-700: oklch(82%  0.168  85);
+  --color-amber-800: oklch(88%  0.120  92);
+  --color-amber-900: oklch(93%  0.068  96);
+  --color-amber-950: oklch(97%  0.028  97);
+
+  /* ── EMERALD (demonstrated evidence, success, strong match) ─────────────── */
+  --color-emerald-50:  oklch(10%  0.048 164);
+  --color-emerald-100: oklch(16%  0.065 163);
+  --color-emerald-200: oklch(23%  0.082 162);
+  --color-emerald-300: oklch(35%  0.102 161);
+  --color-emerald-400: oklch(49%  0.132 162);
+  --color-emerald-500: oklch(61%  0.158 162);
+  --color-emerald-600: oklch(70%  0.162 162);
+  --color-emerald-700: oklch(78%  0.133 163);
+  --color-emerald-800: oklch(85%  0.085 164);
+  --color-emerald-900: oklch(91%  0.048 164);
+  --color-emerald-950: oklch(96%  0.022 165);
+
+  /* ── GREEN ──────────────────────────────────────────────────────────────── */
+  --color-green-50:  oklch(10%  0.048 155);
+  --color-green-100: oklch(16%  0.065 155);
+  --color-green-200: oklch(23%  0.082 154);
+  --color-green-300: oklch(35%  0.102 153);
+  --color-green-400: oklch(49%  0.132 152);
+  --color-green-500: oklch(61%  0.152 151);
+  --color-green-600: oklch(70%  0.152 152);
+  --color-green-700: oklch(78%  0.122 153);
+  --color-green-800: oklch(85%  0.075 154);
+  --color-green-900: oklch(91%  0.042 155);
+  --color-green-950: oklch(96%  0.019 156);
+
+  /* ── VIOLET (AI, Copilot) ───────────────────────────────────────────────── */
+  --color-violet-50:  oklch(12%  0.090 294);
+  --color-violet-100: oklch(17%  0.108 293);
+  --color-violet-200: oklch(25%  0.130 293);
+  --color-violet-300: oklch(36%  0.168 292);
+  --color-violet-400: oklch(49%  0.210 293);
+  --color-violet-500: oklch(59%  0.215 293);
+  --color-violet-600: oklch(68%  0.182 293);
+  --color-violet-700: oklch(76%  0.140 293);
+  --color-violet-800: oklch(83%  0.090 293);
+  --color-violet-900: oklch(90%  0.048 294);
+  --color-violet-950: oklch(96%  0.022 294);
+
+  /* ── SKY ────────────────────────────────────────────────────────────────── */
+  --color-sky-50:  oklch(11%  0.055 243);
+  --color-sky-100: oklch(16%  0.072 241);
+  --color-sky-200: oklch(23%  0.090 240);
+  --color-sky-300: oklch(34%  0.112 240);
+  --color-sky-400: oklch(49%  0.142 238);
+  --color-sky-500: oklch(61%  0.154 236);
+  --color-sky-600: oklch(69%  0.148 233);
+  --color-sky-700: oklch(77%  0.120 231);
+  --color-sky-800: oklch(84%  0.075 230);
+  --color-sky-900: oklch(90%  0.042 229);
+  --color-sky-950: oklch(96%  0.019 228);
+
+  /* ── BLUE ───────────────────────────────────────────────────────────────── */
+  --color-blue-50:  oklch(11%  0.070 268);
+  --color-blue-100: oklch(16%  0.088 267);
+  --color-blue-200: oklch(23%  0.112 267);
+  --color-blue-300: oklch(34%  0.148 266);
+  --color-blue-400: oklch(48%  0.182 265);
+  --color-blue-500: oklch(59%  0.178 262);
+  --color-blue-600: oklch(68%  0.148 257);
+  --color-blue-700: oklch(77%  0.108 253);
+  --color-blue-800: oklch(84%  0.065 253);
+  --color-blue-900: oklch(90%  0.034 254);
+  --color-blue-950: oklch(96%  0.015 254);
+
+  /* ── YELLOW ─────────────────────────────────────────────────────────────── */
+  --color-yellow-50:  oklch(12%  0.058  55);
+  --color-yellow-100: oklch(18%  0.075  57);
+  --color-yellow-200: oklch(25%  0.092  61);
+  --color-yellow-300: oklch(37%  0.118  65);
+  --color-yellow-400: oklch(52%  0.148  73);
+  --color-yellow-500: oklch(66%  0.168  82);
+  --color-yellow-600: oklch(74%  0.178  88);
+  --color-yellow-700: oklch(81%  0.165  95);
+  --color-yellow-800: oklch(87%  0.118  99);
+  --color-yellow-900: oklch(93%  0.065 101);
+  --color-yellow-950: oklch(97%  0.026 102);
+
+  /* ── ORANGE ─────────────────────────────────────────────────────────────── */
+  --color-orange-50:  oklch(11%  0.065  38);
+  --color-orange-100: oklch(17%  0.088  38);
+  --color-orange-200: oklch(24%  0.115  37);
+  --color-orange-300: oklch(36%  0.148  38);
+  --color-orange-400: oklch(51%  0.182  40);
+  --color-orange-500: oklch(62%  0.182  46);
+  --color-orange-600: oklch(69%  0.168  54);
+  --color-orange-700: oklch(77%  0.138  63);
+  --color-orange-800: oklch(84%  0.088  69);
+  --color-orange-900: oklch(90%  0.048  73);
+  --color-orange-950: oklch(96%  0.019  73);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Typography variables                                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  font-family: Inter, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Impact", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+
+  font-family: var(--font-body);
   color-scheme: dark;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Body                                                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
 
 body {
   margin: 0;
   min-width: 320px;
   background-color: var(--color-slate-50);
-  background-image: radial-gradient(60rem 30rem at 10% -10%, oklch(0.35 0.12 270 / 0.35), transparent 60%);
-  background-attachment: fixed;
+  /* Very subtle gold atmospheric depth — not a gradient wall */
+  background-image:
+    radial-gradient(90rem 50rem at 15% 0%,   oklch(81% 0.195 86 / 0.045), transparent 55%),
+    radial-gradient(60rem 35rem at 90% 95%,  oklch(81% 0.195 86 / 0.030), transparent 50%);
+  background-attachment: scroll;
 }
 
-::selection {
-  background: oklch(0.55 0.18 270 / 0.5);
+@media (min-width: 1024px) {
+  body {
+    background-attachment: fixed;
+  }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Selection                                                                   */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+::selection {
+  background: oklch(81% 0.195 86 / 0.38);
+  color: oklch(5.5% 0.009 265);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Display typography utility                                                  */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 0.93;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Accessibility                                                                */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/* Skip-to-main link for keyboard navigation */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 999;
+  padding: 0.5rem 1.25rem;
+  background: var(--color-indigo-700);
+  color: var(--color-indigo-950); /* near-midnight black — max contrast on gold */
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-decoration: none;
+}
+.skip-to-main:focus {
+  left: 0.75rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Reduced motion                                                               */
+/* ─────────────────────────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -157,57 +261,205 @@ body {
   }
 }
 
-/* Skip-to-main link for keyboard navigation */
-.skip-to-main {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 999;
-  padding: 0.5rem 1rem;
-  background: var(--color-indigo-700);
-  color: var(--color-white);
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 0 0 0.375rem 0.375rem;
-}
-.skip-to-main:focus {
-  left: 0.5rem;
-}
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Skeleton pulse                                                               */
+/* ─────────────────────────────────────────────────────────────────────────── */
 
-/* Skeleton pulse animation for loading states */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.35; }
 }
 
 .skeleton {
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
   background-color: var(--color-slate-200);
   border-radius: 0.25rem;
 }
 
-/* Smooth page transition */
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Page content entrance                                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
 main > * {
-  animation: fade-in 0.18s ease-out;
+  animation: fade-in 0.22s ease-out both;
 }
 
-/* Scrollbar styling for sidebar */
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Thin scrollbars                                                              */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: var(--color-slate-300) transparent;
 }
-.overflow-y-auto::-webkit-scrollbar {
-  width: 4px;
-}
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
-}
+.overflow-y-auto::-webkit-scrollbar { width: 4px; }
+.overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background-color: var(--color-slate-300);
   border-radius: 2px;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Score meter gradient fill — gold                                            */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-score-fill {
+  background: linear-gradient(
+    to right,
+    oklch(68% 0.190 86),   /* strong gold */
+    oklch(81% 0.195 86)    /* vivid gold  */
+  );
+  transition: width 0.4s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Panel accent bar — gold left border on data panels                          */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-panel {
+  border-left: 3px solid var(--color-indigo-500);
+}
+
+.nx-panel-success {
+  border-left: 3px solid var(--color-emerald-500);
+}
+
+.nx-panel-warning {
+  border-left: 3px solid var(--color-amber-500);
+}
+
+.nx-panel-danger {
+  border-left: 3px solid var(--color-red-500);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Monospace numerals for scores                                                */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  /* No font-family override — using system tabular nums to avoid width inflation */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Landing page — gold gradient text                                           */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-gradient-text {
+  background: linear-gradient(
+    135deg,
+    oklch(81% 0.195 86),   /* vibrant gold   */
+    oklch(90% 0.140 86)    /* lighter gold   */
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Landing page — section reveal animations                                    */
+/* Applied only on the unauthenticated landing page.                           */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes landing-reveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.landing-reveal {
+  animation: landing-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.landing-reveal-delay-1 { animation-delay: 0.10s; }
+.landing-reveal-delay-2 { animation-delay: 0.20s; }
+.landing-reveal-delay-3 { animation-delay: 0.32s; }
+.landing-reveal-delay-4 { animation-delay: 0.44s; }
+.landing-reveal-delay-5 { animation-delay: 0.56s; }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Landing page — gold shimmer on the CTA button                               */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(250%) skewX(-12deg); }
+}
+
+.nx-cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.nx-cta-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(100% 0 0 / 0.25) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-12deg);
+  animation: shimmer 2.4s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-cta-shimmer::after { animation: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Product viz — animated constellation                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes orbit-slow {
+  from { transform: rotate(0deg) translateX(var(--orbit-r, 60px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--orbit-r, 60px)) rotate(-360deg); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(81% 0.195 86 / 0.35); }
+  50%       { box-shadow: 0 0 0 8px oklch(81% 0.195 86 / 0); }
+}
+
+@keyframes line-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.nx-node-pulse {
+  animation: pulse-gold 2.4s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Chat typing indicator                                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30%           { opacity: 1;   transform: translateY(-3px); }
+}
+
+.nx-typing-dot {
+  animation: typing-dot 1.4s ease-in-out infinite;
+}
+.nx-typing-dot:nth-child(2) { animation-delay: 0.16s; }
+.nx-typing-dot:nth-child(3) { animation-delay: 0.32s; }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Legacy compat — landing-section class used in old AuthGate                  */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.landing-section {
+  animation: landing-reveal 0.5s ease-out both;
+}
+.landing-section:nth-child(2) { animation-delay: 0.1s; }
+.landing-section:nth-child(3) { animation-delay: 0.2s; }
+.landing-section:nth-child(4) { animation-delay: 0.3s; }

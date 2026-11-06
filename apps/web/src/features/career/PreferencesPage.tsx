@@ -48,7 +48,7 @@ function PreferencesForm({ profile }: { profile: CareerProfileResponse }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5 rounded-lg border border-slate-200 bg-white p-4">
+    <form onSubmit={submit} className="space-y-5 rounded-xl border border-slate-200 bg-white px-5 py-5">
       <fieldset>
         <legend className="font-medium text-slate-900">Career directions (optional)</legend>
         <p className="text-sm text-slate-600">A direction guides recommendations and your skill plan. It is a preference, never a filter or a label.</p>
@@ -136,7 +136,7 @@ export function PreferencesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Career preferences</h1>
+      <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Career preferences</h1>
       {state.status === "loading" ? <LoadingState label="Loading your preferences..." /> : null}
       {state.status === "error" ? <ErrorState error={state.error} onRetry={reload} /> : null}
       {state.status === "success" ? <PreferencesForm profile={state.data} /> : null}

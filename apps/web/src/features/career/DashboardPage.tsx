@@ -7,18 +7,23 @@ import { GapList, ProgressSummary } from "./DevelopmentPage";
 import { RefreshPanel } from "./RefreshPanel";
 import { JobCard } from "./jobParts";
 
-function StatusPill({ ok, label }: { ok: boolean; label: string }) {
+function StatusDot({ ok }: { ok: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${ok ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-slate-300 bg-slate-100 text-slate-600"}`}>
-      {ok ? "✓" : "–"} {label}
-    </span>
+    <span
+      aria-hidden="true"
+      className={`inline-block h-2 w-2 shrink-0 rounded-full ${ok ? "bg-emerald-500" : "bg-slate-400"}`}
+    />
   );
 }
 
 function ProfileSection({ data }: { data: CareerProfileResponse }) {
   const direction = data.learning.direction ?? data.preferences.directions[0] ?? null;
   const directionName = data.directions.find((o) => o.id === direction)?.displayName;
-  const prefsSet = data.preferences.employmentTypes.length + data.preferences.workModes.length + data.preferences.locations.length > 0;
+  const prefsSet =
+    data.preferences.employmentTypes.length +
+      data.preferences.workModes.length +
+      data.preferences.locations.length >
+    0;
 
   const rows = [
     {
@@ -33,14 +38,16 @@ function ProfileSection({ data }: { data: CareerProfileResponse }) {
     {
       label: "Resume",
       ok: data.evidence.hasResume,
-      detail: data.resume ? `version ${data.resume.version}, saved ${new Date(data.resume.savedAt).toLocaleDateString()}` : "Resume: none yet",
+      detail: data.resume
+        ? `v${data.resume.version} · saved ${new Date(data.resume.savedAt).toLocaleDateString()}`
+        : "none yet",
       link: "/resume",
       linkLabel: data.resume ? "Manage" : "Add resume",
     },
     {
       label: "Career direction",
       ok: !!directionName,
-      detail: directionName ?? "not chosen (optional)",
+      detail: directionName ?? "Not chosen (optional)",
       link: "/development",
       linkLabel: directionName ? "Change" : "Choose",
     },
@@ -54,18 +61,20 @@ function ProfileSection({ data }: { data: CareerProfileResponse }) {
   ];
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <h2 className="mb-3 text-sm font-semibold text-slate-900">Profile status</h2>
+    <div className="rounded-xl border border-slate-200 bg-white">
+      <div className="border-b border-slate-200 px-4 py-3">
+        <h2 className="text-sm font-semibold text-slate-900">Profile status</h2>
+      </div>
       <ul className="divide-y divide-slate-100">
         {rows.map((row) => (
-          <li key={row.label} className="flex items-center justify-between gap-3 py-2.5">
-            <div className="min-w-0">
-              <StatusPill ok={row.ok} label={row.label} />
-              <p className="mt-0.5 truncate text-xs text-slate-500">{row.detail}</p>
+          <li key={row.label} className="flex items-center justify-between gap-3 px-4 py-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <StatusDot ok={row.ok} />
+              <p className="truncate text-sm text-slate-700">{`${row.label}: ${row.detail}`}</p>
             </div>
             <Link
               to={row.link}
-              className="shrink-0 rounded px-2 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+              className="shrink-0 rounded-md px-2 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 transition-colors"
             >
               {row.linkLabel}
             </Link>
@@ -78,10 +87,30 @@ function ProfileSection({ data }: { data: CareerProfileResponse }) {
 
 function QuickActions() {
   const actions = [
-    { to: "/opportunities", label: "Search opportunities", desc: "Browse jobs matched to your evidence" },
-    { to: "/copilot", label: "Ask Copilot", desc: "Get personalized career guidance" },
-    { to: "/applications", label: "My applications", desc: "Track your job applications" },
-    { to: "/repositories", label: "Manage repositories", desc: "Choose repos for analysis" },
+    {
+      to: "/opportunities",
+      label: "Search opportunities",
+      desc: "Browse jobs matched to your evidence",
+      primary: true,
+    },
+    {
+      to: "/copilot",
+      label: "Ask Copilot",
+      desc: "Get personalized career guidance",
+      primary: false,
+    },
+    {
+      to: "/applications",
+      label: "My applications",
+      desc: "Track your job applications",
+      primary: false,
+    },
+    {
+      to: "/repositories",
+      label: "Manage repositories",
+      desc: "Choose repos for analysis",
+      primary: false,
+    },
   ];
 
   return (
@@ -90,10 +119,18 @@ function QuickActions() {
         <Link
           key={action.to}
           to={action.to}
-          className="group rounded-xl border border-slate-200 bg-white p-3.5 transition-shadow hover:border-indigo-200 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+          className={[
+            "group flex flex-col rounded-xl border p-3.5 transition-all",
+            "hover:border-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700",
+            action.primary
+              ? "border-indigo-200 bg-indigo-50 text-indigo-900"
+              : "border-slate-200 bg-white text-slate-800 hover:bg-slate-100",
+          ].join(" ")}
         >
-          <p className="text-sm font-medium text-slate-900 group-hover:text-indigo-700">{action.label}</p>
-          <p className="mt-0.5 text-xs text-slate-500">{action.desc}</p>
+          <p className="text-sm font-semibold">{action.label}</p>
+          <p className={`mt-0.5 text-xs ${action.primary ? "text-indigo-700 opacity-80" : "text-slate-500"}`}>
+            {action.desc}
+          </p>
         </Link>
       ))}
     </div>
@@ -119,13 +156,15 @@ export function DashboardPage() {
   if (profile.state.status === "error") return <ErrorState error={profile.state.error} onRetry={profile.reload} />;
 
   const data = profile.state.data;
-  const directionName = data.directions.find((o) => o.id === direction)?.displayName;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
+      {/* Page header */}
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Dashboard</h1>
-        <p className="mt-0.5 text-sm text-slate-500">Your evidence, opportunities, and next steps.</p>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Dashboard</h1>
+        <p className="mt-0.5 text-sm text-slate-500">
+          Your evidence, opportunities, and next steps.
+        </p>
       </div>
 
       {/* Evidence refresh + profile status */}
@@ -142,7 +181,12 @@ export function DashboardPage() {
       <section aria-label="Recommended opportunities">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-semibold text-slate-900">Recommended opportunities</h2>
-          <Link to="/opportunities" className="text-sm font-medium text-indigo-700 hover:underline">See all</Link>
+          <Link
+            to="/opportunities"
+            className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+          >
+            See all
+          </Link>
         </div>
         {jobs.state.status === "loading" ? (
           <div className="grid gap-3 md:grid-cols-2">
@@ -153,12 +197,13 @@ export function DashboardPage() {
         ) : jobs.state.status === "success" ? (
           jobs.state.data.noProviderConfigured ? (
             <EmptyState title="No live job provider configured">
-              Real listings need a provider key on the server. You can{" "}
-              <Link to="/opportunities?source=demo" className="underline">explore demo listings</Link>.
+              Real listings need a provider key on the server.{" "}
+              <Link to="/opportunities?source=demo" className="underline text-indigo-700">Explore demo listings</Link>.
             </EmptyState>
           ) : jobs.state.data.items.length === 0 ? (
             <EmptyState title="No opportunities found">
-              Try different filters on the <Link to="/opportunities" className="underline">Opportunities</Link> page.
+              Try different filters on the{" "}
+              <Link to="/opportunities" className="underline text-indigo-700">Opportunities</Link> page.
             </EmptyState>
           ) : (
             <ul className="grid gap-3 md:grid-cols-2">
@@ -174,12 +219,19 @@ export function DashboardPage() {
       <section aria-label="Skill gaps and learning progress">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-semibold text-slate-900">Skill plan</h2>
-          <Link to="/development" className="text-sm font-medium text-indigo-700 hover:underline">Open plan</Link>
+          <Link
+            to="/development"
+            className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+          >
+            Open plan
+          </Link>
         </div>
         {!direction ? (
           <EmptyState title="No career direction chosen">
-            Choose one on the <Link to="/development" className="underline">Development</Link> page for a prioritized plan, or ask the{" "}
-            <Link to="/copilot" className="underline">Copilot</Link>.
+            Choose one on the{" "}
+            <Link to="/development" className="underline text-indigo-700">Development</Link> page for a
+            prioritized plan, or ask the{" "}
+            <Link to="/copilot" className="underline text-indigo-700">Copilot</Link>.
           </EmptyState>
         ) : plan.state.status === "loading" ? (
           <LoadingState label="Building your plan..." />
@@ -187,8 +239,11 @@ export function DashboardPage() {
           <ErrorState error={plan.state.error} onRetry={plan.reload} />
         ) : plan.state.data ? (
           <div className="space-y-3">
-            <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3">
-              <p className="text-sm text-indigo-900"><strong>Next action:</strong> {plan.state.data.nextAction}</p>
+            <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 nx-panel">
+              <p className="text-sm text-indigo-900">
+                <span className="font-semibold">Next action: </span>
+                {plan.state.data.nextAction}
+              </p>
             </div>
             <ProgressSummary analysis={plan.state.data} />
             <GapList analysis={{ ...plan.state.data, gaps: plan.state.data.gaps.slice(0, 3) }} />

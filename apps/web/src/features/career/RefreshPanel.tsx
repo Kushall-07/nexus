@@ -36,11 +36,18 @@ export function RefreshPanel({ evidence, refresh, onDone }: Props) {
   const stale = (result ? result.profileIsStale : refresh.status === "failed") && evidence.hasGithubAnalysis;
 
   return (
-    <section aria-label="GitHub profile status" className="rounded-xl border border-slate-200 bg-white p-4">
+    <section aria-label="GitHub profile status" className="rounded-xl border border-slate-200 bg-white px-5 py-4">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-slate-900">GitHub evidence</h2>
-        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${evidence.hasGithubAnalysis ? "border-emerald-300 bg-emerald-50 text-emerald-800" : "border-slate-300 bg-slate-100 text-slate-600"}`}>
-          {evidence.hasGithubAnalysis ? "✓ Analyzed" : "– Not analyzed"}
+        <span
+          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+            evidence.hasGithubAnalysis
+              ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+              : "border-slate-300 bg-slate-100 text-slate-600"
+          }`}
+        >
+          <span aria-hidden="true">{evidence.hasGithubAnalysis ? "✓ " : "– "}</span>
+          {evidence.hasGithubAnalysis ? "Analyzed" : "Not analyzed"}
         </span>
       </div>
 
@@ -60,21 +67,30 @@ export function RefreshPanel({ evidence, refresh, onDone }: Props) {
       {result ? (
         <p
           role={result.status === "failed" ? "alert" : "status"}
-          className={`mt-2 rounded-lg border px-3 py-2 text-xs ${result.status === "failed" ? "border-red-200 bg-red-50 text-red-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}
+          className={`mt-2 rounded-lg border px-3 py-2 text-xs ${
+            result.status === "failed"
+              ? "border-red-200 bg-red-50 text-red-800"
+              : "border-emerald-200 bg-emerald-50 text-emerald-800"
+          }`}
         >
           {result.message}
         </p>
       ) : null}
 
       {error ? (
-        <p role="alert" className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">{describeError(error)}</p>
+        <p role="alert" className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
+          {describeError(error)}
+        </p>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button type="button" className={buttonClass} disabled={busy} onClick={run}>
           {busy ? (
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-indigo-600" aria-hidden="true" />
+              <span
+                className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-indigo-700"
+                aria-hidden="true"
+              />
               Refreshing…
             </span>
           ) : (
