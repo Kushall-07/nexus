@@ -4,13 +4,32 @@ import { AppError, AuthErrorCode } from "../utils/errors.js";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
-// This API only serves JSON, so these headers cannot break the SPA, OAuth
-// redirects or the Vite dev proxy.
+// Sets defensive security headers on every API response.
+//
+// CSP note: this server delivers JSON and redirects only — no HTML that would
+// execute scripts.  default-src 'none' blocks all content loading; frame-ancestors
+// 'none' prevents clickjacking of any API response the browser may briefly render
+// (e.g. the OAuth callback redirect page).
+// The frontend SPA requires its own CSP configured at the static-hosting/CDN layer
+// where index.html is served, not here.
+//
+// HSTS note: only sent in production where env validation already requires HTTPS.
+// Local HTTP development is unaffected.  No includeSubDomains or preload until the
+// deployment domain topology is confirmed.
 export function securityHeaders(_req: Request, res: Response, next: NextFunction): void {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "no-referrer");
   res.setHeader("Cache-Control", "no-store");
   res.removeHeader("X-Powered-By");
+
+  // Clickjacking protection + restrictive fetch policy for JSON-only API responses.
+  res.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'");
+
+  // Protocol-downgrade prevention — HTTPS only in production.
+  if (env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000");
+  }
+
   next();
 }
 

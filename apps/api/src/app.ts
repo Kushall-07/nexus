@@ -9,6 +9,7 @@ import rolesRouter from "./routes/roles.routes.js";
 import gapAnalysisRouter from "./routes/gap-analysis.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { requestLogger } from "./middleware/request-logger.js";
+import { rateLimitPerIp } from "./middleware/rate-limit.js";
 import mongoose from "mongoose";
 import { requireTrustedOrigin, securityHeaders } from "./middleware/browser-security.js";
 import { env } from "./config/env.js";
@@ -16,6 +17,10 @@ import { careerRouter, copilotRouter, opportunitiesRouter, resumeRouter, savedJo
 
 const app = express();
 
+// Number of trusted proxy hops: 0 = socket address (default), 1 = single proxy.
+// Controls how Express resolves req.ip from X-Forwarded-For headers.
+// Set TRUST_PROXY to match your deployment topology to prevent IP spoofing.
+app.set("trust proxy", env.TRUST_PROXY);
 app.disable("x-powered-by");
 app.use(requestLogger);
 app.use(securityHeaders);
@@ -27,6 +32,12 @@ app.use(requireTrustedOrigin);
 app.use("/api/resume", express.json({ limit: "128kb" }));
 // Every other JSON body in this API is a few dozen bytes; 16kb is generous.
 app.use(express.json({ limit: "16kb" }));
+
+// Global IP backstop for all /api/* routes: 500 req per 15 min per IP.
+// Applies to both authenticated and unauthenticated endpoints. In-process only;
+// each API instance enforces its own limit independently (single-instance private beta).
+// Authenticated routes also carry tighter per-user limits (see individual routers).
+app.use("/api", rateLimitPerIp({ windowMs: 15 * 60_000, max: 500 }));
 
 // Liveness: the process is up. Says nothing about dependencies.
 app.get("/health", (_req, res) => {

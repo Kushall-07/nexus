@@ -59,6 +59,12 @@ const baseEnvSchema = z.object({
   JOB_CACHE_TTL_SECONDS: z.coerce.number().int().min(0).max(86_400).default(3600),
   JOB_PROVIDER_TIMEOUT_MS: z.coerce.number().int().min(1000).max(30_000).default(8000),
   RESUME_MAX_BYTES: z.coerce.number().int().min(10_000).max(10_000_000).default(5_000_000),
+
+  // Number of trusted reverse-proxy hops in front of the API server.
+  // 0 = no proxy; req.ip = socket address (safe default).
+  // 1 = single hop (e.g. nginx, a PaaS load-balancer).
+  // Must match your actual deployment topology to prevent IP-header spoofing.
+  TRUST_PROXY: z.coerce.number().int().min(0).default(0),
 });
 
 // Cross-field rules. Messages name the setting, never its value.
@@ -112,4 +118,5 @@ export const env = envSchema.parse({
   JOB_CACHE_TTL_SECONDS: process.env.JOB_CACHE_TTL_SECONDS,
   JOB_PROVIDER_TIMEOUT_MS: process.env.JOB_PROVIDER_TIMEOUT_MS,
   RESUME_MAX_BYTES: process.env.RESUME_MAX_BYTES,
+  TRUST_PROXY: process.env.TRUST_PROXY,
 });

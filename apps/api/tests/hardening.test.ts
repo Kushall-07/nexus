@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import app from "../src/app.js";
 import { env } from "../src/config/env.js";
 import { errorHandler } from "../src/middleware/error-handler.js";
-import { rateLimitPerUser } from "../src/middleware/rate-limit.js";
+import { rateLimitPerIp, rateLimitPerUser } from "../src/middleware/rate-limit.js";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -41,6 +41,38 @@ describe("browser-facing security", () => {
     expect(response.headers["cache-control"]).toBe("no-store");
     expect(response.headers["referrer-policy"]).toBe("no-referrer");
     expect(response.headers["x-powered-by"]).toBeUndefined();
+  });
+
+  it("sets Content-Security-Policy with default-src none and frame-ancestors none", async () => {
+    const response = await request(app).get("/health");
+    const csp = response.headers["content-security-policy"] as string;
+
+    expect(csp).toBeDefined();
+    expect(csp).toContain("default-src 'none'");
+    expect(csp).toContain("frame-ancestors 'none'");
+  });
+
+  it("omits Strict-Transport-Security in test/development (NODE_ENV=test)", async () => {
+    // HSTS must not be sent over non-HTTPS local dev connections.
+    const response = await request(app).get("/health");
+    expect(response.headers["strict-transport-security"]).toBeUndefined();
+  });
+
+  it("sets Strict-Transport-Security with one-year max-age in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("FRONTEND_URL", "https://app.example.com");
+    vi.stubEnv("BACKEND_URL", "https://api.example.com");
+    vi.resetModules();
+
+    // Re-import the middleware with the production env.
+    const { securityHeaders: prodHeaders } = await import("../src/middleware/browser-security.js");
+
+    const testApp = express();
+    testApp.use(prodHeaders);
+    testApp.get("/t", (_req, res) => res.json({ ok: true }));
+
+    const response = await request(testApp).get("/t");
+    expect(response.headers["strict-transport-security"]).toBe("max-age=31536000");
   });
 
   it("rejects state-changing requests from a foreign Origin before auth runs", async () => {
@@ -138,6 +170,89 @@ describe("per-user rate limiting", () => {
     vi.spyOn(Date, "now").mockReturnValue(now + 61_000);
 
     expect((await request(limited).get("/x").set("x-user", "a")).status).toBe(200);
+  });
+});
+
+describe("per-IP rate limiting", () => {
+  // Create a test app with trust proxy enabled so X-Forwarded-For can be used
+  // to simulate distinct client IPs without needing real network connections.
+  function ipLimitedApp() {
+    const limited = express();
+    limited.set("trust proxy", 1);
+    limited.use(rateLimitPerIp({ windowMs: 60_000, max: 2 }));
+    limited.get("/x", (_req, res) => res.json({ success: true, data: {} }));
+    limited.use(errorHandler);
+    return limited;
+  }
+
+  it("allows requests up to the limit then returns 429 with Retry-After", async () => {
+    const limited = ipLimitedApp();
+
+    expect((await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.1")).status).toBe(200);
+    expect((await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.1")).status).toBe(200);
+
+    const blocked = await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.1");
+
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.error.code).toBe("RATE_LIMITED");
+    expect(Number(blocked.headers["retry-after"])).toBeGreaterThan(0);
+  });
+
+  it("keys on the IP so one client cannot exhaust another's allowance", async () => {
+    const limited = ipLimitedApp();
+
+    // Exhaust 10.0.0.2
+    for (let i = 0; i < 3; i++) await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.2");
+
+    // 10.0.0.3 is still within its own limit
+    expect((await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.3")).status).toBe(200);
+  });
+
+  it("resets after the window using a time mock", async () => {
+    const limited = ipLimitedApp();
+    const now = Date.now();
+
+    for (let i = 0; i < 3; i++) await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.4");
+    vi.spyOn(Date, "now").mockReturnValue(now + 61_000);
+
+    expect((await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.4")).status).toBe(200);
+  });
+
+  it("returns a safe 429 JSON body consistent with application error conventions", async () => {
+    const limited = ipLimitedApp();
+
+    for (let i = 0; i < 3; i++) await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.5");
+
+    const blocked = await request(limited).get("/x").set("X-Forwarded-For", "10.0.0.5");
+
+    expect(blocked.body).toMatchObject({
+      success: false,
+      error: { code: "RATE_LIMITED", message: expect.any(String) },
+    });
+  });
+
+  it("with TRUST_PROXY=0 a spoofed X-Forwarded-For header does not reset the rate-limiter key", async () => {
+    // With trust proxy disabled (default), Express derives req.ip from the
+    // socket address only — the X-Forwarded-For header is ignored entirely.
+    // All supertest requests originate from the same loopback socket address,
+    // so the first two requests exhaust the limit for that socket IP, and a
+    // third request spoofing a different IP is still blocked.
+    const limited = express();
+    limited.set("trust proxy", 0);
+    limited.use(rateLimitPerIp({ windowMs: 60_000, max: 2 }));
+    limited.get("/x", (_req, res) => res.json({ success: true, data: {} }));
+    limited.use(errorHandler);
+
+    // Exhaust the limit using the actual socket IP (no X-Forwarded-For header).
+    expect((await request(limited).get("/x")).status).toBe(200);
+    expect((await request(limited).get("/x")).status).toBe(200);
+
+    // A third request with a spoofed header claiming a fresh IP is still blocked
+    // because trust proxy=0 means Express ignores X-Forwarded-For and continues
+    // to use the socket address, which is already over the limit.
+    const spoofed = await request(limited).get("/x").set("X-Forwarded-For", "1.2.3.4");
+    expect(spoofed.status).toBe(429);
+    expect(spoofed.body.error.code).toBe("RATE_LIMITED");
   });
 });
 

@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Minimal permissions: read repository contents, no write access.
+permissions:
+  contents: read
+
+jobs:
+  # -------------------------------------------------------------------------
+  # TypeScript — verify all three packages compile cleanly.
+  # The API tsconfig uses customConditions: ["source"] so @nexus/domain resolves
+  # to its TypeScript source directly; domain does not need to be built first.
+  # -------------------------------------------------------------------------
+  typecheck:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck domain
+        run: npm run typecheck --workspace=packages/domain
+
+      - name: Typecheck API
+        run: npm run typecheck --workspace=apps/api
+
+      - name: Typecheck web
+        run: npm run typecheck --workspace=apps/web
+
+  # -------------------------------------------------------------------------
+  # Unit tests — all three packages.
+  # API and domain tests use vitest with resolve.conditions: ["source"] so
+  # @nexus/domain resolves to source — no domain build required here either.
+  # tests/setup-env.ts pre-populates every required process.env value before
+  # any test module loads, so no real .env or external services are needed.
+  # E2E (Playwright) tests and integration tests are excluded from these suites.
+  # -------------------------------------------------------------------------
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Domain unit tests
+        run: npm run test --workspace=packages/domain
+
+      - name: API unit tests
+        run: npm run test --workspace=apps/api
+
+      - name: Web unit tests
+        run: npm run test --workspace=apps/web
+
+  # -------------------------------------------------------------------------
+  # Production build — only runs after typecheck and test pass.
+  # Domain must be built first so apps/api and apps/web can resolve its
+  # compiled output (tsconfig.build.json sets customConditions: [] — no source
+  # condition at build time).
+  # The web build embeds VITE_API_BASE_URL at build time; it is intentionally
+  # not set here, defaulting to empty string (Vite proxy / same-origin mode).
+  # Set it in your deployment pipeline for production releases.
+  # -------------------------------------------------------------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [typecheck, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build domain
+        run: npm run build --workspace=packages/domain
+
+      - name: Build API
+        run: npm run build --workspace=apps/api
+
+      - name: Build web
+        run: npm run build --workspace=apps/web
