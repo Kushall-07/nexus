@@ -9,3 +9,9 @@ coverage/
 
 .DS_Store
 .vscode/
+
+# Generated TypeScript build cache
+/apps/web/tsconfig.tsbuildinfo
+# Playwright generated output
+/apps/web/test-results/
+/apps/web/e2e/results.json
