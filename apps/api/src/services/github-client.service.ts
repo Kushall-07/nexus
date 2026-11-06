@@ -36,9 +36,12 @@ function mapErrorResponse(response: Response): AppError {
   const rateLimit = extractRateLimitInfo(response);
 
   if (response.status === 401) {
+    // HTTP 400, not 401: the NEXUS session is valid; the GitHub credential is stale.
+    // Returning 401 here would cause the frontend's global onUnauthorized handler to
+    // clear the NEXUS session and force a re-login, which is incorrect.
     return new AppError(
       AuthErrorCode.GITHUB_TOKEN_EXPIRED,
-      401,
+      400,
       "GitHub access token is invalid or expired.",
     );
   }

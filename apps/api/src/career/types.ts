@@ -23,7 +23,7 @@ export type ExperienceLevel = (typeof EXPERIENCE_LEVELS)[number];
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
-export type JobProviderId = "demo" | "remotive" | "adzuna" | "jsearch";
+export type JobProviderId = "demo" | "remotive" | "adzuna" | "jsearch" | "arbeitnow" | "himalayas";
 
 // Normalized listing. Every field a source may omit is optional: nothing is
 // fabricated when a provider does not supply it.
@@ -39,7 +39,7 @@ export interface NormalizedJob {
   workMode?: WorkMode;
   employmentType?: EmploymentType;
   experienceLevel?: ExperienceLevel;
-  salary?: { min?: number; max?: number; currency?: string; period?: "year" | "month" | "hour" };
+  salary?: { min?: number; max?: number; currency?: string; period?: "year" | "month" | "hour" | "week" | "day" };
   requiredSkills: string[]; // canonical skill ids or lowercase free text
   preferredSkills: string[];
   qualifications: string[];

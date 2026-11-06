@@ -35,6 +35,7 @@ export interface JobProvider {
 export interface ProviderDeps {
   fetchImpl?: typeof fetch;
   timeoutMs: number;
+  maxBodyBytes?: number;
 }
 
 const MAX_BODY_BYTES = 2_000_000;
@@ -68,7 +69,7 @@ export async function fetchJson(
 
   try {
     const text = await response.text();
-    if (text.length > MAX_BODY_BYTES) throw new Error("oversized");
+    if (text.length > (deps.maxBodyBytes ?? MAX_BODY_BYTES)) throw new Error("oversized");
     return JSON.parse(text) as unknown;
   } catch {
     throw new ProviderError("bad_response", "The job provider returned an unreadable response.");

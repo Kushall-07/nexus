@@ -184,7 +184,7 @@ describe("GET /api/github/repos", () => {
       .get("/api/github/repos")
       .set("Cookie", `${SESSION_COOKIE_NAME}=${SESSION_TOKEN}`);
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
     expect(response.body.error.code).toBe("GITHUB_TOKEN_EXPIRED");
     expect(bulkWriteMock).not.toHaveBeenCalled();
   });

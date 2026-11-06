@@ -1,6 +1,6 @@
 import { env } from "../../config/env.js";
 import type { JobSearchQuery, NormalizedJob } from "../types.js";
-import { createAdzunaProvider, createJSearchProvider, createRemotiveProvider } from "./adapters.js";
+import { createAdzunaProvider, createArbeitnowProvider, createHimalayasProvider, createJSearchProvider, createRemotiveProvider } from "./adapters.js";
 import { createDemoProvider } from "./demo-provider.js";
 import { ProviderError, type JobProvider, type ProviderStatus } from "./provider.js";
 import { dedupeKey } from "./text.js";
@@ -163,6 +163,8 @@ export function getJobService(): JobService {
     defaultService = createJobService({
       liveProviders: [
         createRemotiveProvider({ ...deps, enabled: env.REMOTIVE_ENABLED }),
+        createArbeitnowProvider({ ...deps, enabled: env.ARBEITNOW_ENABLED }),
+        createHimalayasProvider({ ...deps, enabled: env.HIMALAYAS_ENABLED }),
         createAdzunaProvider({ ...deps, appId: env.ADZUNA_APP_ID, appKey: env.ADZUNA_APP_KEY, country: env.ADZUNA_COUNTRY }),
         createJSearchProvider({ ...deps, apiKey: env.JSEARCH_API_KEY }),
       ],

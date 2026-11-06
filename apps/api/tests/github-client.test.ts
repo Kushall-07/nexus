@@ -48,7 +48,7 @@ describe("githubRequest", () => {
 
     await expect(githubRequest(FAKE_TOKEN, "/user")).rejects.toMatchObject({
       code: "GITHUB_TOKEN_EXPIRED",
-      status: 401,
+      status: 400,
     });
   });
 

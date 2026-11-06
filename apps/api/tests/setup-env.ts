@@ -18,6 +18,8 @@ const testEnv: Record<string, string> = {
   ADZUNA_APP_ID: "",
   ADZUNA_APP_KEY: "",
   REMOTIVE_ENABLED: "",
+  ARBEITNOW_ENABLED: "",
+  HIMALAYAS_ENABLED: "",
 };
 
 for (const [key, value] of Object.entries(testEnv)) {

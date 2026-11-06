@@ -215,6 +215,77 @@ describe("saved jobs and application tracking", () => {
   });
 });
 
+describe("saved jobs — Himalayas provider (slash in job ID)", () => {
+  const HIMALAYAS_ID = "himalayas:acme-remote/senior-backend-engineer-456";
+  const ENCODED_ID = encodeURIComponent(HIMALAYAS_ID);
+
+  beforeEach(async () => {
+    // Inject a Himalayas job into the in-memory index by running a search against
+    // a one-job mock provider, then reset to the standard service for HTTP tests.
+    const { createJobService, resetJobService } = await import("../../src/career/jobs/job-service.js");
+    const { buildJob } = await import("../../src/career/jobs/adapters.js");
+    resetJobService(
+      createJobService({
+        liveProviders: [
+          {
+            id: "himalayas",
+            label: "Himalayas",
+            status: () => ({ id: "himalayas", label: "Himalayas", configured: true }),
+            search: async () =>
+              [
+                buildJob(
+                  {
+                    provider: "himalayas",
+                    providerJobId: "acme-remote/senior-backend-engineer-456",
+                    title: "Senior Backend Engineer",
+                    url: "https://himalayas.app/companies/acme-remote/jobs/senior-backend-engineer-456",
+                    sourceName: "Himalayas",
+                    descriptionHtml: "Node.js and TypeScript.",
+                  },
+                  new Date(),
+                ),
+              ].filter((j): j is NonNullable<typeof j> => j !== null),
+          },
+        ],
+        cacheTtlMs: 0,
+      }),
+    );
+    await a.get("/api/opportunities"); // populates the in-memory index
+  });
+
+  it("saves a Himalayas job whose ID contains a slash", async () => {
+    const response = await a.put(`/api/saved-jobs/${ENCODED_ID}`).send({ status: "saved" });
+    expect(response.status).toBe(201);
+    expect(response.body.data.jobId).toBe(HIMALAYAS_ID);
+    expect(response.body.data.job.url).toBe("https://himalayas.app/companies/acme-remote/jobs/senior-backend-engineer-456");
+  });
+
+  it("unsaves a previously saved Himalayas job", async () => {
+    await a.put(`/api/saved-jobs/${ENCODED_ID}`).send({ status: "saved" });
+    const del = await a.delete(`/api/saved-jobs/${ENCODED_ID}`);
+    expect(del.status).toBe(200);
+    expect(del.body.data.deleted).toBe(true);
+  });
+
+  it("dismisses a Himalayas job", async () => {
+    const response = await a.put(`/api/saved-jobs/${ENCODED_ID}`).send({ dismissed: true });
+    expect(response.status).toBe(201);
+    expect(response.body.data.dismissed).toBe(true);
+  });
+
+  it("retrieves a match explanation for a Himalayas job", async () => {
+    const response = await a.get(`/api/opportunities/${ENCODED_ID}/match`);
+    expect(response.status).toBe(200);
+    expect(response.body.data.match.jobId).toBe(HIMALAYAS_ID);
+  });
+
+  it("rejects malformed job IDs with 400", async () => {
+    expect((await a.put("/api/saved-jobs/himalayas:").send({ status: "saved" })).status).toBe(400);
+    expect((await a.put("/api/saved-jobs/HIMALAYAS:company%2Fjob").send({ status: "saved" })).status).toBe(400);
+    expect((await a.put("/api/saved-jobs/himalayas:" + "x".repeat(260)).send({ status: "saved" })).status).toBe(400);
+  });
+});
+
 describe("career profile, preferences and learning progress", () => {
   it("persists preferences per user and validates them", async () => {
     const put = await a.put("/api/career/preferences").send({ directions: ["backend-engineer"], workModes: ["remote"], experienceLevel: "entry", isStudent: true });

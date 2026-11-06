@@ -33,7 +33,7 @@ function requireUser(req: Request) {
 const invalid = () => new AppError(AuthErrorCode.VALIDATION_ERROR, 400, "Invalid request.");
 const ok = (res: Response, data: unknown, status = 200) => res.status(status).json({ success: true, data });
 
-const jobIdSchema = z.string().min(3).max(300).regex(/^[a-z]+:[A-Za-z0-9_.:\-]{1,250}$/);
+const jobIdSchema = z.string().min(3).max(300).regex(/^[a-z]+:[A-Za-z0-9_./:\-]{1,250}$/);
 const skillIdSchema = z.string().regex(/^[a-z0-9-]{1,64}$/);
 
 function parse<T>(schema: z.ZodType<T>, value: unknown): T {

@@ -231,3 +231,4 @@ export async function handleCopilotMessage(
         suggestions: SUGGESTED_PROMPTS,
       });
   }
+}
