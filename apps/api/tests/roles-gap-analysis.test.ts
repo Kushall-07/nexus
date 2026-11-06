@@ -31,6 +31,14 @@ vi.mock("../src/models/gap-analysis.model.js", () => ({
     findOne: (filter: { _id: string; userId: string }) => ({
       lean: async () => gapStore.find((row) => row._id === filter._id && row.userId === filter.userId) ?? null,
     }),
+    // Keep only the newest document per (userId, roleId) — mirrors the real lifecycle.
+    deleteMany: async (filter: { userId: string; roleId: string; _id: { $ne: string } }) => {
+      const before = gapStore.length;
+      gapStore = gapStore.filter(
+        (row) => !(row.userId === filter.userId && row.roleId === filter.roleId && row._id !== filter._id.$ne),
+      );
+      return { deletedCount: before - gapStore.length };
+    },
   },
 }));
 

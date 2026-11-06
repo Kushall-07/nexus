@@ -157,6 +157,8 @@ export async function runGapAnalysis(userId: string, roleId: string): Promise<Ga
     throw error;
   }
 
+  // Keep exactly one gap analysis per (user, role). Create the new document
+  // first so that if the write fails the user retains their previous result.
   const stored = await GapAnalysisModel.create({
     userId,
     analysisId: latest.summary.analysisId,
@@ -166,6 +168,8 @@ export async function runGapAnalysis(userId: string, roleId: string): Promise<Ga
     roleCatalogHash: roleCatalogHash(),
     result,
   });
+
+  await GapAnalysisModel.deleteMany({ userId, roleId: role.id, _id: { $ne: stored._id } });
 
   return toDto({
     _id: stored._id,

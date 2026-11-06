@@ -1,8 +1,10 @@
 import type { ErrorRequestHandler } from "express";
 import mongoose from "mongoose";
+import { logger } from "../utils/logger.js";
 import { AppError, AuthErrorCode } from "../utils/errors.js";
 
-export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+  const correlationId = req.correlationId;
   if (err instanceof AppError) {
     res.status(err.status).json({
       success: false,
@@ -31,7 +33,7 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   }
 
   if (err instanceof mongoose.Error) {
-    console.error("MongoDB error:", err.name);
+    logger.error("MongoDB error", { correlationId, name: err.name });
 
     res.status(500).json({
       success: false,
@@ -43,7 +45,12 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return;
   }
 
-  console.error("Unexpected error:", err instanceof Error ? err.message : err);
+  // Log only the error class and message — never a stack trace or any value
+  // that could contain a credential (e.g. a connection string).
+  logger.error("Unexpected error", {
+    correlationId,
+    name: err instanceof Error ? err.constructor.name : typeof err,
+  });
 
   res.status(500).json({
     success: false,

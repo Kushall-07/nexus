@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const repoFindMock = vi.fn();
 const evidenceFindMock = vi.fn();
 const createMock = vi.fn();
+const deleteManyMock = vi.fn();
 
 vi.mock("../src/models/repository.model.js", () => ({
   RepositoryModel: { find: (...args: unknown[]) => repoFindMock(...args) },
@@ -11,7 +12,10 @@ vi.mock("../src/models/evidence.model.js", () => ({
   EvidenceModel: { find: (...args: unknown[]) => evidenceFindMock(...args) },
 }));
 vi.mock("../src/models/analysis.model.js", () => ({
-  AnalysisModel: { create: (...args: unknown[]) => createMock(...args) },
+  AnalysisModel: {
+    create: (...args: unknown[]) => createMock(...args),
+    deleteMany: (...args: unknown[]) => deleteManyMock(...args),
+  },
 }));
 
 const { scoreUserEvidence } = await import("../src/services/scoring.service.js");
@@ -41,6 +45,7 @@ describe("scoreUserEvidence", () => {
     repoFindMock.mockReset();
     evidenceFindMock.mockReset();
     createMock.mockReset().mockResolvedValue({ _id: "analysis-1" });
+    deleteManyMock.mockReset().mockResolvedValue({ deletedCount: 0 });
   });
 
   function arrange() {
@@ -95,6 +100,13 @@ describe("scoreUserEvidence", () => {
 
     const signals = scored.result.repositorySkillScores.find((s) => s.repositoryId === REPO_A)!.signals;
     expect(signals.find((s) => s.signal === "dependency")!.evidenceIds).toEqual(["e1"]);
+
+    // create-first lifecycle: deleteMany must be called after create, scoped to
+    // superseded documents only (excludes the analysis we just created).
+    expect(deleteManyMock).toHaveBeenCalledWith({ userId: USER, _id: { $ne: "analysis-1" } });
+    const createOrder = createMock.mock.invocationCallOrder[0]!;
+    const deleteOrder = deleteManyMock.mock.invocationCallOrder[0]!;
+    expect(createOrder).toBeLessThan(deleteOrder);
   });
 
   it("is independent of MongoDB retrieval order", async () => {
@@ -129,6 +141,15 @@ describe("scoreUserEvidence", () => {
     repoFindMock.mockReturnValue(lean([{ _id: REPO_A, scoringObservations: { sourceFileCount: 1, relevantStructureSignalCount: 0 } }]));
     evidenceFindMock.mockReturnValue(lean([]));
     await expect(scoreUserEvidence(USER)).rejects.toMatchObject({ code: "NO_EVIDENCE" });
+  });
+
+  it("does not delete the previous analysis when create fails", async () => {
+    arrange();
+    createMock.mockRejectedValueOnce(new Error("write concern error"));
+
+    await expect(scoreUserEvidence(USER)).rejects.toThrow("write concern error");
+    expect(createMock).toHaveBeenCalledOnce();
+    expect(deleteManyMock).not.toHaveBeenCalled();
   });
 
   it("maps invalid stored evidence to INVALID_EVIDENCE without persisting", async () => {

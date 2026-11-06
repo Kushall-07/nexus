@@ -80,6 +80,10 @@ export async function revokeSessionToken(token: string): Promise<boolean> {
 }
 
 export function verifySessionToken(token: string): SessionPayload {
+  // Prune on every verification so the map cannot grow indefinitely in a
+  // long-running process that stops receiving new logouts.
+  pruneRevokedTokens(Math.floor(Date.now() / 1000));
+
   if (revokedTokens.has(tokenFingerprint(token))) {
     throw new Error("Session has been revoked.");
   }

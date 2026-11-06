@@ -33,6 +33,13 @@ vi.mock("../src/models/gap-analysis.model.js", () => ({
     findOne: (filter: { _id: string; userId: string }) => ({
       lean: async () => gapStore.find((row) => row._id === filter._id && row.userId === filter.userId) ?? null,
     }),
+    deleteMany: async (filter: { userId: string; roleId: string; _id: { $ne: string } }) => {
+      const before = gapStore.length;
+      gapStore = gapStore.filter(
+        (row) => !(row.userId === filter.userId && row.roleId === filter.roleId && row._id !== filter._id.$ne),
+      );
+      return { deletedCount: before - gapStore.length };
+    },
   },
 }));
 vi.mock("../src/llm/provider.js", () => ({ getLlmProvider: () => providerMock() }));

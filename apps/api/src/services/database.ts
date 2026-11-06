@@ -7,7 +7,8 @@ export async function connectDatabase(): Promise<void> {
   }
 
   // Fail fast with a clear error instead of waiting the 30s driver default.
-  await mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 10_000 });
+  // maxPoolSize: 50 replaces the default of 5, which exhausts under real concurrent load.
+  await mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 10_000, maxPoolSize: 50 });
 }
 
 export async function disconnectDatabase(): Promise<void> {

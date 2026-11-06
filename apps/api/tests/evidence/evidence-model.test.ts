@@ -24,35 +24,50 @@ describe("EvidenceModel", () => {
     expect(EvidenceModel.collection.name).toBe("repositoryEvidence");
   });
 
-  it("accepts a valid document with string or numeric values", () => {
-    expect(new EvidenceModel(validDocument()).validateSync()).toBeUndefined();
-    expect(new EvidenceModel(validDocument({ value: 65 })).validateSync()).toBeUndefined();
+  it("accepts a valid document with string or numeric values", async () => {
+    await expect(new EvidenceModel(validDocument()).validate()).resolves.toBeUndefined();
+    await expect(new EvidenceModel(validDocument({ value: 65 })).validate()).resolves.toBeUndefined();
   });
 
-  it("rejects strengths outside [0, 1]", () => {
-    expect(new EvidenceModel(validDocument({ normalizedStrength: 1.01 })).validateSync()?.errors).toHaveProperty("normalizedStrength");
-    expect(new EvidenceModel(validDocument({ normalizedStrength: -0.01 })).validateSync()?.errors).toHaveProperty("normalizedStrength");
+  it("rejects strengths outside [0, 1]", async () => {
+    await expect(new EvidenceModel(validDocument({ normalizedStrength: 1.01 })).validate()).rejects.toMatchObject({
+      errors: expect.objectContaining({ normalizedStrength: expect.anything() }),
+    });
+    await expect(new EvidenceModel(validDocument({ normalizedStrength: -0.01 })).validate()).rejects.toMatchObject({
+      errors: expect.objectContaining({ normalizedStrength: expect.anything() }),
+    });
   });
 
-  it("rejects unknown evidence types and signals", () => {
-    const errors = new EvidenceModel(validDocument({ evidenceType: "VIBES", signal: "score" })).validateSync()?.errors;
-    expect(errors).toHaveProperty("evidenceType");
-    expect(errors).toHaveProperty("signal");
+  it("rejects unknown evidence types and signals", async () => {
+    await expect(
+      new EvidenceModel(validDocument({ evidenceType: "VIBES", signal: "score" })).validate(),
+    ).rejects.toMatchObject({
+      errors: expect.objectContaining({
+        evidenceType: expect.anything(),
+        signal: expect.anything(),
+      }),
+    });
   });
 
-  it("requires ownership, skill, explanation and identity", () => {
-    const errors = new EvidenceModel({}).validateSync()?.errors ?? {};
-
-    for (const field of ["userId", "repositoryId", "skillId", "explanation", "evidenceKey", "detectedAt", "normalizedStrength"]) {
-      expect(errors).toHaveProperty(field);
-    }
+  it("requires ownership, skill, explanation and identity", async () => {
+    await expect(new EvidenceModel({}).validate()).rejects.toMatchObject({
+      errors: expect.objectContaining({
+        userId: expect.anything(),
+        repositoryId: expect.anything(),
+        skillId: expect.anything(),
+        explanation: expect.anything(),
+        evidenceKey: expect.anything(),
+        detectedAt: expect.anything(),
+        normalizedStrength: expect.anything(),
+      }),
+    });
   });
 
-  it("makes provenance optional", () => {
+  it("makes provenance optional", async () => {
     const doc = validDocument();
     delete (doc as Record<string, unknown>).sourcePath;
 
-    expect(new EvidenceModel(doc).validateSync()).toBeUndefined();
+    await expect(new EvidenceModel(doc).validate()).resolves.toBeUndefined();
   });
 
   it("defines the idempotency and query indexes", () => {

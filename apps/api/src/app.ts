@@ -8,6 +8,7 @@ import skillsRouter from "./routes/skills.routes.js";
 import rolesRouter from "./routes/roles.routes.js";
 import gapAnalysisRouter from "./routes/gap-analysis.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
+import { requestLogger } from "./middleware/request-logger.js";
 import mongoose from "mongoose";
 import { requireTrustedOrigin, securityHeaders } from "./middleware/browser-security.js";
 import { env } from "./config/env.js";
@@ -16,6 +17,7 @@ import { careerRouter, copilotRouter, opportunitiesRouter, resumeRouter, savedJo
 const app = express();
 
 app.disable("x-powered-by");
+app.use(requestLogger);
 app.use(securityHeaders);
 app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
 app.use(cookieParser());

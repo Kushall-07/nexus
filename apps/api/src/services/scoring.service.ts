@@ -83,6 +83,10 @@ export async function scoreUserEvidence(userId: string): Promise<ScoredAnalysis>
   }
 
   const hash = configHash();
+
+  // Keep exactly one analysis per user. Create the new document first so that
+  // if the write fails the user retains their previous analysis. Only after a
+  // successful create do we remove the superseded documents.
   const analysis = await AnalysisModel.create({
     userId,
     scoringVersion: config.scoringVersion,
@@ -91,6 +95,8 @@ export async function scoreUserEvidence(userId: string): Promise<ScoredAnalysis>
     evidenceCount: evidence.length,
     result,
   });
+
+  await AnalysisModel.deleteMany({ userId, _id: { $ne: analysis._id } });
 
   return {
     analysisId: String(analysis._id),
