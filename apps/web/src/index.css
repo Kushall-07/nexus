@@ -190,10 +190,11 @@ body {
   margin: 0;
   min-width: 320px;
   background-color: var(--color-slate-50);
-  /* Very subtle gold atmospheric depth — not a gradient wall */
+  /* Gold atmospheric depth — two radial glows at opposing corners */
   background-image:
-    radial-gradient(90rem 50rem at 15% 0%,   oklch(81% 0.195 86 / 0.045), transparent 55%),
-    radial-gradient(60rem 35rem at 90% 95%,  oklch(81% 0.195 86 / 0.030), transparent 50%);
+    radial-gradient(90rem 50rem at 12% 0%,   oklch(81% 0.195 86 / 0.050), transparent 55%),
+    radial-gradient(60rem 35rem at 92% 98%,  oklch(81% 0.195 86 / 0.032), transparent 50%),
+    radial-gradient(40rem 25rem at 55% 50%,  oklch(81% 0.195 86 / 0.012), transparent 60%);
   background-attachment: scroll;
 }
 
@@ -413,6 +414,19 @@ main > * {
 
 @media (prefers-reduced-motion: reduce) {
   .nx-cta-shimmer::after { animation: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Glass card — dark, translucent surface with atmospheric depth               */
+/* Use for feature cards on the landing page and elevated modals.              */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-glass {
+  background: oklch(8% 0.015 86 / 0.90);
+  border: 1px solid oklch(100% 0 0 / 0.08);
+  box-shadow:
+    0 24px 64px oklch(0% 0 0 / 0.45),
+    inset 0 1px 0 oklch(100% 0 0 / 0.07);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */

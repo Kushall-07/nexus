@@ -310,18 +310,22 @@ function ProductViz() {
 function LandingNav() {
   return (
     <header className="sticky top-0 z-30 w-full border-b border-slate-200 bg-slate-50/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
         <div className="flex items-center gap-2.5">
           <span className="text-indigo-700">
             <IconNexus className="h-6 w-6" />
           </span>
-          <span className="font-display text-xl text-slate-900 tracking-tight" style={{ letterSpacing: "-0.02em" }}>
+          <span
+            className="font-display text-slate-900"
+            style={{ fontSize: "1.15rem", letterSpacing: "-0.025em" }}
+          >
             NEXUS
           </span>
         </div>
         <a
           href="/api/auth/github"
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50"
+          style={{ color: "oklch(5.5% 0.009 265)" }}
         >
           <GitHubMark />
           Sign in
@@ -343,18 +347,42 @@ export function SignInPrompt() {
       <LandingNav />
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-5 pt-16 pb-20 sm:pt-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+      <section className="relative overflow-hidden mx-auto max-w-5xl px-5 pt-16 pb-20 sm:pt-24">
+
+        {/* Large N lettermark watermark — atmospheric depth */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute right-[-3rem] top-[-2rem]"
+          style={{ opacity: 0.038 }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" className="text-indigo-700 w-80 h-80 sm:w-96 sm:h-96">
+            <rect x="4" y="2" width="4" height="20" />
+            <polygon points="8,2 12,2 20,22 16,22" />
+            <rect x="16" y="2" width="4" height="20" />
+          </svg>
+        </div>
+
+        <div className="relative grid items-center gap-12 lg:grid-cols-2">
+
           {/* Left: headline + CTA */}
           <div>
+            {/* Badge */}
+            <div
+              className="landing-reveal mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5"
+              style={{ animationDelay: "0.02s" }}
+            >
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-indigo-700" />
+              <span className="text-xs font-semibold text-indigo-700">Evidence-backed career intelligence</span>
+            </div>
+
             <div
               className="landing-reveal"
-              style={{ animationDelay: "0.05s" }}
+              style={{ animationDelay: "0.08s" }}
             >
               <h1
                 className="font-display text-slate-900"
                 style={{
-                  fontSize: "clamp(3.2rem, 8vw, 6rem)",
+                  fontSize: "clamp(3.5rem, 9vw, 7rem)",
                   lineHeight: 0.92,
                   letterSpacing: "-0.025em",
                 }}
@@ -369,7 +397,7 @@ export function SignInPrompt() {
 
             <p
               className="landing-reveal mt-6 max-w-md text-base text-slate-700 sm:text-lg"
-              style={{ animationDelay: "0.18s" }}
+              style={{ animationDelay: "0.20s" }}
             >
               Turn it into your next opportunity. NEXUS reads your GitHub
               repositories and produces evidence-backed career intelligence —
@@ -378,7 +406,7 @@ export function SignInPrompt() {
 
             <div
               className="landing-reveal mt-8"
-              style={{ animationDelay: "0.28s" }}
+              style={{ animationDelay: "0.30s" }}
             >
               {notice ? (
                 <p
@@ -391,25 +419,34 @@ export function SignInPrompt() {
 
               <a
                 href="/api/auth/github"
-                className="nx-cta-shimmer inline-flex items-center gap-2.5 rounded-xl bg-indigo-700 px-6 py-3.5 text-base font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50"
+                className="nx-cta-shimmer inline-flex items-center gap-2.5 rounded-xl bg-indigo-700 px-6 py-3.5 text-base font-semibold transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50"
                 style={{ color: "oklch(5.5% 0.009 265)" }}
               >
                 <GitHubMark />
                 Sign in with GitHub
               </a>
 
-              <p className="mt-3 text-xs text-slate-500">
-                Only reads public repositories. No code or private data is accessed.
-              </p>
+              {/* Trust indicators */}
+              <div className="mt-5 flex flex-wrap gap-5 text-xs text-slate-500">
+                <span>Only reads public repos</span>
+                <span>No keyword matching</span>
+                <span>Free to use</span>
+              </div>
             </div>
           </div>
 
-          {/* Right: animated product visualization */}
+          {/* Right: product visualization — glass card */}
           <div
             className="landing-reveal"
-            style={{ animationDelay: "0.38s" }}
+            style={{ animationDelay: "0.42s" }}
           >
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <div
+              className="rounded-2xl border border-white/10 p-6"
+              style={{
+                background: "oklch(8% 0.015 86 / 0.92)",
+                boxShadow: "0 24px 64px oklch(0% 0 0 / 0.5), inset 0 1px 0 oklch(100% 0 0 / 0.07)",
+              }}
+            >
               <p className="mb-4 text-xs font-medium text-slate-500 text-center tracking-wide">
                 GitHub evidence → skill graph → matched roles
               </p>
@@ -419,10 +456,10 @@ export function SignInPrompt() {
         </div>
       </section>
 
-      {/* ── Problem ────────────────────────────────────────────────────── */}
+      {/* ── Problem / Before–After ──────────────────────────────────────── */}
       <section className="border-t border-slate-200 bg-white px-5 py-16 sm:py-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="landing-reveal">
+        <div className="mx-auto max-w-4xl">
+          <div className="landing-reveal text-center mb-10">
             <h2
               className="font-display text-slate-900"
               style={{
@@ -434,37 +471,54 @@ export function SignInPrompt() {
               JOB APPLICATIONS<br />
               <span className="nx-gradient-text">SHOULDN'T BE GUESSWORK.</span>
             </h2>
+            <p className="landing-reveal landing-reveal-delay-1 mx-auto mt-5 max-w-xl text-base text-slate-600 sm:text-lg">
+              Most platforms match you on keywords. NEXUS reads your actual
+              repository history — languages, frameworks, test coverage, project
+              patterns — and builds a verifiable skill profile from real evidence.
+            </p>
           </div>
-          <p className="landing-reveal landing-reveal-delay-1 mx-auto mt-6 max-w-xl text-base text-slate-600 sm:text-lg">
-            Most platforms match you on keywords. NEXUS reads your actual
-            repository history — languages, frameworks, test coverage, project
-            patterns — and builds a verifiable skill profile from real evidence.
-          </p>
-          <div className="landing-reveal landing-reveal-delay-2 mt-10 grid gap-4 sm:grid-cols-3 text-left">
-            {[
-              { label: "Before", value: "Keyword match", dim: true },
-              { label: "With NEXUS", value: "Evidence score", dim: false },
-              { label: "Result", value: "Explainable fit", dim: false },
-            ].map(({ label, value, dim }) => (
-              <div
-                key={label}
-                className={`rounded-xl border px-5 py-4 ${
-                  dim
-                    ? "border-slate-200 bg-slate-100 opacity-60"
-                    : "border-indigo-200 bg-indigo-50"
-                }`}
-              >
-                <p className="text-xs font-medium text-slate-500">{label}</p>
-                <p
-                  className={`mt-1 font-display text-2xl ${
-                    dim ? "text-slate-700" : "text-indigo-900"
-                  }`}
-                  style={{ letterSpacing: "-0.02em" }}
-                >
-                  {value}
-                </p>
-              </div>
-            ))}
+
+          {/* Two-panel before/after contrast */}
+          <div className="landing-reveal landing-reveal-delay-2 grid gap-4 sm:grid-cols-2">
+            {/* Before panel */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-100 px-6 py-6 opacity-75">
+              <p className="mb-5 text-xs font-semibold text-slate-400 pb-3 border-b border-slate-200">
+                Without evidence
+              </p>
+              <ul className="space-y-3.5">
+                {[
+                  "Keywords from resume templates",
+                  "Self-reported skill levels",
+                  "No depth or history check",
+                  "Guesswork at both ends",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-slate-500">
+                    <span className="mt-0.5 shrink-0 text-slate-400 font-bold">—</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* After panel */}
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-6 py-6">
+              <p className="mb-5 text-xs font-semibold text-indigo-500 pb-3 border-b border-indigo-200">
+                With NEXUS evidence
+              </p>
+              <ul className="space-y-3.5">
+                {[
+                  "Repository-sourced skill evidence",
+                  "Verifiable depth across projects",
+                  "Explainable job match scores",
+                  "Prioritized gap-closing plan",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <span className="mt-0.5 shrink-0 text-indigo-700 font-bold">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -510,7 +564,7 @@ export function SignInPrompt() {
             ].map(({ step, title, body }, i) => (
               <div
                 key={step}
-                className={`landing-reveal flex gap-5 py-6 border-t border-slate-200`}
+                className="landing-reveal flex gap-5 py-6 border-t border-slate-200"
                 style={{ animationDelay: `${0.1 + i * 0.1}s` }}
               >
                 <div className="shrink-0 pt-0.5">
@@ -531,7 +585,7 @@ export function SignInPrompt() {
         </div>
       </section>
 
-      {/* ── Capabilities ───────────────────────────────────────────────── */}
+      {/* ── Capabilities — feature grid ─────────────────────────────────── */}
       <section className="border-t border-slate-200 bg-white px-5 py-14">
         <div className="mx-auto max-w-3xl">
           <div className="landing-reveal text-center">
@@ -546,25 +600,30 @@ export function SignInPrompt() {
               EVERYTHING IN ONE PLACE.
             </h2>
           </div>
-          <div className="landing-reveal landing-reveal-delay-1 mt-8 flex flex-wrap justify-center gap-2.5">
+
+          <div className="landing-reveal landing-reveal-delay-1 mt-10 grid gap-x-10 gap-y-5 sm:grid-cols-2">
             {[
-              "GitHub evidence analysis",
-              "Explainable job matching",
-              "Skill graph",
-              "Role benchmarking",
-              "Skill gap plans",
-              "Resume upload",
-              "Application tracking",
-              "Career Copilot",
-              "Development tasks",
-              "Preference filtering",
-            ].map((feature) => (
-              <span
-                key={feature}
-                className="rounded-full border border-slate-300 bg-slate-100 px-3.5 py-1.5 text-sm font-medium text-slate-700"
-              >
-                {feature}
-              </span>
+              ["GitHub analysis", "Real evidence across repos, languages, and frameworks"],
+              ["Explainable matching", "Every job score backed by specific work history"],
+              ["Skill graph", "Visual map of your technical depth and coverage"],
+              ["Role benchmarking", "Compare your profile to any engineering role"],
+              ["Gap analysis", "Know exactly what to build for your target role"],
+              ["Resume upload", "Layer in document evidence alongside repository data"],
+              ["Application tracking", "Track every job you apply to in one place"],
+              ["Career Copilot", "Guidance grounded in your actual work history"],
+              ["Development tasks", "Actionable projects to close your skill gaps"],
+              ["Job preferences", "Filter by role type, location, and work mode"],
+            ].map(([title, desc]) => (
+              <div key={title} className="flex gap-3">
+                <span
+                  aria-hidden="true"
+                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-700"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">{title}</p>
+                  <p className="mt-0.5 text-sm text-slate-500">{desc}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -609,13 +668,13 @@ export function SignInPrompt() {
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="border-t border-slate-200 px-5 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 sm:flex-row">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className="text-indigo-700">
               <IconNexus className="h-5 w-5" />
             </span>
             <span
               className="font-display text-slate-900 text-sm"
-              style={{ letterSpacing: "-0.01em" }}
+              style={{ letterSpacing: "-0.02em" }}
             >
               NEXUS
             </span>

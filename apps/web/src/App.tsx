@@ -102,8 +102,8 @@ function SidebarNav({ onClose }: { onClose?: () => void }) {
                 className={[
                   "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-100",
                   isActive
-                    ? "bg-indigo-100 text-indigo-900"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-800",
+                    ? "bg-indigo-100 text-indigo-900 shadow-[inset_3px_0_0_oklch(81%_0.195_86)]"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
                 ].join(" ")}
               >
                 <span className={isActive ? "text-indigo-700" : "text-slate-400"}>
@@ -136,7 +136,7 @@ function NexusBrand({ compact = false }: { compact?: boolean }) {
           NEXUS
         </p>
         <p className="text-[9px] leading-tight text-slate-500">
-          Career Copilot · GitHub Evidence Engine
+          Career Intelligence
         </p>
       </div>
     </div>
@@ -240,19 +240,19 @@ function DesktopSidebar() {
     >
       {/* Brand mark */}
       <div className="px-4 py-5 border-b border-slate-200">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <span className="text-indigo-700 shrink-0">
             <IconNexus className="h-6 w-6" />
           </span>
           <div>
             <p
               className="font-display text-slate-900 leading-tight"
-              style={{ fontSize: "1.05rem", letterSpacing: "-0.02em" }}
+              style={{ fontSize: "1.1rem", letterSpacing: "-0.025em" }}
             >
               NEXUS
             </p>
-            <p className="text-[9px] leading-tight text-slate-500">
-              Career Copilot · GitHub Evidence Engine
+            <p className="text-[9px] leading-none text-slate-500 mt-0.5">
+              GitHub Evidence Engine
             </p>
           </div>
         </div>

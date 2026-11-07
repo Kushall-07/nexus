@@ -143,17 +143,11 @@ export function IconChevronRight({ className }: IconProps) {
 
 export function IconNexus({ className }: IconProps) {
   return (
-    <svg {...defaults} className={className} width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-      <circle cx="14" cy="14" r="4" fill="currentColor" />
-      <line x1="14" y1="1" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="14" y1="20" x2="14" y2="27" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="1" y1="14" x2="8" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="20" y1="14" x2="27" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="4.1" y1="4.1" x2="9.2" y2="9.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-      <line x1="23.9" y1="23.9" x2="18.8" y2="18.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-      <line x1="23.9" y1="4.1" x2="18.8" y2="9.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-      <line x1="4.1" y1="23.9" x2="9.2" y2="18.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+    <svg aria-hidden="true" className={className} width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      {/* Bold geometric N lettermark — NEXUS brand mark */}
+      <rect x="4" y="2" width="4" height="20" />
+      <polygon points="8,2 12,2 20,22 16,22" />
+      <rect x="16" y="2" width="4" height="20" />
     </svg>
   );
 }
