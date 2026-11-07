@@ -15,3 +15,7 @@ coverage/
 # Playwright generated output
 /apps/web/test-results/
 /apps/web/e2e/results.json
+# Phase 6C E2E — session token written by global-setup, never committed
+/apps/web/e2e/.session-token
+# Phase 6C E2E — Playwright storageState directory (if used in future)
+/apps/web/e2e/.auth/

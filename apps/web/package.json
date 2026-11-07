@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "e2e:dev": "vite --config vite.e2e.config.ts",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:report": "playwright show-report",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "test": "vitest run"

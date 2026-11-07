@@ -1,15 +1,20 @@
 /**
- * Creates (or reuses) a sandboxed E2E test user in the local MongoDB and returns
- * a valid JWT session token on stdout. Nothing is printed to stderr except errors.
+ * Phase 6C E2E seed script.
  *
- * Usage:  node e2e/seed-test-session.mjs
- * Output: a single line containing the JWT (no other output)
+ * Creates (or reuses) the sandboxed E2E test user in the nexus_e2e MongoDB
+ * database and writes a valid JWT session token to stdout.
  *
- * The test user is identifiable by githubId "e2e-test-user" and is never used
- * for real GitHub calls.  It is safe to leave in the dev DB between runs.
+ * SAFETY CONTRACT:
+ *   - Reads ONLY from process.env.  NEVER reads from the root .env file.
+ *   - Requires MONGODB_URI to contain "nexus_e2e" or aborts immediately.
+ *   - Requires MONGODB_URI to target localhost or 127.0.0.1 or aborts.
+ *   - Must be called with the env vars pre-populated by global-setup.ts.
+ *   - Is NOT safe to call standalone without the validated environment.
+ *
+ * Usage:  (spawned by global-setup.ts with correct process.env)
+ * Output: a single line containing the JWT (stdout); errors go to stderr.
  */
 
-import { readFileSync } from "node:fs";
 import { createCipheriv, randomBytes, createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
@@ -19,21 +24,71 @@ const require = createRequire(import.meta.url);
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
-// ── Load .env from repo root ─────────────────────────────────────────────────
-function readEnv() {
-  const root = path.resolve(fileURLToPath(import.meta.url), "../../../../");
-  const lines = readFileSync(path.join(root, ".env"), "utf8").split(/\r?\n/);
-  const env = {};
-  for (const line of lines) {
-    const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
-    if (m) env[m[1]] = m[2].trim().replace(/^["']|["']$/g, "");
+// ── Safety guard ─────────────────────────────────────────────────────────────
+
+const APPROVED_E2E_PORT = 27018;
+
+function assertSafeUri(uri) {
+  if (!uri || uri.trim() === "") {
+    process.stderr.write("[seed] MONGODB_URI is missing or empty. Aborting.\n");
+    process.exit(1);
   }
-  return env;
+
+  const hasLocalhost = /(?:^|@|\/\/)(?:localhost|127\.0\.0\.1)/.test(uri);
+  if (!hasLocalhost) {
+    process.stderr.write(
+      "[seed] MONGODB_URI must target localhost or 127.0.0.1. " +
+        "Refusing to seed a non-local database.\n",
+    );
+    process.exit(1);
+  }
+
+  // Extract db name from URI path
+  const withoutProto = uri.replace(/^mongodb(\+srv)?:\/\//, "");
+  const slashIndex = withoutProto.indexOf("/");
+  if (slashIndex === -1) {
+    process.stderr.write("[seed] MONGODB_URI has no database name. Aborting.\n");
+    process.exit(1);
+  }
+  const dbName = withoutProto.slice(slashIndex + 1).split("?")[0].split("/")[0].trim();
+  if (!dbName) {
+    process.stderr.write("[seed] MONGODB_URI has an empty database name. Aborting.\n");
+    process.exit(1);
+  }
+  if (dbName !== "nexus_e2e") {
+    process.stderr.write(
+      `[seed] MONGODB_URI points to "${dbName}" — only "nexus_e2e" is permitted.\n` +
+        "[seed] Refusing to mutate a non-E2E database.\n",
+    );
+    process.exit(1);
+  }
+
+  // Port check: must be the dedicated E2E port 27018, not the dev port 27017
+  const atIndex = withoutProto.indexOf("@");
+  const hostSection = atIndex === -1
+    ? withoutProto.split("/")[0]
+    : withoutProto.slice(atIndex + 1).split("/")[0];
+  const colonIndex = hostSection.lastIndexOf(":");
+  const port = colonIndex === -1 ? null : parseInt(hostSection.slice(colonIndex + 1), 10);
+  if (port !== APPROVED_E2E_PORT) {
+    process.stderr.write(
+      `[seed] MONGODB_URI must use port ${APPROVED_E2E_PORT} (nexus-mongodb-e2e). ` +
+        `Got port ${port ?? "none"}. Port 27017 is the development database.\n`,
+    );
+    process.exit(1);
+  }
 }
 
-// ── Minimal token encryption (mirrors apps/api/src/utils/token-encryption.ts) ─
+// ── Token encryption (mirrors apps/api/src/utils/token-encryption.ts) ────────
+
 function encryptToken(plaintext, keyBase64) {
   const key = Buffer.from(keyBase64, "base64");
+  if (key.length !== 32) {
+    process.stderr.write(
+      "[seed] TOKEN_ENCRYPTION_KEY does not decode to 32 bytes. Aborting.\n",
+    );
+    process.exit(1);
+  }
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key, iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
@@ -42,6 +97,7 @@ function encryptToken(plaintext, keyBase64) {
 }
 
 // ── Minimal User schema (mirrors apps/api/src/models/user.model.ts) ───────────
+
 const userSchema = new mongoose.Schema(
   {
     githubId: { type: String, required: true, unique: true, index: true },
@@ -51,23 +107,34 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-// Use existing compiled model if already registered (re-entrancy guard)
+
 const UserModel = mongoose.models.User ?? mongoose.model("User", userSchema);
 
-async function main() {
-  const env = readEnv();
-  const mongoUri = env.MONGODB_URI || "mongodb://localhost:27017/nexus";
-  const jwtSecret = env.JWT_SECRET;
-  const encryptionKey = env.TOKEN_ENCRYPTION_KEY;
+// ── Main ─────────────────────────────────────────────────────────────────────
 
-  if (!jwtSecret || !encryptionKey) {
-    process.stderr.write("Missing JWT_SECRET or TOKEN_ENCRYPTION_KEY in .env\n");
+async function main() {
+  // Require env vars from process.env — global-setup.ts must have set them.
+  const mongoUri = process.env.MONGODB_URI ?? "";
+  const jwtSecret = process.env.JWT_SECRET ?? "";
+  const encryptionKey = process.env.TOKEN_ENCRYPTION_KEY ?? "";
+
+  if (!jwtSecret || jwtSecret.length < 32) {
+    process.stderr.write("[seed] JWT_SECRET is missing or shorter than 32 chars. Aborting.\n");
+    process.exit(1);
+  }
+  if (!encryptionKey) {
+    process.stderr.write("[seed] TOKEN_ENCRYPTION_KEY is missing. Aborting.\n");
     process.exit(1);
   }
 
-  await mongoose.connect(mongoUri, { dbName: undefined });
+  // Safety guard — must pass before any DB mutation
+  assertSafeUri(mongoUri);
 
-  // Upsert a stable test user; dummy encrypted token wraps the literal string "e2e-dummy-token"
+  await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 10_000 });
+
+  // Upsert a stable test user; dummy encrypted token wraps the literal string
+  // "e2e-dummy-token".  The API will get a GITHUB_TOKEN_EXPIRED error if the
+  // test user's repositories are requested, which is expected and tested.
   const encryptedToken = encryptToken("e2e-dummy-token", encryptionKey);
 
   const user = await UserModel.findOneAndUpdate(
@@ -76,10 +143,15 @@ async function main() {
     { upsert: true, new: true, setDefaultsOnInsert: true },
   );
 
+  // Fixed JTI derived from a deterministic string — unique within E2E.
+  // Teardown removes the revoked_sessions collection so stale revocations
+  // from prior runs never block a fresh session.
+  const jti = createHash("sha256").update("e2e-fixed-session-phase6c").digest("hex");
+
   const token = jwt.sign(
     { sub: user._id.toString(), githubId: user.githubId },
     jwtSecret,
-    { expiresIn: "1h", jwtid: createHash("sha256").update("e2e-fixed-session").digest("hex") },
+    { expiresIn: "24h", jwtid: jti },
   );
 
   // Single line of output — the JWT
@@ -89,6 +161,8 @@ async function main() {
 }
 
 main().catch((err) => {
-  process.stderr.write(String(err) + "\n");
+  // Log only the error name/message — never the full stack which might echo env vars
+  const msg = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`[seed] Error: ${msg}\n`);
   process.exit(1);
 });

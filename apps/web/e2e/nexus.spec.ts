@@ -1,16 +1,17 @@
 /**
- * NEXUS live browser E2E test suite.
+ * NEXUS live browser E2E test suite — Phase 6C isolated environment.
  *
- * Prerequisites (all running before this file executes):
- *   - MongoDB on localhost:27017
- *   - API on localhost:4000  (`npm run dev` in apps/api)
- *   - Vite dev server on localhost:5173  (`npm run dev` in apps/web)
+ * Prerequisites (all managed automatically by playwright.config.ts):
+ *   - E2E MongoDB database: nexus_e2e @ 127.0.0.1:27017
+ *   - E2E API on localhost:4001  (webServer: npm run e2e-start)
+ *   - E2E Vite dev server on localhost:5174  (webServer: npm run e2e:dev)
  *
  * Authentication strategy:
- *   The seed script (e2e/seed-test-session.mjs) creates a sandboxed MongoDB user
- *   with githubId "e2e-test-user" and mints a 1-hour JWT using the same JWT_SECRET
- *   as the running API.  The JWT is injected as the nexus_session cookie before
- *   any authenticated test runs.
+ *   global-setup.ts seeds the nexus_e2e database, creates the test user
+ *   with githubId "e2e-test-user", and mints a 24-hour JWT using the
+ *   test-only JWT_SECRET from e2e/.env.test.  The token is written to
+ *   e2e/.session-token and read here by mintSessionToken().  No subprocess
+ *   is called per test; the token is minted once and reused.
  *
  * Route map (confirmed from App.tsx):
  *   /             → SkillOverviewPage  ("Skill graph")
@@ -29,15 +30,20 @@
  */
 
 import { test, expect, type BrowserContext } from "@playwright/test";
-import { execSync } from "child_process";
-import path from "path";
-import { fileURLToPath } from "url";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(fileURLToPath(import.meta.url), "../../../../");
-const SEED_SCRIPT = path.join(ROOT, "apps/web/e2e/seed-test-session.mjs");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Session token written by global-setup.ts before any test runs.
+const SESSION_TOKEN_PATH = path.join(__dirname, ".session-token");
+
+// E2E API base — port 4001 (isolated from development API on 4000).
+const E2E_API = "http://localhost:4001";
 
 function mintSessionToken(): string {
-  return execSync(`node "${SEED_SCRIPT}"`, { encoding: "utf8", timeout: 10_000 }).trim();
+  return readFileSync(SESSION_TOKEN_PATH, "utf8").trim();
 }
 
 async function injectSession(context: BrowserContext): Promise<void> {
@@ -78,21 +84,21 @@ test.describe("Unauthenticated", () => {
   });
 
   test("API /health returns ok", async ({ request }) => {
-    const res = await request.get("http://localhost:4000/health");
+    const res = await request.get(`${E2E_API}/health`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.status).toBe("ok");
   });
 
   test("API /ready returns ready with MongoDB connected", async ({ request }) => {
-    const res = await request.get("http://localhost:4000/ready");
+    const res = await request.get(`${E2E_API}/ready`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.status).toBe("ready");
   });
 
   test("unauthenticated API route returns 401", async ({ request }) => {
-    const res = await request.get("http://localhost:4000/api/auth/me");
+    const res = await request.get(`${E2E_API}/api/auth/me`);
     expect(res.status()).toBe(401);
   });
 });
@@ -323,17 +329,11 @@ test.describe("API endpoint coverage (authenticated)", () => {
     await injectSession(context);
   });
 
-  async function getSessionCookie(page: Parameters<typeof test>[1] extends (...args: infer A) => unknown ? A[0] extends { page: infer P } ? P : never : never) {
-    await page.goto("/");
-    const cookies = await page.context().cookies();
-    return cookies.find((c) => c.name === "nexus_session")!;
-  }
-
   test("GET /api/auth/me — returns test user", async ({ page, request }) => {
     await page.goto("/");
     const cookies = await page.context().cookies();
     const sc = cookies.find((c) => c.name === "nexus_session")!;
-    const res = await request.get("http://localhost:4000/api/auth/me", {
+    const res = await request.get(`${E2E_API}/api/auth/me`, {
       headers: { cookie: `nexus_session=${sc.value}` },
     });
     expect(res.status()).toBe(200);
@@ -345,7 +345,7 @@ test.describe("API endpoint coverage (authenticated)", () => {
     await page.goto("/");
     const cookies = await page.context().cookies();
     const sc = cookies.find((c) => c.name === "nexus_session")!;
-    const res = await request.get("http://localhost:4000/api/career/profile", {
+    const res = await request.get(`${E2E_API}/api/career/profile`, {
       headers: { cookie: `nexus_session=${sc.value}` },
     });
     expect(res.status()).toBe(200);
@@ -357,7 +357,7 @@ test.describe("API endpoint coverage (authenticated)", () => {
     await page.goto("/");
     const cookies = await page.context().cookies();
     const sc = cookies.find((c) => c.name === "nexus_session")!;
-    const res = await request.get("http://localhost:4000/api/opportunities/providers", {
+    const res = await request.get(`${E2E_API}/api/opportunities/providers`, {
       headers: { cookie: `nexus_session=${sc.value}` },
     });
     expect(res.status()).toBe(200);
@@ -371,7 +371,7 @@ test.describe("API endpoint coverage (authenticated)", () => {
     await page.goto("/");
     const cookies = await page.context().cookies();
     const sc = cookies.find((c) => c.name === "nexus_session")!;
-    const res = await request.get("http://localhost:4000/api/saved-jobs", {
+    const res = await request.get(`${E2E_API}/api/saved-jobs`, {
       headers: { cookie: `nexus_session=${sc.value}` },
     });
     expect(res.status()).toBe(200);
@@ -384,7 +384,7 @@ test.describe("API endpoint coverage (authenticated)", () => {
     await page.goto("/");
     const cookies = await page.context().cookies();
     const sc = cookies.find((c) => c.name === "nexus_session")!;
-    const res = await request.get("http://localhost:4000/api/copilot/prompts", {
+    const res = await request.get(`${E2E_API}/api/copilot/prompts`, {
       headers: { cookie: `nexus_session=${sc.value}` },
     });
     expect(res.status()).toBe(200);
