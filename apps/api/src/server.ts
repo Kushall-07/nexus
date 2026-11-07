@@ -2,6 +2,7 @@ import app from "./app.js";
 import { env } from "./config/env.js";
 import { connectDatabase, disconnectDatabase } from "./services/database.js";
 import { loadRevokedSessions } from "./services/session.service.js";
+import { logger } from "./utils/logger.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
@@ -44,6 +45,22 @@ async function startServer(): Promise<void> {
   process.on("SIGINT", () => shutdown("SIGINT"));
   process.on("SIGTERM", () => shutdown("SIGTERM"));
 }
+
+// ── Global process-level safety nets ─────────────────────────────────────────
+// These catch errors that escape all try/catch boundaries (e.g. bugs in
+// third-party callbacks).  They log a sanitised message (never a stack that
+// could embed secrets) and exit so a process supervisor can restart cleanly.
+
+process.on("unhandledRejection", (reason) => {
+  const msg = reason instanceof Error ? reason.message : String(reason);
+  logger.error("Unhandled promise rejection", { msg });
+  process.exit(1);
+});
+
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught exception", { msg: error.message });
+  process.exit(1);
+});
 
 startServer().catch((error) => {
   // Message only: a connection error can embed the database URI.
