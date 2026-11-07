@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Route, Routes, useLocation } from "react-router-dom";
+import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthGate } from "./AuthGate";
 import { AuthProvider } from "./auth/AuthContext";
 import { AccountMenu } from "./components/AccountMenu";
@@ -7,7 +7,6 @@ import {
   IconBriefcase,
   IconChat,
   IconClipboard,
-  IconClose,
   IconCode,
   IconDashboard,
   IconDocument,
@@ -18,6 +17,7 @@ import {
   IconStar,
   IconTarget,
   IconTrendingUp,
+  IconClose,
 } from "./components/Icons";
 import { ApplicationsPage } from "./features/career/ApplicationsPage";
 import { CopilotPage } from "./features/career/CopilotPage";
@@ -31,6 +31,7 @@ import { RepositoriesPage } from "./features/repositories/RepositoriesPage";
 import { RolesPage } from "./features/roles/RolesPage";
 import { SkillDetailPage } from "./features/skills/SkillDetailPage";
 import { SkillOverviewPage } from "./features/skills/SkillOverviewPage";
+import { LandingPage } from "./pages/landing/LandingPage";
 
 interface NavGroup {
   label?: string;
@@ -62,7 +63,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Profile",
     items: [
-      { to: "/", label: "Skills", icon: <IconStar className="h-4 w-4 shrink-0" />, end: true },
+      { to: "/skills", label: "Skills", icon: <IconStar className="h-4 w-4 shrink-0" /> },
       { to: "/resume", label: "Resume", icon: <IconDocument className="h-4 w-4 shrink-0" /> },
       { to: "/repositories", label: "Repositories", icon: <IconCode className="h-4 w-4 shrink-0" /> },
       { to: "/roles", label: "Target role", icon: <IconTarget className="h-4 w-4 shrink-0" /> },
@@ -136,7 +137,7 @@ function NexusBrand({ compact = false }: { compact?: boolean }) {
           NEXUS
         </p>
         <p className="text-[9px] leading-tight text-slate-500">
-          Career Intelligence
+          GitHub Evidence Engine
         </p>
       </div>
     </div>
@@ -283,38 +284,52 @@ function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 lg:flex-row">
-      <a href="#main-content" className="skip-to-main">
-        Skip to main content
-      </a>
-      <DesktopSidebar />
-      <div className="flex flex-1 flex-col min-w-0">
-        <MobileHeader onMenuOpen={() => setDrawerOpen(true)} />
-        <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-        <main
-          id="main-content"
-          className="mx-auto w-full max-w-5xl flex-1 overflow-x-clip px-4 py-6 sm:px-6"
-        >
-          <AuthGate>
-            <Routes>
-              <Route path="/" element={<SkillOverviewPage />} />
-              <Route path="/skills/:skillId" element={<SkillDetailPage />} />
-              <Route path="/repositories" element={<RepositoriesPage />} />
-              <Route path="/roles" element={<RolesPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/opportunities" element={<OpportunitiesRoute />} />
-              <Route path="/copilot" element={<CopilotPage />} />
-              <Route path="/applications" element={<ApplicationsPage />} />
-              <Route path="/resume" element={<ResumePage />} />
-              <Route path="/development" element={<DevelopmentPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/preferences" element={<PreferencesPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthGate>
-        </main>
-      </div>
-    </div>
+    <Routes>
+      {/* ── Public landing page — always visible, no auth required ─────────── */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* ── Authenticated application shell ────────────────────────────────── */}
+      <Route
+        path="/*"
+        element={
+          <div className="flex min-h-screen bg-slate-50 text-slate-900 lg:flex-row">
+            <a href="#main-content" className="skip-to-main">
+              Skip to main content
+            </a>
+            <DesktopSidebar />
+            <div className="flex flex-1 flex-col min-w-0">
+              <MobileHeader onMenuOpen={() => setDrawerOpen(true)} />
+              <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+              <main
+                id="main-content"
+                className="mx-auto w-full max-w-5xl flex-1 overflow-x-clip px-4 py-6 sm:px-6"
+              >
+                <AuthGate>
+                  <Routes>
+                    {/* /skills replaces the former / route for SkillOverview */}
+                    <Route path="/skills" element={<SkillOverviewPage />} />
+                    <Route path="/skills/:skillId" element={<SkillDetailPage />} />
+                    <Route path="/repositories" element={<RepositoriesPage />} />
+                    <Route path="/roles" element={<RolesPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/opportunities" element={<OpportunitiesRoute />} />
+                    <Route path="/copilot" element={<CopilotPage />} />
+                    <Route path="/applications" element={<ApplicationsPage />} />
+                    <Route path="/resume" element={<ResumePage />} />
+                    <Route path="/development" element={<DevelopmentPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/preferences" element={<PreferencesPage />} />
+                    {/* Redirect legacy root to /skills for authenticated users who have bookmarks */}
+                    <Route path="/" element={<Navigate to="/skills" replace />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AuthGate>
+              </main>
+            </div>
+          </div>
+        }
+      />
+    </Routes>
   );
 }
 
@@ -331,7 +346,7 @@ function NotFound() {
       <a
         href="/dashboard"
         className="mt-6 inline-flex items-center rounded-lg bg-indigo-700 px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-2"
-        style={{ color: "oklch(5.5% 0.009 265)" }}
+        style={{ color: "var(--color-indigo-950)" }}
       >
         Go to Dashboard
       </a>

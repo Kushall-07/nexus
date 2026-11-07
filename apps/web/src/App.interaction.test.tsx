@@ -135,7 +135,7 @@ describe("skill overview and detail (real App, stubbed network)", () => {
   it("renders API data and opens a skill's detail with contributions and evidence", async () => {
     handler = baseHandler();
     const user = userEvent.setup();
-    mount();
+    mount("/skills");
 
     expect(screen.getByRole("status")).toBeTruthy();
     expect(await screen.findByText("36.5/100")).toBeTruthy();
@@ -159,7 +159,7 @@ describe("skill overview and detail (real App, stubbed network)", () => {
   it("shows the no-evidence state for a skill without a score", async () => {
     handler = baseHandler();
     const user = userEvent.setup();
-    mount();
+    mount("/skills");
 
     await user.click(await screen.findByRole("link", { name: /Next\.js/ }));
 
@@ -171,7 +171,7 @@ describe("skill overview and detail (real App, stubbed network)", () => {
     let failing = true;
     handler = baseHandler({ "/api/skills": () => (failing ? fail(500, "INTERNAL_ERROR", "boom") : ok(overview)) });
     const user = userEvent.setup();
-    mount();
+    mount("/skills");
 
     expect(await screen.findByRole("alert")).toBeTruthy();
     failing = false;
@@ -192,7 +192,7 @@ describe("skill overview and detail (real App, stubbed network)", () => {
   it("shows Not yet analyzed and never a score before any analysis exists", async () => {
     const empty = { analysis: null, categories: [{ ...overview.categories[0]!, skills: overview.categories[0]!.skills.map((skill) => ({ ...skill, score: null, status: "not-analyzed" })) }] };
     handler = baseHandler({ "/api/skills": () => ok(empty) });
-    mount();
+    mount("/skills");
 
     expect((await screen.findAllByText("Not yet analyzed")).length).toBeGreaterThan(0);
     expect(screen.queryByText(/\/100/)).toBeNull();

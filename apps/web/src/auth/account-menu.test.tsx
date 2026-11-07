@@ -40,7 +40,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function mount(path = "/") {
+function mount(path = "/skills") {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <App />
@@ -193,7 +193,7 @@ describe("switch GitHub account", () => {
 describe("expired sessions and cancelled sign-in", () => {
   it("returns to the signed-out state when a data request reports an expired session", async () => {
     routes["/api/skills"] = () => fail(401, "UNAUTHORIZED", "Invalid or expired session.");
-    mount();
+    mount("/skills");
 
     expect((await screen.findAllByRole("link", { name: "Sign in with GitHub" })).length).toBeGreaterThan(0);
     expect(screen.queryByText("octocat")).toBeNull();

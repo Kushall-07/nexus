@@ -12,6 +12,7 @@ describe("NEXUS web foundation", () => {
     );
 
     expect(html).toContain("NEXUS");
-    expect(html).toContain("GitHub Evidence Engine");
+    // Landing page hero headline — present on the public / route
+    expect(html).toContain("IS EVIDENCE");
   });
 });

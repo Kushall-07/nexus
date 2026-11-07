@@ -477,3 +477,139 @@ main > * {
 .landing-section:nth-child(2) { animation-delay: 0.1s; }
 .landing-section:nth-child(3) { animation-delay: 0.2s; }
 .landing-section:nth-child(4) { animation-delay: 0.3s; }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Light theme — Cream / Deep Teal / Coral                                     */
+/* Activated via data-theme="light" on <html>.                                  */
+/* Overrides the Gold Signal dark palette with the approved light palette.     */
+/*                                                                              */
+/* Cream:      #F1EEE8  — primary background                                   */
+/* Deep Teal:  #0E4F4A  — primary action and brand surface                     */
+/* Coral:      #F67F5E  — accent and selective emphasis                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ── Background surfaces ─────────────────────────────────────────────── */
+  --color-slate-50:  oklch(93% 0.014 72);   /* Cream #F1EEE8 — page bg       */
+  --color-slate-100: oklch(90% 0.013 72);   /* hover tint on cream            */
+  --color-white:     oklch(98% 0.006 72);   /* elevated card surface          */
+
+  /* ── Borders ─────────────────────────────────────────────────────────── */
+  --color-slate-200: oklch(84% 0.015 72);   /* default border on cream        */
+  --color-slate-300: oklch(74% 0.015 72);   /* stronger border                */
+
+  /* ── Text ────────────────────────────────────────────────────────────── */
+  --color-slate-400: oklch(55% 0.010 200);  /* icons / placeholders           */
+  --color-slate-500: oklch(45% 0.010 200);  /* muted / helper text            */
+  --color-slate-600: oklch(37% 0.015 192);  /* secondary text (teal cast)     */
+  --color-slate-700: oklch(28% 0.040 192);  /* body text                      */
+  --color-slate-800: oklch(22% 0.050 192);  /* strong body / sub-headings     */
+  --color-slate-900: oklch(16% 0.055 192);  /* Near-black headings            */
+  --color-slate-950: oklch(10% 0.055 192);  /* max contrast                   */
+
+  /* ── Primary (Deep Teal replaces Gold as the action color) ────────────── */
+  --color-indigo-50:  oklch(94% 0.025 165); /* very subtle teal tint bg       */
+  --color-indigo-100: oklch(87% 0.040 170); /* active nav / teal tint         */
+  --color-indigo-200: oklch(76% 0.058 178); /* teal accent border             */
+  --color-indigo-300: oklch(60% 0.075 185); /* medium teal                    */
+  --color-indigo-400: oklch(46% 0.075 190); /* hover teal                     */
+  --color-indigo-500: oklch(38% 0.070 191); /* strong teal                    */
+  --color-indigo-600: oklch(33% 0.068 192); /* button hover                   */
+  --color-indigo-700: oklch(30% 0.065 192); /* PRIMARY — Deep Teal #0E4F4A    */
+  --color-indigo-800: oklch(24% 0.055 192); /* darker teal                    */
+  --color-indigo-900: oklch(18% 0.045 192); /* very dark teal                 */
+  --color-indigo-950: oklch(98% 0.006 72);  /* near-cream (skip-to-main bg)   */
+
+  /* ── Accent: Coral ──────────────────────────────────────────────────── */
+  --color-orange-500: oklch(70% 0.148 36);  /* Coral #F67F5E — accent          */
+  --color-orange-600: oklch(63% 0.148 34);  /* coral hover                     */
+  --color-orange-400: oklch(76% 0.138 38);  /* coral light                     */
+}
+
+/* Light mode body background — Cream with subtle teal atmospheric tint */
+[data-theme="light"] body {
+  background-color: var(--color-slate-50);
+  background-image:
+    radial-gradient(90rem 50rem at 12% 0%,   oklch(30% 0.065 192 / 0.040), transparent 55%),
+    radial-gradient(60rem 35rem at 92% 98%,  oklch(70% 0.148 36 / 0.030), transparent 50%),
+    radial-gradient(40rem 25rem at 55% 50%,  oklch(30% 0.065 192 / 0.015), transparent 60%);
+}
+
+/* Theme transition — smooth color shifts when toggling */
+[data-theme],
+[data-theme] *,
+[data-theme] *::before,
+[data-theme] *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 220ms;
+  transition-timing-function: ease-out;
+}
+
+/* Suppress transition on initial page load — only animate actual toggles */
+.theme-no-transition,
+.theme-no-transition *,
+.theme-no-transition *::before,
+.theme-no-transition *::after {
+  transition: none !important;
+}
+
+/* Light theme overrides for gold-specific utilities */
+
+[data-theme="light"] .nx-gradient-text {
+  /* Teal → Coral gradient replaces the Gold gradient on the light palette */
+  background: linear-gradient(
+    135deg,
+    oklch(30% 0.065 192),  /* Deep Teal */
+    oklch(70% 0.148 36)    /* Coral     */
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .nx-score-fill {
+  /* Teal gradient replaces Gold on light palette */
+  background: linear-gradient(
+    to right,
+    oklch(38% 0.070 191),  /* strong teal */
+    oklch(30% 0.065 192)   /* Deep Teal   */
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Coral accent — available as a semantic utility in both themes               */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-coral {
+  color: oklch(70% 0.148 36);
+}
+
+.nx-bg-coral {
+  background-color: oklch(70% 0.148 36);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Landing page — section scroll-reveal (Intersection Observer driven)         */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.landing-section-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-section-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-section-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -145,7 +145,7 @@ function ScoringFeedback({ scoring }: { scoring: ScoringState }) {
             : ""}
         </p>
         <p className="mt-2 flex gap-4">
-          <Link to="/" className="font-semibold underline text-emerald-900 hover:text-emerald-700">View Skill Graph</Link>
+          <Link to="/skills" className="font-semibold underline text-emerald-900 hover:text-emerald-700">View Skill Graph</Link>
           <Link to="/roles" className="font-semibold underline text-emerald-900 hover:text-emerald-700">Choose a Target Role</Link>
         </p>
       </div>

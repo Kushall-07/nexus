@@ -171,7 +171,7 @@ describe("SkillDetailView", () => {
     expect(html).toContain("Frontend");
     expect(html).toContain("36.5/100");
     expect(html).toContain("not proof of expertise");
-    expect(html).toContain('href="/"');
+    expect(html).toContain('href="/skills"');
   });
 
   it("shows the signal breakdown with weights and applicability", () => {

@@ -24,7 +24,7 @@ interface Props {
 function BackLink() {
   return (
     <Link
-      to="/"
+      to="/skills"
       className="text-sm font-medium text-indigo-700 underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
     >
       Back to skill overview
