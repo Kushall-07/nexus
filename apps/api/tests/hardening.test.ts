@@ -294,3 +294,104 @@ describe("environment validation", () => {
     await expect(loadEnv()).rejects.toThrow(/FRONTEND_URL/);
   });
 });
+
+describe("E2E rate-limit isolation", () => {
+  // Reloads env.ts with the current process.env stubs.
+  async function loadEnv() {
+    vi.resetModules();
+    return import("../src/config/env.js");
+  }
+
+  // ── Configuration validation ───────────────────────────────────────────────
+
+  it("accepts E2E_RATE_LIMIT_MAX in test mode with a valid value", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("E2E_RATE_LIMIT_MAX", "1500");
+    const { env: testEnv } = await loadEnv();
+    expect(testEnv.E2E_RATE_LIMIT_MAX).toBe(1500);
+  });
+
+  it("is absent (undefined) in test mode when not set — production default 500 applies", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    // E2E_RATE_LIMIT_MAX deliberately not stubbed — should be absent from process.env
+    const { env: testEnv } = await loadEnv();
+    expect(testEnv.E2E_RATE_LIMIT_MAX).toBeUndefined();
+  });
+
+  it("rejects E2E_RATE_LIMIT_MAX when NODE_ENV=production — production cannot enable the override", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("FRONTEND_URL", "https://app.example.com");
+    vi.stubEnv("BACKEND_URL", "https://api.example.com");
+    vi.stubEnv("E2E_RATE_LIMIT_MAX", "5000");
+    await expect(loadEnv()).rejects.toThrow(/E2E_RATE_LIMIT_MAX/);
+  });
+
+  it("rejects E2E_RATE_LIMIT_MAX when NODE_ENV=development — development does not inherit the override", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("E2E_RATE_LIMIT_MAX", "5000");
+    await expect(loadEnv()).rejects.toThrow(/E2E_RATE_LIMIT_MAX/);
+  });
+
+  it("rejects zero as E2E_RATE_LIMIT_MAX (must be at least 1)", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("E2E_RATE_LIMIT_MAX", "0");
+    await expect(loadEnv()).rejects.toThrow(/E2E_RATE_LIMIT_MAX/);
+  });
+
+  it("rejects values above 10 000 as unreasonable", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("E2E_RATE_LIMIT_MAX", "10001");
+    await expect(loadEnv()).rejects.toThrow(/E2E_RATE_LIMIT_MAX/);
+  });
+
+  it("rejects a non-numeric E2E_RATE_LIMIT_MAX value", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("E2E_RATE_LIMIT_MAX", "not-a-number");
+    await expect(loadEnv()).rejects.toThrow(/E2E_RATE_LIMIT_MAX/);
+  });
+
+  // ── Middleware behaviour ───────────────────────────────────────────────────
+  // These tests use fresh rateLimitPerIp instances (same as the per-IP suite
+  // above) to prove the limiter still fires at the configured ceiling — the
+  // E2E override does not bypass rate-limiting, it only raises the threshold.
+
+  it("rate limiting still enforces the configured test ceiling — 429 fires after the limit", async () => {
+    const limited = express();
+    limited.set("trust proxy", 1);
+    // max=3 simulates a low E2E_RATE_LIMIT_MAX; proves the guard still fires.
+    limited.use(rateLimitPerIp({ windowMs: 60_000, max: 3 }));
+    limited.get("/x", (_req, res) => res.json({ success: true, data: {} }));
+    limited.use(errorHandler);
+
+    for (let i = 0; i < 3; i++) {
+      expect(
+        (await request(limited).get("/x").set("X-Forwarded-For", "10.100.0.1")).status,
+      ).toBe(200);
+    }
+
+    const blocked = await request(limited).get("/x").set("X-Forwarded-For", "10.100.0.1");
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.error.code).toBe("RATE_LIMITED");
+    expect(Number(blocked.headers["retry-after"])).toBeGreaterThan(0);
+  });
+
+  it("TRUST_PROXY=0 — spoofed X-Forwarded-For cannot circumvent a raised test limit", async () => {
+    // With trust proxy disabled, Express ignores X-Forwarded-For regardless of
+    // the configured max.  All requests key on the socket address; a header
+    // claiming a fresh IP after exhaustion is still blocked.
+    const limited = express();
+    limited.set("trust proxy", 0);
+    limited.use(rateLimitPerIp({ windowMs: 60_000, max: 3 }));
+    limited.get("/x", (_req, res) => res.json({ success: true, data: {} }));
+    limited.use(errorHandler);
+
+    for (let i = 0; i < 3; i++) {
+      expect((await request(limited).get("/x")).status).toBe(200);
+    }
+
+    // Spoofed header claiming a new IP — still blocked because socket IP is used.
+    const spoofed = await request(limited).get("/x").set("X-Forwarded-For", "10.200.0.1");
+    expect(spoofed.status).toBe(429);
+    expect(spoofed.body.error.code).toBe("RATE_LIMITED");
+  });
+});

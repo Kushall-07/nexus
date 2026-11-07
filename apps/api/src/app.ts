@@ -37,7 +37,16 @@ app.use(express.json({ limit: "16kb" }));
 // Applies to both authenticated and unauthenticated endpoints. In-process only;
 // each API instance enforces its own limit independently (single-instance private beta).
 // Authenticated routes also carry tighter per-user limits (see individual routers).
-app.use("/api", rateLimitPerIp({ windowMs: 15 * 60_000, max: 500 }));
+//
+// In test mode (NODE_ENV=test), E2E_RATE_LIMIT_MAX may raise the ceiling so that
+// three parallel Playwright projects sharing the localhost IP do not exhaust the
+// production default.  env.ts rejects E2E_RATE_LIMIT_MAX in all other environments,
+// keeping the production default of 500 strictly unchanged.
+const globalIpMax =
+  env.NODE_ENV === "test" && env.E2E_RATE_LIMIT_MAX != null
+    ? env.E2E_RATE_LIMIT_MAX
+    : 500;
+app.use("/api", rateLimitPerIp({ windowMs: 15 * 60_000, max: globalIpMax }));
 
 // Liveness: the process is up. Says nothing about dependencies.
 app.get("/health", (_req, res) => {

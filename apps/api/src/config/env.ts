@@ -65,6 +65,13 @@ const baseEnvSchema = z.object({
   // 1 = single hop (e.g. nginx, a PaaS load-balancer).
   // Must match your actual deployment topology to prevent IP-header spoofing.
   TRUST_PROXY: z.coerce.number().int().min(0).default(0),
+
+  // E2E test isolation only — raises the per-IP rate-limit ceiling so that the
+  // three parallel Playwright projects (desktop / tablet / mobile) do not exhaust
+  // the production default of 500 req / 15 min from the shared localhost IP.
+  // ONLY accepted when NODE_ENV=test.  Rejected in production and development
+  // by the superRefine cross-field rule below.  Not present in root .env.
+  E2E_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(10_000).optional(),
 });
 
 // Cross-field rules. Messages name the setting, never its value.
@@ -89,6 +96,13 @@ const envSchema = baseEnvSchema.superRefine((value, ctx) => {
       const url = value[key];
       if (url && new URL(url).protocol !== "https:") fail(key, "must use https in production.");
     }
+  }
+
+  if (value.E2E_RATE_LIMIT_MAX !== undefined && value.NODE_ENV !== "test") {
+    fail(
+      "E2E_RATE_LIMIT_MAX",
+      "may only be set when NODE_ENV=test. Remove this variable from production and development configuration.",
+    );
   }
 });
 
@@ -119,4 +133,5 @@ export const env = envSchema.parse({
   JOB_PROVIDER_TIMEOUT_MS: process.env.JOB_PROVIDER_TIMEOUT_MS,
   RESUME_MAX_BYTES: process.env.RESUME_MAX_BYTES,
   TRUST_PROXY: process.env.TRUST_PROXY,
+  E2E_RATE_LIMIT_MAX: process.env.E2E_RATE_LIMIT_MAX,
 });
