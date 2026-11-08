@@ -334,7 +334,7 @@ export function ResumePage() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Resume</h1>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>My Career Profile</h1>
         <p className="mt-0.5 text-sm text-slate-500">
           Upload a text-based PDF or DOCX. NEXUS extracts fields for you to review; the file itself is not stored —
           only the reviewed fields are, and you can delete them at any time.

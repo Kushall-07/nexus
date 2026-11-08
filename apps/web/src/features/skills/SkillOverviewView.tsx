@@ -56,7 +56,7 @@ export function SkillOverviewView({ state, onRetry, onRunScoring, scoring }: Pro
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Skill graph</h1>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Skill Intelligence</h1>
         <p className="mt-1 max-w-3xl text-sm text-slate-500">
           Evidence Scores summarise observable signals in your analyzed public repositories. They are not proof of
           expertise — a skill without evidence has simply not been observed.

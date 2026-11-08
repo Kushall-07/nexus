@@ -14,7 +14,7 @@
  *   is called per test; the token is minted once and reused.
  *
  * Route map (confirmed from App.tsx):
- *   /             → SkillOverviewPage  ("Skill graph")
+ *   /             → SkillOverviewPage  ("Skill Intelligence")
  *   /skills/:id   → SkillDetailPage
  *   /repositories → RepositoriesPage   ("Repositories")
  *   /roles        → RolesPage          ("Target role")
@@ -182,9 +182,9 @@ test.describe("Page routes", () => {
     await injectSession(context);
   });
 
-  test("/ → Skill graph (SkillOverviewPage)", async ({ page }) => {
+  test("/ → Skill Intelligence (SkillOverviewPage)", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /skill graph/i, level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /skill intelligence/i, level: 1 })).toBeVisible();
   });
 
   test("/dashboard → Dashboard", async ({ page }) => {

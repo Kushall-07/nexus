@@ -153,7 +153,7 @@ describe("skill overview and detail (real App, stubbed network)", () => {
     expect(calls.map((call) => call.url)).toEqual(expect.arrayContaining(["/api/skills/react", "/api/skills/react/evidence"]));
 
     await user.click(screen.getByRole("link", { name: "Back to skill overview" }));
-    expect(await screen.findByRole("heading", { name: "Skill graph" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Skill Intelligence" })).toBeTruthy();
   });
 
   it("shows the no-evidence state for a skill without a score", async () => {
