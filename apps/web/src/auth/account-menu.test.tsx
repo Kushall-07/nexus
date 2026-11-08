@@ -114,7 +114,7 @@ describe("header account control", () => {
   it("keeps the existing navigation", async () => {
     mount();
     await trigger();
-    for (const name of ["Repositories", "Skills", "Target role"]) {
+    for (const name of ["GitHub Evidence", "Skill Intelligence", "Role & Gap Analysis"]) {
       expect(screen.getByRole("link", { name })).toBeTruthy();
     }
   });

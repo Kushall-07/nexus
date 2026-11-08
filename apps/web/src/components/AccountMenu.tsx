@@ -4,7 +4,7 @@ import { SIGN_IN_URL, useAuth } from "../auth/AuthContext";
 const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700";
 const menuItemClass = `block w-full rounded-md px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`;
 
-export function AccountMenu() {
+export function AccountMenu({ compact = false }: { compact?: boolean }) {
   const { state, actionError, pending, signOut, switchAccount } = useAuth();
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -30,12 +30,12 @@ export function AccountMenu() {
   }, [open]);
 
   if (state.status === "loading") {
-    return (
-      <p className="text-sm text-slate-600">Checking session...</p>
-    );
+    if (compact) return <div className="h-6 w-6 rounded-full bg-slate-200 skeleton" />;
+    return <p className="text-sm text-slate-600">Checking session...</p>;
   }
 
   if (state.status !== "authenticated") {
+    if (compact) return null;
     return (
       <a
         href={SIGN_IN_URL}
@@ -48,6 +48,20 @@ export function AccountMenu() {
 
   const { username, githubId } = state.user;
   const label = username ?? "GitHub account";
+
+  const avatar = githubId ? (
+    <img
+      src={`https://avatars.githubusercontent.com/u/${encodeURIComponent(githubId)}?s=48`}
+      alt=""
+      width={24}
+      height={24}
+      className="h-6 w-6 shrink-0 rounded-full bg-slate-200"
+    />
+  ) : (
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">
+      {label.charAt(0).toUpperCase()}
+    </span>
+  );
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Escape") {
@@ -66,7 +80,7 @@ export function AccountMenu() {
   };
 
   return (
-    <div ref={root} className="relative w-full" onKeyDown={onKeyDown}>
+    <div ref={root} className={`relative ${compact ? "" : "w-full"}`} onKeyDown={onKeyDown}>
       <button
         ref={trigger}
         type="button"
@@ -75,29 +89,26 @@ export function AccountMenu() {
         aria-controls="account-menu"
         aria-label={`Account menu for ${label}`}
         onClick={() => setOpen((value) => !value)}
-        className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 ${focusRing}`}
+        className={
+          compact
+            ? `flex items-center justify-center rounded-lg p-1 hover:bg-slate-100 ${focusRing}`
+            : `flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 ${focusRing}`
+        }
       >
-        {githubId ? (
-          <img
-            src={`https://avatars.githubusercontent.com/u/${encodeURIComponent(githubId)}?s=48`}
-            alt=""
-            width={24}
-            height={24}
-            className="h-6 w-6 shrink-0 rounded-full bg-slate-200"
-          />
-        ) : (
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">
-            {label.charAt(0).toUpperCase()}
-          </span>
-        )}
-        <span className="min-w-0 flex-1 truncate text-left">{label}</span>
+        {avatar}
+        {!compact && <span className="min-w-0 flex-1 truncate text-left">{label}</span>}
       </button>
       {open ? (
         <div
           id="account-menu"
           role="menu"
           aria-label="Account"
-          className="absolute bottom-full left-0 z-50 mb-2 w-full min-w-[200px] rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg"
+          className={[
+            "absolute z-50 rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg",
+            compact
+              ? "bottom-full left-0 mb-2 min-w-[200px]"
+              : "bottom-full left-0 mb-2 w-full min-w-[200px]",
+          ].join(" ")}
         >
           <div className="px-2.5 py-2 border-b border-slate-100 mb-1">
             <p className="truncate text-sm font-medium text-slate-900">{label}</p>

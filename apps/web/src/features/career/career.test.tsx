@@ -136,8 +136,8 @@ describe("shell and sign-in", () => {
   it("adds the career navigation while keeping the existing links and account menu", async () => {
     handler = routes({ "/api/opportunities": () => ok(search([])) });
     mount("/opportunities");
-    const nav = screen.getByRole("navigation", { name: "Primary" });
-    for (const name of ["Dashboard", "Opportunities", "Copilot", "Applications", "Resume", "Development", "Repositories", "Skills", "Target role"]) {
+    const nav = screen.getByRole("navigation", { name: "Primary navigation" });
+    for (const name of ["Overview", "Job Discovery", "Career Copilot", "Applications", "My Career Profile", "Role & Gap Analysis", "GitHub Evidence", "Skill Intelligence"]) {
       expect(within(nav).getByRole("link", { name })).toBeTruthy();
     }
     expect(await screen.findByRole("button", { name: /octocat/ })).toBeTruthy();

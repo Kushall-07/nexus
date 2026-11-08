@@ -136,7 +136,8 @@ export function PreferencesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Career preferences</h1>
+      <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>My Career Profile</h1>
+      <p className="mt-1 text-sm text-slate-500">Set your directions, work mode, and other preferences to sharpen job matching.</p>
       {state.status === "loading" ? <LoadingState label="Loading your preferences..." /> : null}
       {state.status === "error" ? <ErrorState error={state.error} onRetry={reload} /> : null}
       {state.status === "success" ? <PreferencesForm profile={state.data} /> : null}

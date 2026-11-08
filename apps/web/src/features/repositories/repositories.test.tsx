@@ -98,11 +98,11 @@ describe("repository list", () => {
 
   it("is reachable from the navigation and offers Skills and Target role links", async () => {
     await openRepositories();
-    const nav = screen.getByRole("navigation", { name: "Primary" });
+    const nav = screen.getByRole("navigation", { name: "Primary navigation" });
 
-    expect(within(nav).getByRole("link", { name: "Repositories" })).toBeTruthy();
-    expect(within(nav).getByRole("link", { name: "Skills" })).toBeTruthy();
-    expect(within(nav).getByRole("link", { name: "Target role" })).toBeTruthy();
+    expect(within(nav).getByRole("link", { name: "GitHub Evidence" })).toBeTruthy();
+    expect(within(nav).getByRole("link", { name: "Skill Intelligence" })).toBeTruthy();
+    expect(within(nav).getByRole("link", { name: "Role & Gap Analysis" })).toBeTruthy();
   });
 
   it("shows an empty state when there are no public repositories", async () => {
@@ -301,7 +301,7 @@ describe("scoring", () => {
 
     await user.click(screen.getByRole("link", { name: "View Skill Graph" }));
 
-    expect(await screen.findByRole("heading", { name: "Skill graph" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Skill Intelligence" })).toBeTruthy();
   });
 
   it("explains NO_EVIDENCE and sends no duplicate requests while scoring", async () => {

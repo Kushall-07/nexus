@@ -188,3 +188,64 @@ export function IconExternal({ className }: IconProps) {
     </svg>
   );
 }
+
+export function IconChevronLeft({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9,3 5,7 9,11" />
+    </svg>
+  );
+}
+
+export function IconBookmark({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 2h10a1 1 0 0 1 1 1v11l-6-3.5L2 14V3a1 1 0 0 1 1-1z" />
+    </svg>
+  );
+}
+
+export function IconSearch({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6.5" cy="6.5" r="4.5" />
+      <line x1="10" y1="10" x2="14" y2="14" />
+    </svg>
+  );
+}
+
+export function IconLayoutColumns({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="2" width="6" height="12" rx="1" />
+      <rect x="9" y="2" width="6" height="12" rx="1" />
+    </svg>
+  );
+}
+
+export function IconTable({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="2" width="14" height="12" rx="1" />
+      <line x1="1" y1="6" x2="15" y2="6" />
+      <line x1="6" y1="6" x2="6" y2="14" />
+    </svg>
+  );
+}
+
+export function IconArrowRight({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="2" y1="7" x2="12" y2="7" />
+      <polyline points="8,3 12,7 8,11" />
+    </svg>
+  );
+}
+
+export function IconSparkle({ className }: IconProps) {
+  return (
+    <svg {...defaults} className={className} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 1v3M8 12v3M1 8h3M12 8h3M3.5 3.5l2 2M10.5 10.5l2 2M10.5 3.5l-2 2M3.5 10.5l2 2" />
+    </svg>
+  );
+}

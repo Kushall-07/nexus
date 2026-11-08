@@ -171,10 +171,10 @@ export function RepositoriesView(props: Props) {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Repositories</h1>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>GitHub Evidence</h1>
         <p className="mt-1 max-w-3xl text-sm text-slate-500">
           NEXUS reads only your public repositories. Select up to {maxSelected}, analyze them, then score the
-          collected evidence.
+          collected evidence into a Skill Graph.
         </p>
       </header>
 

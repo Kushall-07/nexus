@@ -7,15 +7,70 @@ import { useApiResource } from "../../hooks/useApiResource";
 import { ExternalLink, JobMeta, SourceBadge, StatusSelect, buttonClass, inputClass, primaryButtonClass } from "./jobParts";
 import { APPLICATION_STATUS_LABELS } from "../../api/career-types";
 
-const STATUS_ACCENT: Record<ApplicationStatus, string> = {
-  saved: "",
-  planning: "",
-  applied: "nx-panel",
-  interviewing: "nx-panel-success",
-  offer: "nx-panel-success",
-  rejected: "nx-panel-danger",
-  withdrawn: "",
+// ── Status pipeline ─────────────────────────────────────────────────────────────
+
+const PIPELINE_STAGES: ApplicationStatus[] = ["saved", "planning", "applied", "interviewing", "offer"];
+
+const STAGE_STYLE: Record<ApplicationStatus, { dot: string; badge: string }> = {
+  saved:        { dot: "bg-slate-400",   badge: "border-slate-200 bg-slate-100 text-slate-700" },
+  planning:     { dot: "bg-sky-400",     badge: "border-sky-200 bg-sky-50 text-sky-800" },
+  applied:      { dot: "bg-indigo-400",  badge: "border-indigo-200 bg-indigo-50 text-indigo-800" },
+  interviewing: { dot: "bg-amber-400",   badge: "border-amber-200 bg-amber-50 text-amber-800" },
+  offer:        { dot: "bg-emerald-500", badge: "border-emerald-200 bg-emerald-50 text-emerald-800" },
+  rejected:     { dot: "bg-red-400",     badge: "border-red-200 bg-red-50 text-red-800" },
+  withdrawn:    { dot: "bg-slate-300",   badge: "border-slate-200 bg-slate-50 text-slate-600" },
 };
+
+const STATUS_ACCENT: Record<ApplicationStatus, string> = {
+  saved:        "",
+  planning:     "",
+  applied:      "nx-panel",
+  interviewing: "nx-panel-success",
+  offer:        "nx-panel-success",
+  rejected:     "nx-panel-danger",
+  withdrawn:    "",
+};
+
+function PipelineBar({ items }: { items: SavedJobRecord[] }) {
+  const counts = Object.fromEntries(
+    PIPELINE_STAGES.map((stage) => [stage, items.filter((r) => r.status === stage).length])
+  ) as Record<ApplicationStatus, number>;
+  const total = items.length;
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white px-5 py-4">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Pipeline</p>
+      <div className="flex items-stretch gap-0 overflow-hidden rounded-lg border border-slate-200">
+        {PIPELINE_STAGES.map((stage, index) => {
+          const count = counts[stage];
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          const style = STAGE_STYLE[stage];
+          return (
+            <div
+              key={stage}
+              className={[
+                "flex flex-1 flex-col items-center gap-1 px-2 py-2.5 text-center",
+                index < PIPELINE_STAGES.length - 1 ? "border-r border-slate-200" : "",
+                count > 0 ? "bg-white" : "bg-slate-50",
+              ].join(" ")}
+            >
+              <span className={`inline-block h-2 w-2 rounded-full ${style.dot}`} aria-hidden="true" />
+              <span className="text-xs font-medium text-slate-700 capitalize hidden sm:block">
+                {APPLICATION_STATUS_LABELS[stage]}
+              </span>
+              <span className="tabular-nums text-base font-bold text-slate-900">{count}</span>
+              {total > 0 ? (
+                <span className="text-[10px] text-slate-400 tabular-nums">{pct}%</span>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Application row ─────────────────────────────────────────────────────────────
 
 function Row({ record, onChange, onRemove, onError }: {
   record: SavedJobRecord;
@@ -29,6 +84,7 @@ function Row({ record, onChange, onRemove, onError }: {
   const [busy, setBusy] = useState(false);
   const path = `/api/saved-jobs/${encodeURIComponent(record.jobId)}`;
   const fail = (error: unknown) => onError(error instanceof ApiError ? error : new ApiError(0, "UNKNOWN_ERROR", "The request failed."));
+  const style = STAGE_STYLE[record.status];
 
   async function save() {
     setBusy(true);
@@ -57,13 +113,15 @@ function Row({ record, onChange, onRemove, onError }: {
 
   return (
     <li className={`rounded-xl border border-slate-200 bg-white p-4 ${STATUS_ACCENT[record.status]}`}>
+      {/* Job header */}
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="font-semibold text-slate-900 leading-snug">{record.job.title}</h3>
+          <h2 className="font-semibold text-slate-900 leading-snug">{record.job.title}</h2>
           <p className="text-sm text-slate-600">{record.job.company ?? "Company not provided"}</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+          <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${style.badge}`}>
+            <span className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${style.dot}`} aria-hidden="true" />
             {APPLICATION_STATUS_LABELS[record.status]}
           </span>
           <SourceBadge job={record.job} />
@@ -72,7 +130,9 @@ function Row({ record, onChange, onRemove, onError }: {
       <div className="mt-1.5">
         <JobMeta job={record.job} />
       </div>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+
+      {/* Tracking form */}
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor={`s-${id}`} className="block text-xs font-medium text-slate-600 mb-1">Status</label>
           <StatusSelect id={`s-${id}`} value={status} onChange={setStatus} disabled={busy} />
@@ -86,6 +146,8 @@ function Row({ record, onChange, onRemove, onError }: {
           <textarea id={`n-${id}`} className={inputClass} rows={2} maxLength={2000} value={note} onChange={(event) => setNote(event.target.value)} disabled={busy} />
         </div>
       </div>
+
+      {/* Actions */}
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className={primaryButtonClass} disabled={busy} onClick={save}>
           Save changes{" "}<span className="sr-only">for {record.job.title}</span>
@@ -98,6 +160,8 @@ function Row({ record, onChange, onRemove, onError }: {
     </li>
   );
 }
+
+// ── Main page ───────────────────────────────────────────────────────────────────
 
 export function ApplicationsPage() {
   const { state, reload } = useApiResource(() => apiGet<{ items: SavedJobRecord[] }>("/api/saved-jobs"), []);
@@ -126,10 +190,16 @@ export function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Saved jobs &amp; applications</h1>
-        <p className="mt-0.5 text-sm text-slate-500">
-          Your private tracker. NEXUS never submits applications on your behalf.
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>
+          Applications
+        </h1>
+        <p className="mt-1.5 text-sm text-slate-500">
+          Your private tracker — NEXUS never submits applications on your behalf.{" "}
+          <Link to="/opportunities" className="font-medium text-indigo-700 hover:underline">
+            Find opportunities
+          </Link>
         </p>
       </div>
 
@@ -146,22 +216,25 @@ export function ApplicationsPage() {
           to start tracking it.
         </EmptyState>
       ) : (
-        <ul className="space-y-3" aria-label="Saved jobs">
-          {active.map((record) => (
-            <Row
-              key={record.jobId}
-              record={record}
-              onChange={(updated) => setItems(list.map((entry) => (entry.jobId === updated.jobId ? updated : entry)))}
-              onRemove={(jobId) => setItems(list.filter((entry) => entry.jobId !== jobId))}
-              onError={setError}
-            />
-          ))}
-        </ul>
+        <>
+          <PipelineBar items={active} />
+          <ul className="space-y-4" aria-label="Saved jobs">
+            {active.map((record) => (
+              <Row
+                key={record.jobId}
+                record={record}
+                onChange={(updated) => setItems(list.map((entry) => (entry.jobId === updated.jobId ? updated : entry)))}
+                onRemove={(jobId) => setItems(list.filter((entry) => entry.jobId !== jobId))}
+                onError={setError}
+              />
+            ))}
+          </ul>
+        </>
       )}
 
       {dismissed.length > 0 ? (
         <section aria-label="Dismissed recommendations">
-          <h2 className="mb-2 text-sm font-semibold text-slate-700">Dismissed recommendations</h2>
+          <h2 className="mb-2 text-sm font-semibold text-slate-700">Dismissed ({dismissed.length})</h2>
           <ul className="space-y-2">
             {dismissed.map((record) => (
               <li

@@ -187,7 +187,7 @@ export function DevelopmentPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Skill development</h1>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Role & Gap Analysis</h1>
         <p className="mt-0.5 text-sm text-slate-500">
           Pick a career direction to see which skills your evidence does not yet demonstrate, in priority order.
           A direction is a preference you can change or clear at any time — it never limits your job search.
