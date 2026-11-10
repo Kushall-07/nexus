@@ -148,19 +148,35 @@ export interface RepositoryDto {
   fullName: string;
   url: string;
   description: string | null;
+  visibility: "public";
+  defaultBranch: string | null;
   isFork: boolean;
   isArchived: boolean;
   primaryLanguage: string | null;
   stars: number;
+  forks: number;
+  githubCreatedAt: string | null;
+  githubUpdatedAt: string | null;
+  githubPushedAt: string | null;
+  languages: Record<string, number> | null;
+  languagePercentages: Record<string, number>;
   selected: boolean;
   analyzed: boolean;
   analyzedAt: string | null;
+}
+
+export interface RepositorySyncSummary {
+  discovered: number;
+  inserted: number;
+  updated: number;
 }
 
 export interface RepositoryListResponse {
   repositories: RepositoryDto[];
   count: number;
   truncated: boolean;
+  sync: RepositorySyncSummary;
+  syncedAt: string;
 }
 
 export interface GithubQuota {

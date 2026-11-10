@@ -38,9 +38,9 @@ function PipelineBar({ items }: { items: SavedJobRecord[] }) {
   const total = items.length;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-5 py-4">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Pipeline</p>
-      <div className="flex items-stretch gap-0 overflow-hidden rounded-lg border border-slate-200">
+    <div className="nx-card rounded-2xl border border-slate-200 bg-white px-5 py-5">
+      <p className="mb-3 text-xs font-bold tracking-widest text-slate-500 uppercase">Pipeline</p>
+      <div className="flex items-stretch gap-0 overflow-hidden rounded-xl border border-slate-200">
         {PIPELINE_STAGES.map((stage, index) => {
           const count = counts[stage];
           const pct = total > 0 ? Math.round((count / total) * 100) : 0;
@@ -49,16 +49,16 @@ function PipelineBar({ items }: { items: SavedJobRecord[] }) {
             <div
               key={stage}
               className={[
-                "flex flex-1 flex-col items-center gap-1 px-2 py-2.5 text-center",
+                "flex flex-1 flex-col items-center gap-1 px-2 py-3 text-center transition-colors",
                 index < PIPELINE_STAGES.length - 1 ? "border-r border-slate-200" : "",
-                count > 0 ? "bg-white" : "bg-slate-50",
+                count > 0 ? "bg-white" : "bg-slate-50/60",
               ].join(" ")}
             >
               <span className={`inline-block h-2 w-2 rounded-full ${style.dot}`} aria-hidden="true" />
               <span className="text-xs font-medium text-slate-700 capitalize hidden sm:block">
                 {APPLICATION_STATUS_LABELS[stage]}
               </span>
-              <span className="tabular-nums text-base font-bold text-slate-900">{count}</span>
+              <span className="tabular-nums text-lg font-bold text-slate-900">{count}</span>
               {total > 0 ? (
                 <span className="text-[10px] text-slate-400 tabular-nums">{pct}%</span>
               ) : null}
@@ -112,44 +112,44 @@ function Row({ record, onChange, onRemove, onError }: {
   const id = record.jobId.replace(/[^a-z0-9]/gi, "-");
 
   return (
-    <li className={`rounded-xl border border-slate-200 bg-white p-4 ${STATUS_ACCENT[record.status]}`}>
+    <li className={`nx-card rounded-2xl border border-slate-200 bg-white p-5 ${STATUS_ACCENT[record.status]}`}>
       {/* Job header */}
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h2 className="font-semibold text-slate-900 leading-snug">{record.job.title}</h2>
-          <p className="text-sm text-slate-600">{record.job.company ?? "Company not provided"}</p>
+          <h2 className="font-semibold text-slate-900 leading-snug text-base">{record.job.title}</h2>
+          <p className="text-sm text-slate-600 mt-0.5">{record.job.company ?? "Company not provided"}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${style.badge}`}>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${style.badge}`}>
             <span className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${style.dot}`} aria-hidden="true" />
             {APPLICATION_STATUS_LABELS[record.status]}
           </span>
           <SourceBadge job={record.job} />
         </div>
       </div>
-      <div className="mt-1.5">
+      <div className="mt-2">
         <JobMeta job={record.job} />
       </div>
 
       {/* Tracking form */}
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
         <div>
-          <label htmlFor={`s-${id}`} className="block text-xs font-medium text-slate-600 mb-1">Status</label>
+          <label htmlFor={`s-${id}`} className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Status</label>
           <StatusSelect id={`s-${id}`} value={status} onChange={setStatus} disabled={busy} />
         </div>
         <div>
-          <label htmlFor={`d-${id}`} className="block text-xs font-medium text-slate-600 mb-1">Date</label>
+          <label htmlFor={`d-${id}`} className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Date</label>
           <input id={`d-${id}`} type="date" className={inputClass} value={date} onChange={(event) => setDate(event.target.value)} disabled={busy} />
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor={`n-${id}`} className="block text-xs font-medium text-slate-600 mb-1">Private note</label>
+          <label htmlFor={`n-${id}`} className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Private note</label>
           <textarea id={`n-${id}`} className={inputClass} rows={2} maxLength={2000} value={note} onChange={(event) => setNote(event.target.value)} disabled={busy} />
         </div>
       </div>
 
       {/* Actions */}
-      <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" className={primaryButtonClass} disabled={busy} onClick={save}>
+      <div className="mt-3.5 flex flex-wrap gap-2">
+        <button type="button" className={primaryButtonClass} disabled={busy} onClick={save} style={{ color: "var(--color-indigo-950)" }}>
           Save changes{" "}<span className="sr-only">for {record.job.title}</span>
         </button>
         <button type="button" className={buttonClass} disabled={busy} onClick={remove}>
@@ -189,13 +189,13 @@ export function ApplicationsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 nx-stagger">
       {/* Header */}
       <div>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "2rem", lineHeight: 1, letterSpacing: "-0.025em" }}>
           Applications
         </h1>
-        <p className="mt-1.5 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-slate-500">
           Your private tracker — NEXUS never submits applications on your behalf.{" "}
           <Link to="/opportunities" className="font-medium text-indigo-700 hover:underline">
             Find opportunities
@@ -204,9 +204,9 @@ export function ApplicationsPage() {
       </div>
 
       {error ? (
-        <p role="alert" className="rounded-xl border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-900">
+        <div role="alert" className="nx-card rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
           {describeError(error)}
-        </p>
+        </div>
       ) : null}
 
       {active.length === 0 ? (
@@ -234,12 +234,12 @@ export function ApplicationsPage() {
 
       {dismissed.length > 0 ? (
         <section aria-label="Dismissed recommendations">
-          <h2 className="mb-2 text-sm font-semibold text-slate-700">Dismissed ({dismissed.length})</h2>
+          <h2 className="mb-2 text-xs font-bold tracking-widest text-slate-500 uppercase">Dismissed ({dismissed.length})</h2>
           <ul className="space-y-2">
             {dismissed.map((record) => (
               <li
                 key={record.jobId}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm"
+                className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"
               >
                 <span className="truncate text-slate-700">
                   {record.job.title}{record.job.company ? ` — ${record.job.company}` : ""}

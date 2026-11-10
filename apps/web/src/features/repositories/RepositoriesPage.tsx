@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, apiGet, apiPatch, apiPost } from "../../api/client";
-import type { GithubQuota, RepositoryDto, RepositoryListResponse, ScoringRunSummary } from "../../api/types";
-import { RepositoriesView, type AnalysisProgress, type ListState, type ScoringState } from "./RepositoriesView";
+import type { GithubQuota, RepositoryDto, RepositoryListResponse, RepositorySyncSummary, ScoringRunSummary } from "../../api/types";
+import { RepositoriesView, type AnalysisProgress, type ListState, type RefreshState, type ScoringState } from "./RepositoriesView";
 
 // Mirrors the backend's MAX_REPOSITORIES_PER_ANALYSIS default. The backend
 // remains the authority and its rejection is still surfaced to the user.
@@ -20,8 +20,10 @@ export function RepositoriesPage() {
   const [progress, setProgress] = useState<AnalysisProgress>({ running: false, entries: {} });
   const [reanalyze, setReanalyze] = useState(false);
   const [scoring, setScoring] = useState<ScoringState>({ status: "idle" });
+  const [refresh, setRefresh] = useState<RefreshState>({ status: "idle" });
   const analyzing = useRef(false);
   const scoringNow = useRef(false);
+  const refreshing = useRef(false);
 
   const loadQuota = useCallback(async () => {
     try {
@@ -31,19 +33,51 @@ export function RepositoriesPage() {
     }
   }, []);
 
-  const loadRepositories = useCallback(async (keepExisting: boolean) => {
+  const loadRepositories = useCallback(async (keepExisting: boolean, isUserRefresh = false) => {
     if (!keepExisting) setList({ status: "loading" });
+
+    if (isUserRefresh) {
+      if (refreshing.current) return;
+      refreshing.current = true;
+      setRefresh({ status: "loading" });
+    }
+
     try {
       const data = await apiGet<RepositoryListResponse>("/api/github/repos");
       setList({ status: "success", repositories: data.repositories });
       setTruncated(data.truncated);
+
+      if (isUserRefresh) {
+        setRefresh({
+          status: "success",
+          syncedAt: data.syncedAt,
+          sync: data.sync,
+        });
+      } else {
+        // Store syncedAt from initial load too, but without showing a banner
+        setRefresh((prev) =>
+          prev.status === "idle"
+            ? { status: "success", syncedAt: data.syncedAt, sync: data.sync }
+            : prev,
+        );
+      }
     } catch (error) {
-      setList({ status: "error", error: toApiError(error) });
+      const apiErr = toApiError(error);
+      if (isUserRefresh) {
+        // Preserve the existing list on a failed explicit refresh
+        setRefresh({ status: "error", error: apiErr });
+      } else {
+        setList({ status: "error", error: apiErr });
+      }
+    } finally {
+      if (isUserRefresh) {
+        refreshing.current = false;
+      }
     }
   }, []);
 
   useEffect(() => {
-    void loadRepositories(false);
+    void loadRepositories(false, false);
     void loadQuota();
   }, [loadRepositories, loadQuota]);
 
@@ -105,7 +139,7 @@ export function RepositoriesPage() {
 
     setProgress({ running: false, entries });
     analyzing.current = false;
-    await Promise.all([loadRepositories(true), loadQuota()]);
+    await Promise.all([loadRepositories(true, false), loadQuota()]);
   }
 
   async function runScoring() {
@@ -122,6 +156,11 @@ export function RepositoriesPage() {
     }
   }
 
+  function handleRefresh() {
+    void loadRepositories(list.status === "success", true);
+    void loadQuota();
+  }
+
   return (
     <RepositoriesView
       list={list}
@@ -133,11 +172,9 @@ export function RepositoriesPage() {
       progress={progress}
       reanalyze={reanalyze}
       scoring={scoring}
+      refresh={refresh}
       onToggle={toggleSelection}
-      onRefresh={() => {
-        void loadRepositories(list.status === "success");
-        void loadQuota();
-      }}
+      onRefresh={handleRefresh}
       onReanalyzeChange={setReanalyze}
       onAnalyze={analyzeSelected}
       onScore={runScoring}

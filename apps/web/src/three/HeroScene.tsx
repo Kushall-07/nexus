@@ -15,30 +15,14 @@
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
 
-export type HeroTheme = "dark" | "light";
+// ─── Color constants (light theme only) ──────────────────────────────────────
 
-interface Props {
-  theme: HeroTheme;
-}
-
-// ─── Color constants ──────────────────────────────────────────────────────────
-
-const DARK = {
-  node: new THREE.Color(0xf6c900),        // Vibrant Gold — primary nodes
-  nodeDim: new THREE.Color(0x8a6e00),     // Dimmed Gold — repo nodes
-  nodeBright: new THREE.Color(0xffe680),  // Bright Gold — opportunity nodes
-  line: new THREE.Color(0xf6c900),        // Gold connections
-  lineOpacity: 0.12,
-  bg: "transparent",
-};
-
-const LIGHT = {
+const PALETTE = {
   node: new THREE.Color(0x0e4f4a),        // Deep Teal — primary nodes
   nodeDim: new THREE.Color(0x1a7a74),     // Mid Teal — repo nodes
   nodeBright: new THREE.Color(0xf67f5e),  // Coral — opportunity nodes
   line: new THREE.Color(0x0e4f4a),        // Teal connections
   lineOpacity: 0.10,
-  bg: "transparent",
 };
 
 // ─── Scene parameters ─────────────────────────────────────────────────────────
@@ -60,12 +44,11 @@ const SKILL_COUNT = Math.floor(PARTICLE_COUNT * 0.40);
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function HeroScene({ theme }: Props) {
+export function HeroScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerRef = useRef<{ x: number; y: number } | null>(null);
   const destroyRef = useRef<(() => void) | null>(null);
 
-  // Re-create scene when theme changes
   useEffect(() => {
     // Destroy previous scene if any
     destroyRef.current?.();
@@ -78,7 +61,7 @@ export function HeroScene({ theme }: Props) {
     const testCtx = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
     if (!testCtx) return;
 
-    const palette = theme === "light" ? LIGHT : DARK;
+    const palette = PALETTE;
 
     // ── Renderer ───────────────────────────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({
@@ -178,7 +161,7 @@ export function HeroScene({ theme }: Props) {
     // Shader material for circular, smooth point sprites with per-vertex sizes
     const pointMat = new THREE.ShaderMaterial({
       uniforms: {
-        uOpacity: { value: theme === "light" ? 0.85 : 0.90 },
+        uOpacity: { value: 0.85 },
       },
       vertexShader: /* glsl */ `
         attribute float aSize;
@@ -412,7 +395,7 @@ export function HeroScene({ theme }: Props) {
 
     destroyRef.current = destroy;
     return destroy;
-  }, [theme]);
+  }, []);
 
   // ── Pointer tracking ─────────────────────────────────────────────────────
   useEffect(() => {

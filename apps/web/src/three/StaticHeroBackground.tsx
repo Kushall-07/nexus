@@ -6,15 +6,9 @@
  *  - User prefers reduced motion
  *  - WebGL is unavailable
  *
- * Renders a branded atmospheric field with the existing Gold Signal
- * animation system (nx-node-pulse) adapted for the landing page.
+ * Renders a branded atmospheric field using the light theme palette
+ * (Deep Teal + Coral) with the existing animation system (nx-node-pulse).
  */
-
-import type { HeroTheme } from "./HeroScene";
-
-interface Props {
-  theme: HeroTheme;
-}
 
 // Pre-defined node positions for a natural-looking static constellation
 const NODES = [
@@ -41,13 +35,11 @@ const CONNECTIONS = [
   [12, 5], [13, 6], [14, 7],
 ];
 
-export function StaticHeroBackground({ theme }: Props) {
-  const isDark = theme === "dark";
-  const nodeColor = isDark ? "oklch(81% 0.195 86)" : "oklch(30% 0.065 192)";
-  const lineColor = isDark ? "oklch(81% 0.195 86 / 0.14)" : "oklch(30% 0.065 192 / 0.12)";
-  const nodePulseClass = "nx-node-pulse";
+const NODE_COLOR = "oklch(30% 0.065 192)";       // Deep Teal
+const HUB_COLOR  = "oklch(70% 0.148 36)";        // Coral — central hub
+const LINE_COLOR = "oklch(30% 0.065 192 / 0.12)"; // Teal connections
 
-  // Convert percentage positions to SVG coords (0-100 viewBox)
+export function StaticHeroBackground() {
   const getNode = (i: number) => NODES[i] ?? NODES[0]!;
 
   return (
@@ -69,7 +61,7 @@ export function StaticHeroBackground({ theme }: Props) {
               key={i}
               x1={pa.x} y1={pa.y}
               x2={pb.x} y2={pb.y}
-              stroke={lineColor}
+              stroke={LINE_COLOR}
               strokeWidth="0.3"
             />
           );
@@ -82,8 +74,8 @@ export function StaticHeroBackground({ theme }: Props) {
             cx={n.x}
             cy={n.y}
             r={n.size * 0.28}
-            fill={i === 11 ? (isDark ? "oklch(81% 0.195 86)" : "oklch(70% 0.148 36)") : nodeColor}
-            className={nodePulseClass}
+            fill={i === 11 ? HUB_COLOR : NODE_COLOR}
+            className="nx-node-pulse"
             style={{
               animationDelay: n.delay,
               animationDuration: n.duration,

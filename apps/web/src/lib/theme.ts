@@ -1,57 +1,39 @@
 /**
- * NEXUS theme system — dual theme: Gold Signal (dark) + Cream/Teal/Coral (light)
+ * NEXUS theme — light only.
  *
- * Theme is stored in localStorage and applied via data-theme="light" on <html>.
- * Default is dark (no attribute needed — Gold Signal is the baseline).
+ * The application is permanently light-themed. Dark mode is not supported.
+ * The `data-theme="light"` attribute is set directly in index.html so the
+ * correct theme is active before any JavaScript executes.
+ *
+ * This module retains a minimal surface for compatibility in case other
+ * modules import from it, but all dark-mode functionality has been removed.
  */
 
-export type Theme = "dark" | "light";
+export type Theme = "light";
 
-const STORAGE_KEY = "nexus-theme";
-
-/** Read the persisted theme preference, defaulting to dark. */
+/** Always returns "light". */
 export function getStoredTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored === "light" ? "light" : "dark";
+  return "light";
 }
 
-/** Apply theme to <html> immediately, suppressing the CSS transition during the apply. */
-export function applyTheme(theme: Theme): void {
-  const html = document.documentElement;
+/** No-op — the theme is always light. */
+export function applyTheme(_theme: Theme): void {
+  // The HTML element permanently carries data-theme="light" (set in index.html).
+  // Nothing to do here.
+}
 
-  // Suppress the CSS transition while changing
-  html.classList.add("theme-no-transition");
-
-  if (theme === "light") {
-    html.setAttribute("data-theme", "light");
-  } else {
-    html.removeAttribute("data-theme");
+/** No-op — there is no theme to set. */
+export function setTheme(_theme: Theme): void {
+  // Clear any legacy dark-theme preference that may remain in localStorage.
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("nexus-theme");
   }
-
-  // Re-enable transitions on the next paint
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      html.classList.remove("theme-no-transition");
-    });
-  });
 }
 
-/** Persist and apply a new theme selection. */
-export function setTheme(theme: Theme): void {
-  localStorage.setItem(STORAGE_KEY, theme);
-  applyTheme(theme);
-}
-
-/** Toggle between dark and light. */
-export function toggleTheme(): Theme {
-  const current = getStoredTheme();
-  const next: Theme = current === "dark" ? "light" : "dark";
-  setTheme(next);
-  return next;
-}
-
-/** Initialize: apply the persisted theme on page load without transition. */
+/** No-op — there is nothing to initialize. */
 export function initTheme(): void {
-  applyTheme(getStoredTheme());
+  // Clear any legacy dark-theme preference that may remain in localStorage.
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("nexus-theme");
+  }
 }

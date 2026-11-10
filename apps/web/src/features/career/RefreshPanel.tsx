@@ -8,13 +8,15 @@ interface Props {
   evidence: EvidenceMeta;
   refresh: RefreshState;
   onDone: () => void;
+  /** extra classes for the card (e.g. "h-full" to stretch inside a grid row) */
+  className?: string;
 }
 
 const when = (value: string | null) => (value ? new Date(value).toLocaleString() : "never");
 
 // Re-runs the existing GitHub analysis + scoring. The previous profile stays
 // in place if the refresh fails.
-export function RefreshPanel({ evidence, refresh, onDone }: Props) {
+export function RefreshPanel({ evidence, refresh, onDone, className = "" }: Props) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<RefreshResult | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
@@ -36,7 +38,7 @@ export function RefreshPanel({ evidence, refresh, onDone }: Props) {
   const stale = (result ? result.profileIsStale : refresh.status === "failed") && evidence.hasGithubAnalysis;
 
   return (
-    <section aria-label="GitHub profile status" className="rounded-xl border border-slate-200 bg-white px-5 py-4">
+    <section aria-label="GitHub profile status" className={`nx-card flex flex-col rounded-2xl border border-slate-200 bg-white px-5 py-4 ${className}`}>
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-slate-900">GitHub evidence</h2>
         <span
@@ -83,7 +85,7 @@ export function RefreshPanel({ evidence, refresh, onDone }: Props) {
         </p>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap items-center gap-3">
+      <div className="mt-auto flex flex-wrap items-center gap-3 pt-3">
         <button type="button" className={buttonClass} disabled={busy} onClick={run}>
           {busy ? (
             <span className="flex items-center gap-1.5">

@@ -67,10 +67,10 @@ function SavedJobRow({
   }
 
   return (
-    <li className="rounded-xl border border-slate-200 bg-white p-4">
+    <li className="nx-card rounded-2xl border border-slate-200 bg-white p-4 nx-card-hover">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-slate-900 leading-snug">{record.job.title}</h3>
+          <h3 className="font-semibold text-slate-900 leading-snug text-base">{record.job.title}</h3>
           <p className="mt-0.5 text-sm text-slate-600">{record.job.company ?? "Company not provided"}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -87,12 +87,13 @@ function SavedJobRow({
         <p className="mt-2 text-xs text-slate-500 italic line-clamp-2">{record.note}</p>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-3.5 flex flex-wrap items-center gap-2">
         <button
           type="button"
           disabled={busy}
           onClick={handleMoveToApplied}
-          className="inline-flex items-center rounded-lg bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-indigo-950 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 disabled:opacity-50"
+          className="inline-flex items-center rounded-xl bg-indigo-700 px-3.5 py-1.5 text-sm font-semibold hover:bg-indigo-600 active:scale-[0.98] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-1 disabled:opacity-50"
+          style={{ color: "var(--color-indigo-950)" }}
         >
           Mark as Applied
         </button>
@@ -101,7 +102,7 @@ function SavedJobRow({
           type="button"
           disabled={busy}
           onClick={handleRemove}
-          className="inline-flex items-center rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 disabled:opacity-50"
         >
           Remove<span className="sr-only"> {record.job.title}</span>
         </button>
@@ -131,23 +132,24 @@ export function SavedOpportunitiesPage() {
   ).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 nx-stagger">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1
             className="font-display text-slate-900"
-            style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}
+            style={{ fontSize: "2rem", lineHeight: 1, letterSpacing: "-0.025em" }}
           >
             Saved Opportunities
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-500">
             Jobs you&apos;re considering. Ready to apply? Move them to your application tracker.
           </p>
         </div>
         <Link
           to="/opportunities"
-          className="inline-flex items-center rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-indigo-950 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+          className="inline-flex items-center rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold hover:bg-indigo-600 active:scale-[0.98] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700"
+          style={{ color: "var(--color-indigo-950)" }}
         >
           Find more jobs
         </Link>
@@ -155,7 +157,7 @@ export function SavedOpportunitiesPage() {
 
       {/* In-pipeline notice */}
       {inPipelineCount > 0 && (
-        <div className="flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm nx-panel">
+        <div className="nx-card flex items-center justify-between rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm nx-panel">
           <p className="text-indigo-900">
             <span className="font-semibold">{inPipelineCount}</span>{" "}
             {inPipelineCount === 1 ? "job is" : "jobs are"} in your application pipeline.
@@ -172,9 +174,9 @@ export function SavedOpportunitiesPage() {
 
       {/* Error banner */}
       {error && (
-        <p role="alert" className="rounded-xl border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-900">
+        <div role="alert" className="nx-card rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
           {describeError(error)}
-        </p>
+        </div>
       )}
 
       {/* Saved jobs list */}

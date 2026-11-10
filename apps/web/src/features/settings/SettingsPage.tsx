@@ -3,7 +3,6 @@ import { ApiError, apiDelete, apiGet } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import { ErrorState, LoadingState, describeError } from "../../components/StateViews";
 import { useApiResource } from "../../hooks/useApiResource";
-import { getStoredTheme, setTheme, type Theme } from "../../lib/theme";
 import { buttonClass, inputClass } from "../career/jobParts";
 
 interface ProviderInfo {
@@ -44,8 +43,8 @@ function Integrations() {
   const { providers, llm } = state.data;
 
   return (
-    <section aria-labelledby="integrations-heading" className="rounded-xl border border-slate-200 bg-white px-5 py-4">
-      <h2 id="integrations-heading" className="text-sm font-semibold text-slate-900">Integrations</h2>
+    <section aria-labelledby="integrations-heading" className="nx-card rounded-2xl border border-slate-200 bg-white px-5 py-5">
+      <h2 id="integrations-heading" className="text-xs font-bold tracking-widest text-slate-500 uppercase mb-1">Integrations</h2>
       <p className="mt-0.5 mb-4 text-xs text-slate-500">
         Shows whether the server has each optional integration configured. Credentials are kept server-side and
         never sent to your browser.
@@ -100,7 +99,7 @@ function DeleteData() {
   }
 
   return (
-    <section aria-labelledby="delete-heading" className="rounded-xl border border-red-300 bg-white px-5 py-4">
+    <section aria-labelledby="delete-heading" className="nx-card rounded-2xl border border-red-200 bg-red-50/40 px-5 py-5">
       <h2 id="delete-heading" className="font-semibold text-slate-900">Delete my NEXUS data</h2>
       <p className="mt-1.5 text-sm text-slate-600">
         Permanently removes your GitHub connection, analyses and evidence, selected repositories, resume profile,
@@ -151,54 +150,13 @@ function DeleteData() {
   );
 }
 
-function AppearanceSection() {
-  const [theme, setLocalTheme] = useState<Theme>(() => getStoredTheme());
-
-  function toggle() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    setLocalTheme(next);
-  }
-
-  return (
-    <section aria-labelledby="appearance-heading" className="rounded-xl border border-slate-200 bg-white px-5 py-4">
-      <h2 id="appearance-heading" className="text-sm font-semibold text-slate-900">Appearance</h2>
-      <p className="mt-0.5 mb-4 text-xs text-slate-500">
-        Choose your preferred colour scheme. Your selection is saved in this browser.
-      </p>
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-slate-900">
-            {theme === "dark" ? "Gold Signal (dark)" : "Cream & Teal (light)"}
-          </p>
-          <p className="text-xs text-slate-500">
-            {theme === "dark"
-              ? "Midnight Black background, Vibrant Gold accents"
-              : "Cream background, Deep Teal accents"}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={toggle}
-          aria-pressed={theme === "light"}
-          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-          className="shrink-0 rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-200 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 transition-colors"
-        >
-          {theme === "dark" ? "Switch to light" : "Switch to dark"}
-        </button>
-      </div>
-    </section>
-  );
-}
-
 export function SettingsPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 nx-stagger">
       <div>
-        <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>Settings</h1>
-        <p className="mt-0.5 text-sm text-slate-500">Integration status, provider configuration, and account management.</p>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "2rem", lineHeight: 1, letterSpacing: "-0.025em" }}>Settings</h1>
+        <p className="mt-2 text-sm text-slate-500">Integration status, provider configuration, and account management.</p>
       </div>
-      <AppearanceSection />
       <Integrations />
       <DeleteData />
     </div>

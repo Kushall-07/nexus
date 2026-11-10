@@ -465,6 +465,48 @@ describe("Skill development", () => {
     expect(JSON.parse(calls.find((call) => call.url === "/api/career/tasks/postgresql")!.body as string)).toEqual({ status: "completed" });
   });
 
+  it("allows selecting Not started at any time, including when transitioning back from other statuses", async () => {
+    let status: string | null = "in_progress";
+    handler = routes({
+      "/api/career/profile": () => ok(careerProfile({ learning: { direction: "backend-engineer", tasks: { postgresql: { status: "in_progress", updatedAt: "2026-11-09T00:00:00.000Z" } } } })),
+      "/api/career/transition": () => {
+        const p = plan();
+        (p.gaps[0] as { taskStatus: string | null }).taskStatus = status;
+        return ok(p);
+      },
+      "PUT /api/career/tasks/postgresql": (_url, init) => {
+        status = JSON.parse(init!.body as string).status;
+        return ok({ skillId: "postgresql", status });
+      },
+    });
+    const user = userEvent.setup();
+    mount("/development");
+
+    // Gap starts as in_progress — select should display that
+    const select = await screen.findByLabelText("Task status for PostgreSQL");
+    expect((select as HTMLSelectElement).value).toBe("in_progress");
+
+    // User selects Not started — this was broken before the fix
+    await user.selectOptions(select, "not_started");
+    await waitFor(() => {
+      const taskCall = calls.find((call) => call.url === "/api/career/tasks/postgresql");
+      expect(taskCall).toBeTruthy();
+      expect(JSON.parse(taskCall!.body as string)).toEqual({ status: "not_started" });
+    });
+  });
+
+  it("renders all five status options in the task dropdown", async () => {
+    handler = routes({
+      "/api/career/profile": () => ok(careerProfile({ learning: { direction: "backend-engineer", tasks: {} } })),
+      "/api/career/transition": () => ok(plan()),
+    });
+    mount("/development");
+
+    const select = await screen.findByLabelText("Task status for PostgreSQL");
+    const options = Array.from((select as HTMLSelectElement).options).map((o) => o.value);
+    expect(options).toEqual(["not_started", "planned", "in_progress", "completed", "skipped"]);
+  });
+
   it("shows a stale-profile warning after a failed refresh and keeps the previous analysis", async () => {
     handler = routes({
       "/api/career/profile": () => ok(careerProfile({ refresh: { status: "failed", lastAttemptAt: "2026-10-19T00:00:00.000Z", lastSuccessAt: null, lastError: "GitHub rate limit reached." } })),

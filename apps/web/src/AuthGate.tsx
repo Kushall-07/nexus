@@ -8,7 +8,7 @@ import { ErrorState, LoadingState } from "./components/StateViews";
  *
  * Loading  → shows loading state.
  * Error    → shows error state with retry.
- * Unauthenticated → redirects to / (public landing page) which has the sign-in CTA.
+ * Unauthenticated → redirects to /signin (dedicated sign-in page).
  * Authenticated → renders children.
  */
 export function AuthGate({ children }: { children: ReactNode }) {
@@ -16,6 +16,6 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   if (state.status === "loading") return <LoadingState label="Checking your session…" />;
   if (state.status === "error") return <ErrorState error={state.error} onRetry={refresh} />;
-  if (state.status === "unauthenticated") return <Navigate to="/" replace />;
+  if (state.status === "unauthenticated") return <Navigate to="/signin" replace />;
   return <>{children}</>;
 }

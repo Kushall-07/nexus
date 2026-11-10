@@ -1,0 +1,157 @@
+/*
+ * Circle Expand Button — pill with an arrow dot on the right. On hover the dot's circle
+ * grows to flood the whole pill, the label and dot swap colours, and the arrow straightens.
+ * Motion/layout follow the Framer "Circle Expand Button Animation" template
+ * (pill radius, 10px 11px 10px 21px padding, 35px dot, arrow rotated -45deg → 0deg).
+ * Colours come from the NEXUS theme via CSS variables on each tone.
+ */
+.ceb {
+  --ceb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ceb-dot: 35px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: 10px 11px 10px 21px;
+  border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--ceb-bg);
+  color: var(--ceb-fg);
+  border: 1px solid var(--ceb-border, transparent);
+  box-shadow: inset 1px 3px 2px 0 rgba(255, 255, 255, 0.25);
+  transition:
+    color 0.4s var(--ceb-ease),
+    box-shadow 0.4s var(--ceb-ease),
+    transform 0.2s var(--ceb-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ceb:active {
+  transform: scale(0.985);
+}
+
+.ceb:focus-visible {
+  outline: 2px solid var(--color-indigo-700);
+  outline-offset: 3px;
+}
+
+.ceb__label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* the white dot that carries the arrow */
+.ceb__dot {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--ceb-dot);
+  height: var(--ceb-dot);
+  border-radius: 50%;
+  background: var(--ceb-dot-bg);
+  color: var(--ceb-dot-fg);
+  transition:
+    background-color 0.4s var(--ceb-ease),
+    color 0.4s var(--ceb-ease);
+}
+
+.ceb__arrow {
+  width: 55%;
+  height: 55%;
+  transform: rotate(-45deg);
+  transition: transform 0.4s var(--ceb-ease);
+}
+
+/* the circle that floods the pill — centred on the dot, scaled up on hover */
+.ceb__fill {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: calc(11px + var(--ceb-dot) / 2);
+  width: 900px;
+  height: 900px;
+  border-radius: 50%;
+  background: var(--ceb-fill);
+  transform: translate(50%, -50%) scale(calc(35 / 900));
+  transition: transform 0.65s var(--ceb-ease);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ceb:hover,
+.ceb:focus-visible {
+  color: var(--ceb-hover-fg);
+  box-shadow: inset 3px 3px 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.ceb:hover .ceb__fill,
+.ceb:focus-visible .ceb__fill {
+  transform: translate(50%, -50%) scale(1);
+}
+
+.ceb:hover .ceb__dot,
+.ceb:focus-visible .ceb__dot {
+  background: var(--ceb-hover-dot-bg);
+  color: var(--ceb-hover-dot-fg);
+}
+
+.ceb:hover .ceb__arrow,
+.ceb:focus-visible .ceb__arrow {
+  transform: rotate(0deg);
+}
+
+/* ── Tones ───────────────────────────────────────────────────────────────── */
+
+/* solid: deep teal pill, cream dot → cream floods in, teal text */
+.ceb--solid {
+  --ceb-bg: var(--color-indigo-700);
+  --ceb-fg: var(--color-indigo-950);
+  --ceb-dot-bg: var(--color-indigo-950);
+  --ceb-dot-fg: var(--color-indigo-700);
+  --ceb-fill: var(--color-indigo-950);
+  --ceb-hover-fg: var(--color-indigo-700);
+  --ceb-hover-dot-bg: var(--color-indigo-700);
+  --ceb-hover-dot-fg: var(--color-indigo-950);
+}
+
+/* outline: glass pill, coral dot → deep teal floods in, cream text */
+.ceb--outline {
+  --ceb-bg: rgba(255, 255, 255, 0.55);
+  --ceb-fg: var(--color-slate-900);
+  --ceb-border: var(--color-slate-300);
+  --ceb-dot-bg: oklch(62% 0.17 36);
+  --ceb-dot-fg: #fff;
+  --ceb-fill: var(--color-indigo-700);
+  --ceb-hover-fg: var(--color-indigo-950);
+  --ceb-hover-dot-bg: var(--color-indigo-950);
+  --ceb-hover-dot-fg: var(--color-indigo-700);
+  box-shadow: none;
+}
+.ceb--outline:hover,
+.ceb--outline:focus-visible {
+  box-shadow: none;
+  border-color: var(--color-indigo-700);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ceb,
+  .ceb__dot,
+  .ceb__arrow,
+  .ceb__fill {
+    transition: none;
+  }
+}

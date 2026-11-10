@@ -48,10 +48,10 @@ function PreferencesForm({ profile }: { profile: CareerProfileResponse }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5 rounded-xl border border-slate-200 bg-white px-5 py-5">
+    <form onSubmit={submit} className="nx-card space-y-6 rounded-2xl border border-slate-200 bg-white px-5 py-5">
       <fieldset>
-        <legend className="font-medium text-slate-900">Career directions (optional)</legend>
-        <p className="text-sm text-slate-600">A direction guides recommendations and your skill plan. It is a preference, never a filter or a label.</p>
+        <legend className="font-semibold text-slate-900">Career directions (optional)</legend>
+        <p className="mt-0.5 text-sm text-slate-500">A direction guides recommendations and your skill plan. It is a preference, never a filter or a label.</p>
         <div className="mt-2 flex flex-wrap gap-3">
           {profile.directions.map((direction) => (
             <label key={direction.id} className="flex items-center gap-2 text-sm">
@@ -63,7 +63,7 @@ function PreferencesForm({ profile }: { profile: CareerProfileResponse }) {
       </fieldset>
 
       <fieldset>
-        <legend className="font-medium text-slate-900">Employment type</legend>
+        <legend className="font-semibold text-slate-900">Employment type</legend>
         <div className="mt-2 flex flex-wrap gap-3">
           {EMPLOYMENT.map(([value, label]) => (
             <label key={value} className="flex items-center gap-2 text-sm">
@@ -75,7 +75,7 @@ function PreferencesForm({ profile }: { profile: CareerProfileResponse }) {
       </fieldset>
 
       <fieldset>
-        <legend className="font-medium text-slate-900">Work mode</legend>
+        <legend className="font-semibold text-slate-900">Work mode</legend>
         <div className="mt-2 flex flex-wrap gap-3">
           {MODES.map(([value, label]) => (
             <label key={value} className="flex items-center gap-2 text-sm">
@@ -135,12 +135,15 @@ export function PreferencesPage() {
   const { state, reload } = useApiResource(() => apiGet<CareerProfileResponse>("/api/career/profile"), []);
 
   return (
-    <div className="space-y-4">
-      <h1 className="font-display text-slate-900" style={{ fontSize: "1.75rem", lineHeight: 1, letterSpacing: "-0.02em" }}>My Career Profile</h1>
-      <p className="mt-1 text-sm text-slate-500">Set your directions, work mode, and other preferences to sharpen job matching.</p>
+    <div className="space-y-6 nx-stagger">
+      <div>
+        <h1 className="font-display text-slate-900" style={{ fontSize: "2rem", lineHeight: 1, letterSpacing: "-0.025em" }}>My Career Profile</h1>
+        <p className="mt-2 text-sm text-slate-500">Set your directions, work mode, and other preferences to sharpen job matching.</p>
+      </div>
       {state.status === "loading" ? <LoadingState label="Loading your preferences..." /> : null}
       {state.status === "error" ? <ErrorState error={state.error} onRetry={reload} /> : null}
       {state.status === "success" ? <PreferencesForm profile={state.data} /> : null}
     </div>
   );
 }
+

@@ -4,28 +4,30 @@ import { APPLICATION_STATUS_LABELS } from "../../api/career-types";
 export const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-700 focus-visible:ring-offset-1";
 
 export const buttonClass = [
-  "rounded-lg border border-slate-300 bg-white px-3 py-1.5",
+  "rounded-xl border border-slate-200 bg-white px-3.5 py-1.5",
   "text-sm font-medium text-slate-700",
-  "hover:bg-slate-100 hover:text-slate-900 hover:border-slate-400",
+  "hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 hover:shadow-sm",
+  "active:scale-[0.98]",
   "disabled:cursor-not-allowed disabled:opacity-50",
-  "transition-colors",
+  "transition-all duration-150",
   focusRing,
 ].join(" ");
 
-// Gold button: bg-indigo-700 = gold; text-slate-50 = midnight black (max contrast on gold)
 export const primaryButtonClass = [
-  "rounded-lg bg-indigo-700 px-3 py-1.5",
-  "text-sm font-semibold text-slate-50",
-  "hover:bg-indigo-600",
+  "rounded-xl bg-indigo-700 px-3.5 py-1.5",
+  "text-sm font-semibold",
+  "hover:bg-indigo-600 hover:shadow-[0_4px_14px_oklch(30%_0.065_192_/_0.22)]",
+  "active:scale-[0.98]",
   "disabled:cursor-not-allowed disabled:opacity-50",
-  "transition-opacity hover:opacity-90",
+  "transition-all duration-150",
   focusRing,
 ].join(" ");
 
 export const inputClass = [
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5",
+  "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2",
   "text-sm text-slate-800 placeholder:text-slate-400",
-  "focus:border-indigo-500 focus:outline-none",
+  "focus:border-indigo-400 focus:shadow-[0_0_0_3px_oklch(30%_0.065_192_/_0.10)] focus:outline-none",
+  "transition-all duration-150",
   focusRing,
 ].join(" ");
 
@@ -144,7 +146,7 @@ export function JobCard({ item, onDetails, onToggleSave, onDismiss, busy }: Card
 
   return (
     <article
-      className={`rounded-xl border border-slate-200 bg-white px-4 py-3.5 ${accentClass}`}
+      className={`nx-card rounded-2xl border border-slate-200 bg-white px-4 py-4 transition-all hover:shadow-md ${accentClass}`}
       aria-labelledby={`job-${job.id}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -152,31 +154,31 @@ export function JobCard({ item, onDetails, onToggleSave, onDismiss, busy }: Card
           <h3 id={`job-${job.id}`} className="font-semibold text-slate-900 leading-snug">
             {job.title}
           </h3>
-          <p className="text-sm text-slate-600">{job.company ?? "Company not provided"}</p>
+          <p className="text-sm text-slate-500 mt-0.5">{job.company ?? "Company not provided"}</p>
         </div>
         <MatchBadge match={match} />
       </div>
 
-      <div className="mt-1.5">
+      <div className="mt-2">
         <JobMeta job={job} />
       </div>
 
-      <div className="mt-2 flex flex-wrap gap-1.5">
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
         <SourceBadge job={job} />
         {job.stale ? (
-          <span className="rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-xs text-amber-900">
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs text-amber-800">
             Older listing
           </span>
         ) : null}
         {item.saved ? (
-          <span className="rounded-full border border-indigo-300 bg-indigo-100 px-2 py-0.5 text-xs text-indigo-900 font-medium">
+          <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-xs text-indigo-800 font-medium">
             {APPLICATION_STATUS_LABELS[item.saved.status]}
           </span>
         ) : null}
       </div>
 
       {required.length > 0 ? (
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2.5 text-xs text-slate-500">
           <span className="font-semibold tabular-nums text-slate-700">{supported.length}</span>
           {" of "}
           <span className="font-semibold tabular-nums text-slate-700">{required.length}</span>
@@ -185,17 +187,18 @@ export function JobCard({ item, onDetails, onToggleSave, onDismiss, busy }: Card
       ) : null}
 
       {match.hardBlockers.length > 0 ? (
-        <p className="mt-1.5 text-xs font-semibold text-red-800">
+        <p className="mt-2 text-xs font-semibold text-red-700">
           Blocker: {match.hardBlockers[0]}
         </p>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3.5 flex flex-wrap gap-2">
         {onDetails ? (
           <button
             type="button"
             className={primaryButtonClass}
             onClick={() => onDetails(item)}
+            style={{ color: "var(--color-indigo-950)" }}
           >
             View details
             <span className="sr-only"> for {job.title}</span>

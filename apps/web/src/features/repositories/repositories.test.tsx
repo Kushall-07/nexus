@@ -34,7 +34,7 @@ function defaultHandler(url: string, init?: RequestInit): Response | Promise<Res
   if (overrides[key]) return overrides[key](url, init);
 
   if (key === "GET /api/auth/me") return ok({ username: "octocat" });
-  if (key === "GET /api/github/repos") return ok({ repositories: store, count: store.length, truncated: false });
+  if (key === "GET /api/github/repos") return ok({ repositories: store, count: store.length, truncated: false, sync: { discovered: store.length, inserted: 0, updated: 0 }, syncedAt: new Date().toISOString() });
   if (key === "GET /api/github/quota") return ok(quota);
   if (key === "GET /api/skills") return ok(overview);
   if (key === "GET /api/roles") return ok(rolesCatalog);
@@ -89,8 +89,11 @@ describe("repository list", () => {
     await openRepositories();
 
     expect(screen.getByText("Description 1")).toBeTruthy();
-    expect(screen.getByText(/TypeScript · Analyzed/)).toBeTruthy();
-    expect(screen.getByText(/No primary language · Fork · Archived · Not yet analyzed/)).toBeTruthy();
+    expect(screen.getByText("TypeScript")).toBeTruthy();
+    expect(screen.getAllByText("Analyzed").length).toBeGreaterThan(0);
+    expect(screen.getByText("Fork")).toBeTruthy();
+    expect(screen.getByText("Archived")).toBeTruthy();
+    expect(screen.getByText("Not yet analyzed")).toBeTruthy();
     expect((screen.getByRole("checkbox", { name: "octocat/repo-1" }) as HTMLInputElement).checked).toBe(true);
     expect(screen.getByText(/4321 of 5000 requests remaining/)).toBeTruthy();
     expect(screen.getByText("1 of 15 repositories selected")).toBeTruthy();
@@ -106,7 +109,7 @@ describe("repository list", () => {
   });
 
   it("shows an empty state when there are no public repositories", async () => {
-    overrides["GET /api/github/repos"] = () => ok({ repositories: [], count: 0, truncated: false });
+    overrides["GET /api/github/repos"] = () => ok({ repositories: [], count: 0, truncated: false, sync: { discovered: 0, inserted: 0, updated: 0 }, syncedAt: new Date().toISOString() });
     render(<MemoryRouter initialEntries={["/repositories"]}><App /></MemoryRouter>);
 
     expect(await screen.findByText("No public repositories found")).toBeTruthy();
@@ -115,7 +118,7 @@ describe("repository list", () => {
 
   it("shows an error with retry, and still works when quota is unavailable", async () => {
     let failing = true;
-    overrides["GET /api/github/repos"] = () => (failing ? fail(502, "GITHUB_SERVICE_UNAVAILABLE", "GitHub is down") : ok({ repositories: store, count: 2, truncated: false }));
+    overrides["GET /api/github/repos"] = () => (failing ? fail(502, "GITHUB_SERVICE_UNAVAILABLE", "GitHub is down") : ok({ repositories: store, count: 2, truncated: false, sync: { discovered: 2, inserted: 0, updated: 0 }, syncedAt: new Date().toISOString() }));
     overrides["GET /api/github/quota"] = () => fail(502, "GITHUB_SERVICE_UNAVAILABLE", "x");
     const user = userEvent.setup();
     render(<MemoryRouter initialEntries={["/repositories"]}><App /></MemoryRouter>);

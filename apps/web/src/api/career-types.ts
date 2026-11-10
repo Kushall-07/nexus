@@ -4,7 +4,7 @@ export type EmploymentType = "internship" | "full-time" | "part-time" | "contrac
 export type WorkMode = "remote" | "hybrid" | "on-site";
 export type ExperienceLevel = "intern" | "entry" | "mid" | "senior" | "lead";
 export type ApplicationStatus = "saved" | "planning" | "applied" | "interviewing" | "offer" | "rejected" | "withdrawn";
-export type TaskStatus = "planned" | "in_progress" | "completed" | "skipped";
+export type TaskStatus = "not_started" | "planned" | "in_progress" | "completed" | "skipped";
 
 export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
   saved: "Saved",
@@ -209,7 +209,12 @@ export interface TransitionAnalysis {
 }
 
 export type CopilotAction =
-  | { kind: "navigate"; label: string; to: string }
+  // auto: the person asked to be taken there, so the app goes straight away instead of waiting for a click.
+  | { kind: "navigate"; label: string; to: string; auto?: boolean }
+  // Nexus presses this element on the page the person is looking at (hands-free).
+  | { kind: "click"; elementId: number; label: string }
+  // Nexus keeps this note for the rest of the conversation.
+  | { kind: "remember"; note: string }
   | { kind: "refresh-profile"; label: string }
   | { kind: "set-direction"; label: string; directionId: string }
   | { kind: "search-demo"; label: string };
@@ -221,9 +226,11 @@ export type CopilotCard =
 
 export interface CopilotResponse {
   text: string;
-  interpretedBy: "rules" | "llm";
+  interpretedBy: "rules" | "llm" | "agent";
   intent: string;
   cards: CopilotCard[];
   actions: CopilotAction[];
   suggestions: string[];
+  // Context to send back with the next turn (for example the ids of jobs just shown).
+  memo?: string;
 }

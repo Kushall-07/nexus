@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 /*
- * NEXUS — "Gold Signal" design system.
+ * NEXUS — Premium Light Design System
  *
  * Brand palette:
- *   Midnight Black  #08090B  — primary application background
- *   Warm Pure White #F5F3EF  — primary text and surface highlight
- *   Vibrant Gold    #F6C900  — primary accent, action, and data emphasis
+ *   Cream       #F1EEE8  — primary application background
+ *   Deep Teal   #0E4F4A  — primary action, brand surface, and data emphasis
+ *   Coral       #F67F5E  — accent and selective emphasis
  *
  * This theme reuses Tailwind's semantic slot names so every component
  * works without per-component edits:
- *   bg-slate-50       = page background (Midnight Black)
- *   bg-white          = card surface (lifted dark surface)
- *   border-slate-200  = default border (white at ~8% opacity)
- *   text-slate-900    = primary text (Warm White)
- *   bg-indigo-700     = PRIMARY action (Vibrant Gold)
- *   text-indigo-700   = accent link / icon (Gold)
+ *   bg-slate-50       = page background (Cream)
+ *   bg-white          = card surface (elevated light surface)
+ *   border-slate-200  = default border
+ *   text-slate-900    = primary text (near-black)
+ *   bg-indigo-700     = PRIMARY action (Deep Teal)
+ *   text-indigo-700   = accent link / icon (Teal)
  *
  * Typography system:
  *   --font-display  Barlow Condensed  → hero, section headlines, big metrics
@@ -24,32 +24,32 @@
  */
 
 @theme {
-  /* ── SLATE (base tones — inverted: 50 = darkest, 950 = lightest) ──────── */
-  --color-slate-50:  oklch(5.5%  0.009  265); /* Midnight Black — page bg   */
-  --color-slate-100: oklch(8.5%  0.008  265); /* hover / active bg           */
-  --color-slate-200: oklch(13%   0.007  265); /* borders (subtle)            */
-  --color-slate-300: oklch(20%   0.006  265); /* borders (stronger)          */
-  --color-slate-400: oklch(32%   0.005  260); /* icons, placeholder text     */
-  --color-slate-500: oklch(46%   0.004  255); /* muted / helper text         */
-  --color-slate-600: oklch(60%   0.008  90);  /* secondary text              */
-  --color-slate-700: oklch(74%   0.010  90);  /* body text (warming tone)    */
-  --color-slate-800: oklch(85%   0.011  90);  /* strong body / sub-headings  */
-  --color-slate-900: oklch(96%   0.012  90);  /* Warm White — headings       */
-  --color-slate-950: oklch(98%   0.010  90);  /* max contrast white          */
-  --color-white:     oklch(8%    0.008  265); /* card surface (lifted dark)  */
+  /* ── SLATE (base tones) ─────────────────────────────────────────────────── */
+  --color-slate-50:  oklch(93%  0.014  72);   /* Cream #F1EEE8 — page bg       */
+  --color-slate-100: oklch(90%  0.013  72);   /* hover tint on cream            */
+  --color-slate-200: oklch(84%  0.015  72);   /* default border on cream        */
+  --color-slate-300: oklch(74%  0.015  72);   /* stronger border                */
+  --color-slate-400: oklch(55%  0.010  200);  /* icons / placeholders           */
+  --color-slate-500: oklch(45%  0.010  200);  /* muted / helper text            */
+  --color-slate-600: oklch(37%  0.015  192);  /* secondary text (teal cast)     */
+  --color-slate-700: oklch(28%  0.040  192);  /* body text                      */
+  --color-slate-800: oklch(22%  0.050  192);  /* strong body / sub-headings     */
+  --color-slate-900: oklch(16%  0.055  192);  /* near-black headings            */
+  --color-slate-950: oklch(10%  0.055  192);  /* max contrast                   */
+  --color-white:     oklch(98%  0.006  72);   /* elevated card surface          */
 
-  /* ── GOLD (primary interactive color — #F6C900 family) ─────────────────── */
-  --color-indigo-50:  oklch(9%   0.030  86);  /* very subtle gold tint bg    */
-  --color-indigo-100: oklch(13%  0.055  86);  /* active nav / gold tint bg   */
-  --color-indigo-200: oklch(21%  0.090  86);  /* gold accent border          */
-  --color-indigo-300: oklch(35%  0.130  86);  /* medium gold                 */
-  --color-indigo-400: oklch(52%  0.170  86);  /* hover gold                  */
-  --color-indigo-500: oklch(68%  0.190  86);  /* strong gold                 */
-  --color-indigo-600: oklch(79%  0.198  86);  /* button hover                */
-  --color-indigo-700: oklch(81%  0.195  86);  /* PRIMARY — Vibrant Gold      */
-  --color-indigo-800: oklch(88%  0.160  86);  /* lighter gold                */
-  --color-indigo-900: oklch(93%  0.080  86);  /* warm light gold (nav/badge text on dark gold bg) */
-  --color-indigo-950: oklch(5.5% 0.009  265); /* near-midnight (skip-to-main on gold bg) */
+  /* ── DEEP TEAL (primary interactive color — #0E4F4A family) ────────────── */
+  --color-indigo-50:  oklch(94%  0.025  165); /* very subtle teal tint bg       */
+  --color-indigo-100: oklch(87%  0.040  170); /* active nav / teal tint         */
+  --color-indigo-200: oklch(76%  0.058  178); /* teal accent border             */
+  --color-indigo-300: oklch(60%  0.075  185); /* medium teal                    */
+  --color-indigo-400: oklch(46%  0.075  190); /* hover teal                     */
+  --color-indigo-500: oklch(38%  0.070  191); /* strong teal                    */
+  --color-indigo-600: oklch(33%  0.068  192); /* button hover                   */
+  --color-indigo-700: oklch(30%  0.065  192); /* PRIMARY — Deep Teal #0E4F4A    */
+  --color-indigo-800: oklch(24%  0.055  192); /* darker teal                    */
+  --color-indigo-900: oklch(18%  0.045  192); /* very dark teal                 */
+  --color-indigo-950: oklch(98%  0.006  72);  /* near-cream (skip-to-main bg)   */
 
   /* ── RED (error, blockers, missing skills) ─────────────────────────────── */
   --color-red-50:  oklch(10%  0.080  27);
@@ -155,18 +155,36 @@
   --color-yellow-900: oklch(93%  0.065 101);
   --color-yellow-950: oklch(97%  0.026 102);
 
-  /* ── ORANGE ─────────────────────────────────────────────────────────────── */
-  --color-orange-50:  oklch(11%  0.065  38);
-  --color-orange-100: oklch(17%  0.088  38);
-  --color-orange-200: oklch(24%  0.115  37);
-  --color-orange-300: oklch(36%  0.148  38);
-  --color-orange-400: oklch(51%  0.182  40);
-  --color-orange-500: oklch(62%  0.182  46);
-  --color-orange-600: oklch(69%  0.168  54);
-  --color-orange-700: oklch(77%  0.138  63);
-  --color-orange-800: oklch(84%  0.088  69);
-  --color-orange-900: oklch(90%  0.048  73);
-  --color-orange-950: oklch(96%  0.019  73);
+  /* ── ORANGE / CORAL (Coral #F67F5E accent) ─────────────────────────────── */
+  --color-orange-50:  oklch(96%  0.020  38);
+  --color-orange-100: oklch(93%  0.035  37);
+  --color-orange-200: oklch(88%  0.058  37);
+  --color-orange-300: oklch(82%  0.090  37);
+  --color-orange-400: oklch(76%  0.138  38);  /* coral light                     */
+  --color-orange-500: oklch(70%  0.148  36);  /* Coral #F67F5E — accent          */
+  --color-orange-600: oklch(63%  0.148  34);  /* coral hover                     */
+  --color-orange-700: oklch(55%  0.130  33);
+  --color-orange-800: oklch(44%  0.100  32);
+  --color-orange-900: oklch(33%  0.070  31);
+  --color-orange-950: oklch(22%  0.040  30);
+
+  /* ── shadcn/ui semantic tokens, mapped onto the NEXUS palette ──────────────
+     (components in src/components/ui use bg-primary, bg-accent, border-input …) */
+  --color-background:         oklch(98%  0.006  72);   /* elevated surface            */
+  --color-foreground:         oklch(16%  0.055 192);   /* near-black teal text        */
+  --color-primary:            oklch(30%  0.065 192);   /* Deep Teal                   */
+  --color-primary-foreground: oklch(98%  0.006  72);   /* cream on teal               */
+  --color-secondary:          oklch(90%  0.013  72);
+  --color-secondary-foreground: oklch(16% 0.055 192);
+  --color-muted:              oklch(90%  0.013  72);
+  --color-muted-foreground:   oklch(45%  0.010 200);
+  --color-accent:             oklch(94%  0.025 165);   /* soft teal tint              */
+  --color-accent-foreground:  oklch(18%  0.045 192);
+  --color-popover:            oklch(98%  0.006  72);
+  --color-popover-foreground: oklch(16%  0.055 192);
+  --color-border:             oklch(84%  0.015  72);
+  --color-input:              oklch(74%  0.015  72);
+  --color-ring:               oklch(30%  0.065 192);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -179,7 +197,17 @@
   --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
 
   font-family: var(--font-body);
-  color-scheme: dark;
+  color-scheme: light;
+
+  /* ── Shadow system ──────────────────────────────────────────────────────── */
+  --shadow-xs:  0 1px 2px 0 oklch(16% 0.055 192 / 0.04);
+  --shadow-sm:  0 1px 3px 0 oklch(16% 0.055 192 / 0.08), 0 1px 2px -1px oklch(16% 0.055 192 / 0.06);
+  --shadow-md:  0 4px 6px -1px oklch(16% 0.055 192 / 0.08), 0 2px 4px -2px oklch(16% 0.055 192 / 0.05);
+  --shadow-lg:  0 10px 15px -3px oklch(16% 0.055 192 / 0.08), 0 4px 6px -4px oklch(16% 0.055 192 / 0.04);
+  --shadow-xl:  0 20px 25px -5px oklch(16% 0.055 192 / 0.10), 0 8px 10px -6px oklch(16% 0.055 192 / 0.04);
+  --shadow-teal: 0 4px 14px 0 oklch(30% 0.065 192 / 0.18);
+  --shadow-card: 0 2px 8px 0 oklch(16% 0.055 192 / 0.06), 0 1px 2px 0 oklch(16% 0.055 192 / 0.04);
+  --shadow-card-hover: 0 8px 24px 0 oklch(16% 0.055 192 / 0.10), 0 2px 8px 0 oklch(16% 0.055 192 / 0.06);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -190,11 +218,11 @@ body {
   margin: 0;
   min-width: 320px;
   background-color: var(--color-slate-50);
-  /* Gold atmospheric depth — two radial glows at opposing corners */
+  /* Cream atmospheric depth — subtle teal and coral glows */
   background-image:
-    radial-gradient(90rem 50rem at 12% 0%,   oklch(81% 0.195 86 / 0.050), transparent 55%),
-    radial-gradient(60rem 35rem at 92% 98%,  oklch(81% 0.195 86 / 0.032), transparent 50%),
-    radial-gradient(40rem 25rem at 55% 50%,  oklch(81% 0.195 86 / 0.012), transparent 60%);
+    radial-gradient(90rem 50rem at 12% 0%,   oklch(30% 0.065 192 / 0.040), transparent 55%),
+    radial-gradient(60rem 35rem at 92% 98%,  oklch(70% 0.148 36 / 0.030), transparent 50%),
+    radial-gradient(40rem 25rem at 55% 50%,  oklch(30% 0.065 192 / 0.015), transparent 60%);
   background-attachment: scroll;
 }
 
@@ -209,8 +237,8 @@ body {
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 ::selection {
-  background: oklch(81% 0.195 86 / 0.38);
-  color: oklch(5.5% 0.009 265);
+  background: oklch(30% 0.065 192 / 0.18);
+  color: oklch(10% 0.055 192);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -232,7 +260,6 @@ body {
 /* Accessibility                                                                */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-/* Skip-to-main link for keyboard navigation */
 .skip-to-main {
   position: absolute;
   left: -9999px;
@@ -240,7 +267,7 @@ body {
   z-index: 999;
   padding: 0.5rem 1.25rem;
   background: var(--color-indigo-700);
-  color: var(--color-indigo-950); /* near-midnight black — max contrast on gold */
+  color: var(--color-indigo-950);
   font-size: 0.875rem;
   font-weight: 700;
   border-radius: 0 0 0.5rem 0.5rem;
@@ -268,13 +295,25 @@ body {
 
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+  50%       { opacity: 0.4; }
 }
 
 .skeleton {
   animation: skeleton-pulse 1.6s ease-in-out infinite;
-  background-color: var(--color-slate-200);
-  border-radius: 0.25rem;
+  background: linear-gradient(
+    90deg,
+    var(--color-slate-200) 0%,
+    var(--color-slate-100) 50%,
+    var(--color-slate-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.8s ease-in-out infinite;
+  border-radius: 0.375rem;
+}
+
+@keyframes skeleton-sweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -282,81 +321,83 @@ body {
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
 main > * {
-  animation: fade-in 0.22s ease-out both;
+  animation: fade-in 0.25s ease-out both;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* Thin scrollbars                                                              */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-.overflow-y-auto {
+.overflow-y-auto, .overflow-y-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--color-slate-300) transparent;
 }
-.overflow-y-auto::-webkit-scrollbar { width: 4px; }
-.overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
-.overflow-y-auto::-webkit-scrollbar-thumb {
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-y-scroll::-webkit-scrollbar { width: 4px; }
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-y-scroll::-webkit-scrollbar-track { background: transparent; }
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-y-scroll::-webkit-scrollbar-thumb {
   background-color: var(--color-slate-300);
   border-radius: 2px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Score meter gradient fill — gold                                            */
+/* Score meter gradient fill                                                   */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 .nx-score-fill {
   background: linear-gradient(
     to right,
-    oklch(68% 0.190 86),   /* strong gold */
-    oklch(81% 0.195 86)    /* vivid gold  */
+    oklch(38% 0.070 191),
+    oklch(30% 0.065 192)
   );
-  transition: width 0.4s ease-out;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Panel accent bar — gold left border on data panels                          */
+/* Panel accent bar                                                             */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-.nx-panel {
-  border-left: 3px solid var(--color-indigo-500);
-}
-
-.nx-panel-success {
-  border-left: 3px solid var(--color-emerald-500);
-}
-
-.nx-panel-warning {
-  border-left: 3px solid var(--color-amber-500);
-}
-
-.nx-panel-danger {
-  border-left: 3px solid var(--color-red-500);
-}
+.nx-panel         { border-left: 3px solid var(--color-indigo-500); }
+.nx-panel-success { border-left: 3px solid var(--color-emerald-500); }
+.nx-panel-warning { border-left: 3px solid var(--color-amber-500); }
+.nx-panel-danger  { border-left: 3px solid var(--color-red-500); }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Monospace numerals for scores                                                */
+/* Monospace numerals                                                           */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  /* No font-family override — using system tabular nums to avoid width inflation */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Landing page — gold gradient text                                           */
+/* Gradient text                                                                */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 .nx-gradient-text {
   background: linear-gradient(
     135deg,
-    oklch(81% 0.195 86),   /* vibrant gold   */
-    oklch(90% 0.140 86)    /* lighter gold   */
+    oklch(30% 0.065 192),
+    oklch(70% 0.148 36)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nx-gradient-text-coral {
+  background: linear-gradient(
+    135deg,
+    oklch(70% 0.148 36),
+    oklch(63% 0.148 34)
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -364,17 +405,41 @@ main > * {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Landing page — section reveal animations                                    */
-/* Applied only on the unauthenticated landing page.                           */
+/* Landing section reveal (Intersection Observer driven)                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.landing-section-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity  0.70s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.70s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-section-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-section-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Landing page — entrance animations                                          */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 @keyframes landing-reveal {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
 
 .landing-reveal {
-  animation: landing-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: landing-reveal 0.70s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .landing-reveal-delay-1 { animation-delay: 0.10s; }
@@ -384,12 +449,12 @@ main > * {
 .landing-reveal-delay-5 { animation-delay: 0.56s; }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Landing page — gold shimmer on the CTA button                               */
+/* CTA shimmer effect                                                           */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 @keyframes shimmer {
   0%   { transform: translateX(-100%) skewX(-12deg); }
-  100% { transform: translateX(250%) skewX(-12deg); }
+  100% { transform: translateX(250%)  skewX(-12deg); }
 }
 
 .nx-cta-shimmer {
@@ -404,12 +469,12 @@ main > * {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    oklch(100% 0 0 / 0.25) 50%,
+    oklch(100% 0 0 / 0.22) 50%,
     transparent 100%
   );
   transform: translateX(-100%) skewX(-12deg);
-  animation: shimmer 2.4s ease-in-out infinite;
-  animation-delay: 1.2s;
+  animation: shimmer 2.6s ease-in-out infinite;
+  animation-delay: 1.4s;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -417,39 +482,16 @@ main > * {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Glass card — dark, translucent surface with atmospheric depth               */
-/* Use for feature cards on the landing page and elevated modals.              */
+/* Product viz — node pulse animation                                          */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-.nx-glass {
-  background: oklch(8% 0.015 86 / 0.90);
-  border: 1px solid oklch(100% 0 0 / 0.08);
-  box-shadow:
-    0 24px 64px oklch(0% 0 0 / 0.45),
-    inset 0 1px 0 oklch(100% 0 0 / 0.07);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* Product viz — animated constellation                                        */
-/* ─────────────────────────────────────────────────────────────────────────── */
-
-@keyframes orbit-slow {
-  from { transform: rotate(0deg) translateX(var(--orbit-r, 60px)) rotate(0deg); }
-  to   { transform: rotate(360deg) translateX(var(--orbit-r, 60px)) rotate(-360deg); }
-}
-
-@keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 0 0 oklch(81% 0.195 86 / 0.35); }
-  50%       { box-shadow: 0 0 0 8px oklch(81% 0.195 86 / 0); }
-}
-
-@keyframes line-draw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
+@keyframes pulse-teal {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(30% 0.065 192 / 0.35); }
+  50%       { box-shadow: 0 0 0 8px oklch(30% 0.065 192 / 0); }
 }
 
 .nx-node-pulse {
-  animation: pulse-gold 2.4s ease-in-out infinite;
+  animation: pulse-teal 2.4s ease-in-out infinite;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -467,8 +509,34 @@ main > * {
 .nx-typing-dot:nth-child(2) { animation-delay: 0.16s; }
 .nx-typing-dot:nth-child(3) { animation-delay: 0.32s; }
 
+/* Voice: dancing sound bars and the pulsing microphone ring */
+@keyframes nx-wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+.nx-wave-bar { height: 100%; transform: scaleY(0.3); transform-origin: center; }
+.nx-wave-on .nx-wave-bar { animation: nx-wave 0.9s ease-in-out infinite; }
+
+@keyframes nx-mic-ring {
+  0%   { transform: scale(1);   opacity: 0.55; box-shadow: 0 0 0 0 oklch(62% 0.17 36 / 0.5); }
+  100% { transform: scale(1.9); opacity: 0;    box-shadow: 0 0 0 0 oklch(62% 0.17 36 / 0); }
+}
+.nx-mic-ring { background: oklch(62% 0.17 36 / 0.35); animation: nx-mic-ring 1.5s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-wave-on .nx-wave-bar { animation: none; transform: scaleY(0.7); }
+  .nx-mic-ring { animation: none; opacity: 0.3; }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Legacy compat — landing-section class used in old AuthGate                  */
+/* Accent colors                                                                */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-coral      { color: oklch(70% 0.148 36); }
+.nx-bg-coral   { background-color: oklch(70% 0.148 36); }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Legacy compat                                                                */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 .landing-section {
@@ -479,137 +547,298 @@ main > * {
 .landing-section:nth-child(4) { animation-delay: 0.3s; }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Light theme — Cream / Deep Teal / Coral                                     */
-/* Activated via data-theme="light" on <html>.                                  */
-/* Overrides the Gold Signal dark palette with the approved light palette.     */
-/*                                                                              */
-/* Cream:      #F1EEE8  — primary background                                   */
-/* Deep Teal:  #0E4F4A  — primary action and brand surface                     */
-/* Coral:      #F67F5E  — accent and selective emphasis                        */
+/* Glassmorphism card                                                           */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-[data-theme="light"] {
-  color-scheme: light;
-
-  /* ── Background surfaces ─────────────────────────────────────────────── */
-  --color-slate-50:  oklch(93% 0.014 72);   /* Cream #F1EEE8 — page bg       */
-  --color-slate-100: oklch(90% 0.013 72);   /* hover tint on cream            */
-  --color-white:     oklch(98% 0.006 72);   /* elevated card surface          */
-
-  /* ── Borders ─────────────────────────────────────────────────────────── */
-  --color-slate-200: oklch(84% 0.015 72);   /* default border on cream        */
-  --color-slate-300: oklch(74% 0.015 72);   /* stronger border                */
-
-  /* ── Text ────────────────────────────────────────────────────────────── */
-  --color-slate-400: oklch(55% 0.010 200);  /* icons / placeholders           */
-  --color-slate-500: oklch(45% 0.010 200);  /* muted / helper text            */
-  --color-slate-600: oklch(37% 0.015 192);  /* secondary text (teal cast)     */
-  --color-slate-700: oklch(28% 0.040 192);  /* body text                      */
-  --color-slate-800: oklch(22% 0.050 192);  /* strong body / sub-headings     */
-  --color-slate-900: oklch(16% 0.055 192);  /* Near-black headings            */
-  --color-slate-950: oklch(10% 0.055 192);  /* max contrast                   */
-
-  /* ── Primary (Deep Teal replaces Gold as the action color) ────────────── */
-  --color-indigo-50:  oklch(94% 0.025 165); /* very subtle teal tint bg       */
-  --color-indigo-100: oklch(87% 0.040 170); /* active nav / teal tint         */
-  --color-indigo-200: oklch(76% 0.058 178); /* teal accent border             */
-  --color-indigo-300: oklch(60% 0.075 185); /* medium teal                    */
-  --color-indigo-400: oklch(46% 0.075 190); /* hover teal                     */
-  --color-indigo-500: oklch(38% 0.070 191); /* strong teal                    */
-  --color-indigo-600: oklch(33% 0.068 192); /* button hover                   */
-  --color-indigo-700: oklch(30% 0.065 192); /* PRIMARY — Deep Teal #0E4F4A    */
-  --color-indigo-800: oklch(24% 0.055 192); /* darker teal                    */
-  --color-indigo-900: oklch(18% 0.045 192); /* very dark teal                 */
-  --color-indigo-950: oklch(98% 0.006 72);  /* near-cream (skip-to-main bg)   */
-
-  /* ── Accent: Coral ──────────────────────────────────────────────────── */
-  --color-orange-500: oklch(70% 0.148 36);  /* Coral #F67F5E — accent          */
-  --color-orange-600: oklch(63% 0.148 34);  /* coral hover                     */
-  --color-orange-400: oklch(76% 0.138 38);  /* coral light                     */
+.nx-glass {
+  background: oklch(98% 0.006 72 / 0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid oklch(84% 0.015 72 / 0.60);
 }
 
-/* Light mode body background — Cream with subtle teal atmospheric tint */
-[data-theme="light"] body {
-  background-color: var(--color-slate-50);
-  background-image:
-    radial-gradient(90rem 50rem at 12% 0%,   oklch(30% 0.065 192 / 0.040), transparent 55%),
-    radial-gradient(60rem 35rem at 92% 98%,  oklch(70% 0.148 36 / 0.030), transparent 50%),
-    radial-gradient(40rem 25rem at 55% 50%,  oklch(30% 0.065 192 / 0.015), transparent 60%);
+.nx-glass-teal {
+  background: oklch(94% 0.025 165 / 0.80);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid oklch(76% 0.058 178 / 0.50);
 }
 
-/* Theme transition — smooth color shifts when toggling */
-[data-theme],
-[data-theme] *,
-[data-theme] *::before,
-[data-theme] *::after {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-duration: 220ms;
-  transition-timing-function: ease-out;
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Premium card                                                                 */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-slate-200);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
-/* Suppress transition on initial page load — only animate actual toggles */
-.theme-no-transition,
-.theme-no-transition *,
-.theme-no-transition *::before,
-.theme-no-transition *::after {
-  transition: none !important;
+.nx-card-hover:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
+  border-color: var(--color-slate-300);
 }
 
-/* Light theme overrides for gold-specific utilities */
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Gradient borders on interactive cards                                       */
+/* ─────────────────────────────────────────────────────────────────────────── */
 
-[data-theme="light"] .nx-gradient-text {
-  /* Teal → Coral gradient replaces the Gold gradient on the light palette */
+.nx-card-teal {
+  position: relative;
+  background: var(--color-white);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+}
+
+.nx-card-teal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
   background: linear-gradient(
     135deg,
-    oklch(30% 0.065 192),  /* Deep Teal */
-    oklch(70% 0.148 36)    /* Coral     */
+    oklch(76% 0.058 178),
+    oklch(70% 0.148 36)
   );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-[data-theme="light"] .nx-score-fill {
-  /* Teal gradient replaces Gold on light palette */
-  background: linear-gradient(
-    to right,
-    oklch(38% 0.070 191),  /* strong teal */
-    oklch(30% 0.065 192)   /* Deep Teal   */
-  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Coral accent — available as a semantic utility in both themes               */
+/* Floating animated orbs (landing page ambient background)                    */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-.nx-coral {
-  color: oklch(70% 0.148 36);
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) scale(1);     }
+  50%       { transform: translateY(-20px) scale(1.03); }
 }
 
-.nx-bg-coral {
-  background-color: oklch(70% 0.148 36);
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0) rotate(0deg);    }
+  50%       { transform: translateY(-14px) rotate(2deg); }
 }
 
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* Landing page — section scroll-reveal (Intersection Observer driven)         */
-/* ─────────────────────────────────────────────────────────────────────────── */
-
-.landing-section-reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+@keyframes float-fast {
+  0%, 100% { transform: translateY(0) scale(1);      }
+  33%       { transform: translateY(-8px) scale(1.01); }
+  66%       { transform: translateY(-16px) scale(0.99); }
 }
 
-.landing-section-reveal.is-visible {
-  opacity: 1;
-  transform: none;
+@keyframes drift-horizontal {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(12px); }
 }
+
+.nx-float-slow   { animation: float-slow   8s ease-in-out infinite; }
+.nx-float-medium { animation: float-medium 6s ease-in-out infinite; }
+.nx-float-fast   { animation: float-fast   4.5s ease-in-out infinite; }
+.nx-drift        { animation: drift-horizontal 7s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing-section-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  .nx-float-slow, .nx-float-medium, .nx-float-fast, .nx-drift {
+    animation: none;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Landing mesh background gradient                                             */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-mesh-bg {
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 20%, oklch(30% 0.065 192 / 0.08), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, oklch(70% 0.148 36  / 0.07), transparent 55%),
+    radial-gradient(ellipse 50% 70% at 50% 50%, oklch(94% 0.025 165 / 0.60), transparent 70%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Stat number animation                                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.nx-stat-animate {
+  animation: count-up 0.5s ease-out both;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Sidebar nav item transition                                                  */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-nav-item {
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.nx-nav-item:hover {
+  transform: translateX(2px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Stylish buttons: gradient, lift on hover, a light sweep and an arrow nudge   */
+/*   <button class="nx-btn nx-btn-primary">Label <svg class="nx-arrow"/></button> */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.65rem 1.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    filter 0.2s ease;
+}
+.nx-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.32) 50%, transparent 62%);
+  transform: translateX(-130%);
+  transition: transform 0.7s ease;
+}
+.nx-btn:hover:not(:disabled)::after { transform: translateX(130%); }
+.nx-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.nx-btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+.nx-btn:focus-visible { outline: 2px solid var(--color-indigo-700); outline-offset: 3px; }
+.nx-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.nx-btn .nx-arrow { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+.nx-btn:hover:not(:disabled) .nx-arrow { transform: translateX(3px); }
+
+.nx-btn-primary {
+  color: var(--color-indigo-950);
+  background: linear-gradient(135deg, var(--color-indigo-500), var(--color-indigo-800));
+  box-shadow: 0 10px 20px -12px rgba(14, 79, 74, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.nx-btn-primary:hover:not(:disabled) { box-shadow: 0 16px 26px -12px rgba(14, 79, 74, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+
+.nx-btn-coral {
+  color: #fff;
+  background: linear-gradient(135deg, oklch(68% 0.16 40), oklch(58% 0.18 33));
+  box-shadow: 0 10px 20px -12px rgba(200, 80, 50, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.nx-btn-coral:hover:not(:disabled) { box-shadow: 0 16px 26px -12px rgba(200, 80, 50, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+
+.nx-btn-ghost {
+  color: var(--color-slate-800);
+  background: rgba(255, 255, 255, 0.6);
+  border-color: var(--color-slate-300);
+}
+.nx-btn-ghost:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--color-indigo-300);
+  box-shadow: 0 10px 18px -14px rgba(14, 79, 74, 0.6);
+}
+
+.nx-btn-sm { padding: 0.45rem 0.95rem; font-size: 0.75rem; gap: 0.35rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-btn, .nx-btn::after, .nx-btn .nx-arrow { transition: none; }
+  .nx-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Sheet (slide-over) — Radix Dialog drives data-state; Presence waits for     */
+/* these animations before unmounting.                                          */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes nx-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nx-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes nx-slide-in-left   { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes nx-slide-out-left  { from { transform: none; } to { transform: translateX(-100%); } }
+@keyframes nx-slide-in-right  { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes nx-slide-out-right { from { transform: none; } to { transform: translateX(100%); } }
+@keyframes nx-slide-in-top    { from { transform: translateY(-100%); } to { transform: none; } }
+@keyframes nx-slide-out-top   { from { transform: none; } to { transform: translateY(-100%); } }
+@keyframes nx-slide-in-bottom { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes nx-slide-out-bottom{ from { transform: none; } to { transform: translateY(100%); } }
+
+.nx-sheet-overlay[data-state="open"]   { animation: nx-fade-in 0.25s ease-out both; }
+.nx-sheet-overlay[data-state="closed"] { animation: nx-fade-out 0.2s ease-in both; }
+
+.nx-sheet[data-state="open"]   { animation-duration: 0.4s;  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: both; }
+.nx-sheet[data-state="closed"] { animation-duration: 0.22s; animation-timing-function: ease-in; animation-fill-mode: both; }
+.nx-sheet-left[data-state="open"]    { animation-name: nx-slide-in-left; }
+.nx-sheet-left[data-state="closed"]  { animation-name: nx-slide-out-left; }
+.nx-sheet-right[data-state="open"]   { animation-name: nx-slide-in-right; }
+.nx-sheet-right[data-state="closed"] { animation-name: nx-slide-out-right; }
+.nx-sheet-top[data-state="open"]     { animation-name: nx-slide-in-top; }
+.nx-sheet-top[data-state="closed"]   { animation-name: nx-slide-out-top; }
+.nx-sheet-bottom[data-state="open"]  { animation-name: nx-slide-in-bottom; }
+.nx-sheet-bottom[data-state="closed"]{ animation-name: nx-slide-out-bottom; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-sheet-overlay, .nx-sheet { animation-duration: 1ms !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Teal glow on active elements                                                 */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-glow-teal {
+  box-shadow: 0 0 0 3px oklch(30% 0.065 192 / 0.15), var(--shadow-teal);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Line draw animation (SVG decorative lines)                                   */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes line-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Gradient progress bar                                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-progress-fill {
+  background: linear-gradient(
+    to right,
+    oklch(38% 0.070 191),
+    oklch(70% 0.148 36)
+  );
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Stagger children animation helper                                            */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.nx-stagger > * {
+  animation: fade-in 0.4s ease-out both;
+}
+.nx-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.nx-stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.nx-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.nx-stagger > *:nth-child(4) { animation-delay: 0.20s; }
+.nx-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.nx-stagger > *:nth-child(6) { animation-delay: 0.30s; }
+.nx-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.nx-stagger > *:nth-child(8) { animation-delay: 0.40s; }
