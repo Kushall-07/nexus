@@ -38,7 +38,7 @@ describe("getLlmProvider", () => {
     await provider!.explainGapAnalysis({ roleId: "r", roleName: "R", roleMatch: 1, roleCatalogVersion: "1", scoringVersion: "1", skills: [] }).catch(() => undefined);
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions");
-    expect(JSON.parse(init.body as string).model).toBe("gemini-2.5-flash");
+    expect(JSON.parse(init.body as string).model).toBe("gemini-3.5-flash");
 
     envValues.LLM_PROVIDER = "openai-compatible";
     envValues.LLM_BASE_URL = "https://x.test/v1";

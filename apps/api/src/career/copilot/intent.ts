@@ -40,9 +40,52 @@ export type CopilotIntent = z.infer<typeof copilotIntentSchema>;
 
 export const copilotRequestSchema = z
   .object({
-    message: z.string().trim().min(1).max(500),
+    message: z.string().trim().min(1).max(1500),
     // The job card the user is looking at; resolved server-side, never trusted as content.
     jobId: z.string().min(1).max(300).optional(),
+    // Earlier turns of this conversation, so the Copilot can follow what was said. Untrusted; capped.
+    history: z
+      .array(
+        z
+          .object({
+            role: z.enum(["user", "assistant"]),
+            text: z.string().trim().min(1).max(2500),
+            memo: z.string().max(2000).optional(),
+          })
+          .strict(),
+      )
+      .max(24)
+      .optional(),
+    // What is on the person's screen right now. Sent only when the question is about it. Untrusted data.
+    page: z
+      .object({
+        path: z.string().max(120),
+        title: z.string().max(120),
+        text: z.string().max(4000),
+        elements: z
+          .array(
+            z
+              .object({
+                id: z.number().int().min(1).max(200),
+                role: z.string().max(20),
+                name: z.string().max(80),
+                section: z.string().max(60).optional(),
+              })
+              .strict(),
+          )
+          .max(60),
+      })
+      .strict()
+      .optional(),
+    // Short facts Nexus saved earlier in this session (goals, deadlines, plans).
+    notes: z.array(z.string().trim().min(1).max(260)).max(14).optional(),
+    // How the person is talking to Nexus: out loud and hands-free (short, quiet answers) or typing.
+    style: z.enum(["voice", "text"]).optional(),
+    // The device's clock, so "what day is it" and "in two weeks" are answered from the right moment.
+    clientTime: z
+      .object({ iso: z.string().max(40), timeZone: z.string().max(60), local: z.string().max(90) })
+      .strict()
+      .optional(),
   })
   .strict();
 

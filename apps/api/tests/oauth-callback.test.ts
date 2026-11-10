@@ -168,7 +168,7 @@ describe("GET /api/auth/github/callback", () => {
     expect(response.body.error.code).toBe("GITHUB_AUTH_FAILED");
   });
 
-  it("completes a successful login: persists the user, encrypts the token, and redirects without leaking it", async () => {
+  it("completes a successful login: persists the user, encrypts the token, and redirects to /dashboard without leaking it", async () => {
     stubFetch({});
 
     const response = await request(app)
@@ -177,6 +177,7 @@ describe("GET /api/auth/github/callback", () => {
       .set("Cookie", `${OAUTH_STATE_COOKIE_NAME}=${VALID_STATE}`);
 
     expect(response.status).toBe(302);
+    expect(response.headers.location).toMatch(/\/dashboard$/);
     expect(findOneAndUpdateMock).toHaveBeenCalledTimes(1);
 
     const [filter, update, options] = findOneAndUpdateMock.mock.calls[0] as [
@@ -229,6 +230,7 @@ describe("GET /api/auth/github/callback when the user cancels", () => {
       .set("Cookie", `${OAUTH_STATE_COOKIE_NAME}=${VALID_STATE}`);
 
     expect(response.status).toBe(302);
+    expect(response.headers.location).toContain("/signin");
     expect(response.headers.location).toMatch(/\?auth_error=cancelled$/);
     expect(fetchMock).not.toHaveBeenCalled();
 

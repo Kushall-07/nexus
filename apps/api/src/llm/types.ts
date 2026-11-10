@@ -39,10 +39,46 @@ export const gapExplanationSchema = z
 
 export type GapExplanation = z.infer<typeof gapExplanationSchema>;
 
+// Free-form conversation with optional tool calling (OpenAI chat-completions wire format).
+export interface ToolCall {
+  id: string;
+  name: string;
+  // Raw JSON string produced by the model. It is untrusted and must be parsed and validated by the caller.
+  arguments: string;
+  // Provider-specific data that must be sent back unchanged with the tool result (Gemini 3 "thought signatures").
+  extra?: Record<string, unknown>;
+}
+
+export type ChatMessage =
+  | { role: "system" | "user"; content: string }
+  | { role: "assistant"; content: string | null; toolCalls?: ToolCall[] }
+  | { role: "tool"; toolCallId: string; content: string };
+
+export interface ToolDefinition {
+  name: string;
+  description: string;
+  // JSON Schema for the arguments object.
+  parameters: Record<string, unknown>;
+}
+
+export interface ChatRequest {
+  messages: ChatMessage[];
+  tools?: ToolDefinition[];
+  maxTokens?: number;
+  temperature?: number;
+}
+
+export interface ChatResult {
+  content: string | null;
+  toolCalls: ToolCall[];
+}
+
 export interface LLMProvider {
   explainGapAnalysis(request: GapExplanationRequest): Promise<GapExplanation>;
   // Optional Phase 12 capability: returns an UNVALIDATED candidate intent for a user message.
   extractCopilotIntent?(message: string): Promise<unknown>;
+  // Optional conversational capability used by the Copilot agent.
+  chat?(request: ChatRequest): Promise<ChatResult>;
 }
 
 export type LlmFailureKind = "auth" | "rate_limit" | "bad_request" | "timeout" | "network" | "server" | "invalid_response";

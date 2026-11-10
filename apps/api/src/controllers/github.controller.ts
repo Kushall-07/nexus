@@ -9,6 +9,7 @@ import {
   listRepositoriesForUser,
   persistDiscoveredRepositories,
   toRepositoryDTO,
+  type SyncSummary,
 } from "../services/github-repository.service.js";
 import { getGithubQuota } from "../services/github-quota.service.js";
 import { setRepositorySelection } from "../services/github-selection.service.js";
@@ -44,7 +45,7 @@ export async function listRepositories(req: Request, res: Response): Promise<voi
   const accessToken = await getDecryptedGithubToken(user.id);
 
   const { repositories, truncated } = await discoverPublicRepositories(accessToken);
-  await persistDiscoveredRepositories(user.id, repositories);
+  const sync: SyncSummary = await persistDiscoveredRepositories(user.id, repositories);
 
   const stored = await listRepositoriesForUser(user.id);
 
@@ -54,6 +55,8 @@ export async function listRepositories(req: Request, res: Response): Promise<voi
       repositories: stored.map(toRepositoryDTO),
       count: stored.length,
       truncated,
+      sync,
+      syncedAt: new Date().toISOString(),
     },
   });
 }

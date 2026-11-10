@@ -14,7 +14,8 @@ import {
   updateSavedJob,
   upsertSavedJob,
 } from "./career-store.js";
-import { handleCopilotMessage, SUGGESTED_PROMPTS } from "./copilot/copilot.service.js";
+import { AGENT_PROMPTS, handleCopilotMessage, SUGGESTED_PROMPTS } from "./copilot/copilot.service.js";
+import { getLlmProvider } from "../llm/provider.js";
 import { copilotRequestSchema } from "./copilot/intent.js";
 import { getJobService } from "./jobs/job-service.js";
 import { explainJobMatch, resolveJob, searchOpportunities } from "./opportunities.service.js";
@@ -211,5 +212,5 @@ export async function copilotMessageHandler(req: Request, res: Response) {
 
 export function copilotPromptsHandler(req: Request, res: Response) {
   requireUser(req);
-  ok(res, { prompts: SUGGESTED_PROMPTS });
+  ok(res, { prompts: getLlmProvider()?.chat ? AGENT_PROMPTS : SUGGESTED_PROMPTS });
 }

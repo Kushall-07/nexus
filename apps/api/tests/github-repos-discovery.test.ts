@@ -28,6 +28,20 @@ const { encryptToken } = await import("../src/utils/token-encryption.js");
 const REAL_TOKEN = "gho_realGithubAccessToken";
 const SESSION_TOKEN = createSessionToken({ sub: "mongo-user-id", githubId: "42" });
 
+// Realistic BulkWriteResult shape returned by MongoDB driver for upsert operations.
+function makeBulkWriteResult(upsertedCount: number, modifiedCount: number) {
+  return {
+    ok: 1,
+    insertedCount: 0,
+    upsertedCount,
+    matchedCount: modifiedCount,
+    modifiedCount,
+    deletedCount: 0,
+    upsertedIds: {},
+    insertedIds: {},
+  };
+}
+
 function makeGithubRepo(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     id: 1,
@@ -81,7 +95,7 @@ describe("GET /api/github/repos", () => {
       encryptedGithubToken: encryptToken(REAL_TOKEN),
     });
 
-    bulkWriteMock.mockResolvedValue({ ok: 1 });
+    bulkWriteMock.mockResolvedValue(makeBulkWriteResult(0, 1));
     findMock.mockReturnValue({ sort: sortMock });
     sortMock.mockReturnValue([]);
   });
@@ -148,6 +162,27 @@ describe("GET /api/github/repos", () => {
     expect(ops[0].updateOne.update.$set).not.toHaveProperty("analyzedAt");
   });
 
+  it("sets schema defaults for new documents via $setOnInsert without touching existing state", async () => {
+    stubFetchPages([[makeGithubRepo()]]);
+
+    await request(app)
+      .get("/api/github/repos")
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${SESSION_TOKEN}`);
+
+    const ops = bulkWriteMock.mock.calls[0][0] as Array<{
+      updateOne: { update: { $setOnInsert: Record<string, unknown>; $set: Record<string, unknown> } };
+    }>;
+
+    // $setOnInsert carries defaults for new documents only.
+    expect(ops[0].updateOne.update.$setOnInsert).toHaveProperty("selected", false);
+    expect(ops[0].updateOne.update.$setOnInsert).toHaveProperty("analyzed", false);
+    expect(ops[0].updateOne.update.$setOnInsert).toHaveProperty("analyzedAt", null);
+
+    // $set must still not touch these fields (existing documents are unaffected).
+    expect(ops[0].updateOne.update.$set).not.toHaveProperty("selected");
+    expect(ops[0].updateOne.update.$set).not.toHaveProperty("analyzed");
+  });
+
   it("bounds pagination to a fixed number of GitHub requests", async () => {
     const fullPage = Array.from({ length: 100 }, (_, index) =>
       makeGithubRepo({ id: index + 1, full_name: `octocat/repo-${index + 1}` }),
@@ -174,6 +209,48 @@ describe("GET /api/github/repos", () => {
     expect(response.body.data.truncated).toBe(false);
   });
 
+  it("includes a sync summary and syncedAt timestamp in the response", async () => {
+    bulkWriteMock.mockResolvedValue(makeBulkWriteResult(1, 0));
+    stubFetchPages([[makeGithubRepo()]]);
+
+    const before = Date.now();
+    const response = await request(app)
+      .get("/api/github/repos")
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${SESSION_TOKEN}`);
+    const after = Date.now();
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.sync).toEqual({ discovered: 1, inserted: 1, updated: 0 });
+    expect(typeof response.body.data.syncedAt).toBe("string");
+    const syncTime = new Date(response.body.data.syncedAt as string).getTime();
+    expect(syncTime).toBeGreaterThanOrEqual(before);
+    expect(syncTime).toBeLessThanOrEqual(after);
+  });
+
+  it("reports zero inserted and correct updated count for existing repositories", async () => {
+    bulkWriteMock.mockResolvedValue(makeBulkWriteResult(0, 1));
+    stubFetchPages([[makeGithubRepo()]]);
+
+    const response = await request(app)
+      .get("/api/github/repos")
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${SESSION_TOKEN}`);
+
+    expect(response.body.data.sync).toEqual({ discovered: 1, inserted: 0, updated: 1 });
+  });
+
+  it("returns empty sync summary when no repositories are discovered", async () => {
+    stubFetchPages([[]]);
+
+    const response = await request(app)
+      .get("/api/github/repos")
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${SESSION_TOKEN}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.sync).toEqual({ discovered: 0, inserted: 0, updated: 0 });
+    // bulkWrite must not be called with an empty set of operations.
+    expect(bulkWriteMock).not.toHaveBeenCalled();
+  });
+
   it("maps a GitHub failure during discovery to the correct error code", async () => {
     vi.stubGlobal(
       "fetch",
@@ -186,6 +263,16 @@ describe("GET /api/github/repos", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe("GITHUB_TOKEN_EXPIRED");
+    expect(bulkWriteMock).not.toHaveBeenCalled();
+  });
+
+  it("does not call bulkWrite when GitHub returns an empty repository list", async () => {
+    stubFetchPages([[]]);
+
+    await request(app)
+      .get("/api/github/repos")
+      .set("Cookie", `${SESSION_COOKIE_NAME}=${SESSION_TOKEN}`);
+
     expect(bulkWriteMock).not.toHaveBeenCalled();
   });
 });

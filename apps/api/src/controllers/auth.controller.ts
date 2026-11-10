@@ -56,9 +56,9 @@ export async function githubCallback(req: Request, res: Response): Promise<void>
   res.clearCookie(OAUTH_STATE_COOKIE_NAME, clearedOauthStateCookieOptions);
 
   // The user declined on GitHub. No code is exchanged and no session is created;
-  // send them back to the SPA, which shows a neutral notice.
+  // send them back to the sign-in page, which shows a neutral notice.
   if (req.query.error === "access_denied" && !parseResult.success) {
-    res.redirect(`${env.FRONTEND_URL}?auth_error=cancelled`);
+    res.redirect(`${env.FRONTEND_URL}/signin?auth_error=cancelled`);
     return;
   }
 
@@ -91,7 +91,7 @@ export async function githubCallback(req: Request, res: Response): Promise<void>
 
   res.cookie(SESSION_COOKIE_NAME, sessionToken, sessionCookieOptions);
 
-  res.redirect(env.FRONTEND_URL);
+  res.redirect(`${env.FRONTEND_URL}/dashboard`);
 }
 
 export async function me(req: Request, res: Response): Promise<void> {

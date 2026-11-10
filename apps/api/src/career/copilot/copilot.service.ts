@@ -5,6 +5,7 @@ import { listDirections, buildTransitionPlan, changeDirection, requireDirection 
 import type { TransitionAnalysis } from "../transition/transition-analysis.js";
 import type { JobMatch } from "../matching/job-matcher.js";
 import type { NormalizedJob } from "../types.js";
+import { runCopilotAgent, type AgentHistoryItem, type ClientTime, type PageInfo } from "./agent.js";
 import { copilotIntentSchema, interpretMessage, type CopilotIntent } from "./intent.js";
 
 // Phase 12 orchestration layer. It maps a message to a validated intent, then
@@ -13,7 +14,12 @@ import { copilotIntentSchema, interpretMessage, type CopilotIntent } from "./int
 // are returned as UI actions that the user must confirm.
 
 export type CopilotAction =
-  | { kind: "navigate"; label: string; to: string }
+  // auto: the person asked to be taken there, so the app goes straight away instead of waiting for a click.
+  | { kind: "navigate"; label: string; to: string; auto?: boolean }
+  // The browser presses this element on the page the person is looking at (hands-free).
+  | { kind: "click"; elementId: number; label: string }
+  // The browser keeps this note for the rest of the session.
+  | { kind: "remember"; note: string }
   | { kind: "refresh-profile"; label: string }
   | { kind: "set-direction"; label: string; directionId: string }
   | { kind: "search-demo"; label: string };
@@ -25,11 +31,14 @@ export type CopilotCard =
 
 export interface CopilotResponse {
   text: string;
-  interpretedBy: "rules" | "llm";
-  intent: CopilotIntent["type"];
+  // "agent": a conversational model answered; "llm": a model only interpreted the request; "rules": deterministic.
+  interpretedBy: "rules" | "llm" | "agent";
+  intent: CopilotIntent["type"] | "chat";
   cards: CopilotCard[];
   actions: CopilotAction[];
   suggestions: string[];
+  // Compact context the browser sends back with the next turn (for example the ids of jobs just shown).
+  memo?: string;
 }
 
 export const SUGGESTED_PROMPTS = [
@@ -38,6 +47,16 @@ export const SUGGESTED_PROMPTS = [
   "What are the most important skills I am missing?",
   "I want to transition from AI/ML to full-stack development",
   "Reanalyze my profile",
+];
+
+// Starter questions shown when a conversational model is available: open-ended, like talking to a friend.
+export const AGENT_PROMPTS = [
+  "I am not sure where to start. Can you guide me?",
+  "Find backend internships based on my projects",
+  "What are the most important skills I am missing?",
+  "Which courses should I take next?",
+  "How should I prepare for my first tech interview?",
+  "I want to transition from AI/ML to full-stack development",
 ];
 
 const MAX_CARD_ITEMS = 5;
@@ -85,8 +104,14 @@ function qualifiedEnough(item: OpportunityItem): boolean {
 
 export async function handleCopilotMessage(
   userId: string,
-  input: { message: string; jobId?: string },
+  input: { message: string; jobId?: string; history?: AgentHistoryItem[]; username?: string; page?: PageInfo; notes?: string[]; clientTime?: ClientTime; style?: "voice" | "text" },
 ): Promise<CopilotResponse> {
+  // Free conversation first. A job card question (jobId) keeps the deterministic, fully grounded explanation.
+  if (!input.jobId) {
+    const conversational = await runCopilotAgent(userId, input);
+    if (conversational) return conversational;
+  }
+
   const { intent, by } = await interpret(input.message);
   const reply = (partial: Partial<CopilotResponse> & { text: string }): CopilotResponse => ({
     interpretedBy: by,

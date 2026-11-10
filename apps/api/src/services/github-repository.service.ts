@@ -122,19 +122,28 @@ export async function discoverPublicRepositories(
   return { repositories: publicOnly.map(normalizeRepository), truncated };
 }
 
+export interface SyncSummary {
+  discovered: number;
+  inserted: number;
+  updated: number;
+}
+
 // Upserts discovered repositories for the user. Deliberately does not touch
 // `selected`, `analyzed`, or `analyzedAt` so that explicit selection state and
 // future analysis results survive repeated discovery calls. Repositories no
 // longer returned by GitHub are left in place rather than deleted.
+//
+// Returns a summary of what changed: how many repositories were newly inserted
+// versus how many already existed and had their metadata updated.
 export async function persistDiscoveredRepositories(
   userId: string,
   repositories: NormalizedRepository[],
-): Promise<void> {
+): Promise<SyncSummary> {
   if (repositories.length === 0) {
-    return;
+    return { discovered: 0, inserted: 0, updated: 0 };
   }
 
-  await RepositoryModel.bulkWrite(
+  const result = await RepositoryModel.bulkWrite(
     repositories.map((repo) => ({
       updateOne: {
         filter: { userId, githubId: repo.githubId },
@@ -147,11 +156,27 @@ export async function persistDiscoveredRepositories(
             description: repo.description,
             metadata: repo.metadata,
           },
+          // Only applied when inserting a brand-new document. Ensures that new
+          // repository records carry correct schema defaults even though bulkWrite
+          // bypasses Mongoose's setDefaultsOnInsert behavior.
+          $setOnInsert: {
+            selected: false,
+            analyzed: false,
+            analyzedAt: null,
+            scoringObservations: null,
+            contentHash: null,
+          },
         },
         upsert: true,
       },
     })),
   );
+
+  return {
+    discovered: repositories.length,
+    inserted: result.upsertedCount,
+    updated: result.modifiedCount,
+  };
 }
 
 export async function listRepositoriesForUser(

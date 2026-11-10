@@ -15,7 +15,7 @@ export const APPLICATION_STATUSES = [
   "rejected",
   "withdrawn",
 ] as const;
-export const TASK_STATUSES = ["planned", "in_progress", "completed", "skipped"] as const;
+export const TASK_STATUSES = ["not_started", "planned", "in_progress", "completed", "skipped"] as const;
 
 export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number];
 export type WorkMode = (typeof WORK_MODES)[number];

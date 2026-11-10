@@ -46,6 +46,12 @@ const baseEnvSchema = z.object({
   LLM_API_KEY: optionalString,
   LLM_MODEL: optionalString,
   LLM_BASE_URL: z.preprocess(blankToUndefined, z.string().url().optional()),
+  // Optional backups for the conversational Copilot, tried in order when the main model is rate limited.
+  // Comma-separated extra models on the SAME provider and key (each model has its own free quota).
+  LLM_FALLBACK_MODELS: optionalString,
+  // A Google AI Studio key adds Gemini as a final fallback. Leave blank to skip it.
+  GEMINI_API_KEY: optionalString,
+  GEMINI_MODEL: optionalString,
 
   // Optional Phase 11 job providers. Each is enabled only when its credentials
   // are present; none is required (the app falls back to labelled demo data).
@@ -122,6 +128,9 @@ export const env = envSchema.parse({
   LLM_API_KEY: process.env.LLM_API_KEY,
   LLM_MODEL: process.env.LLM_MODEL,
   LLM_BASE_URL: process.env.LLM_BASE_URL,
+  LLM_FALLBACK_MODELS: process.env.LLM_FALLBACK_MODELS,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  GEMINI_MODEL: process.env.GEMINI_MODEL,
   JSEARCH_API_KEY: process.env.JSEARCH_API_KEY,
   ADZUNA_APP_ID: process.env.ADZUNA_APP_ID,
   ADZUNA_APP_KEY: process.env.ADZUNA_APP_KEY,
